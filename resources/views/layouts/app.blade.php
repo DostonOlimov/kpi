@@ -1,83 +1,133 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <!-- Required meta tags -->
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>Kpi tizimi</title>
-        <!-- plugins:css -->
-        <link rel="stylesheet" href="/assets/vendors/iconfonts/mdi/css/materialdesignicons.min.css">
-        <link rel="stylesheet" href="/assets/vendors/iconfonts/ionicons/dist/css/ionicons.css">
-        <link rel="stylesheet" href="/assets/vendors/iconfonts/flag-icon-css/css/flag-icon.min.css">
-        <link rel="stylesheet" href="/assets/vendors/css/vendor.bundle.base.css">
-        <link rel="stylesheet" href="/assets/vendors/css/vendor.bundle.addons.css">
-        <!-- <link rel="stylesheet" href="../../assets/vendors/iconfonts/font-awesome/css/font-awesome.min.css" /> -->
-        <link rel="stylesheet" href="/assets/datepicker/css/bootstrap-datepicker.css">
-        <link rel="stylesheet" href="/assets/datepicker/css/bootstrap.css">
-        <link rel="stylesheet" href="/assets/datepicker/css/bootstrap-responsive.css">
-        <link rel="stylesheet" href="/assets/bower_components/chartist/dist/chartist.min.css">
+<html lang="en" dir="ltr">
+<head>
+    <!-- Character Encoding -->
+    <meta charset="utf-8">
 
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Viewport Settings -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
+    <!-- Metadata -->
+    <meta name="organization" content="">
+    <meta name="author" content="Doston Olimov">
 
-        <!-- endinject -->
-        <!-- plugin css for this page -->
-        <!-- End plugin css for this page -->
-        <!-- inject:css -->
-        <link rel="stylesheet" href="/assets/css/shared/style.css">
-        <!-- endinject -->
-        <!-- Layout styles -->
-        <link rel="stylesheet" href="/assets/css/demo_1/style.css">
-        <!-- End Layout styles -->
-        <link rel="stylesheet" href="/assets/css/custom.css">
-        <link rel="shortcut icon" href="/assets/images/favicon.ico" />
-        @stack('styles')
-    </head>
-    <body>
-        <div class="container-scroller">
-            <!-- partial:partials/_navbar.html -->
-            @include('layouts.blocks.top_navbar')
-            <!-- partial -->
-            <div class="container-fluid page-body-wrapper">
-                <!-- partial:partials/_sidebar.html -->
-                @include('layouts.blocks.sidebar')
-                <!-- partial -->
-                <div class="main-panel" id="main-panel">
-                    @yield('content')
-                    <!-- partial:partials/_footer.html -->
-                    @include('layouts.blocks.footer')
-                    <!-- partial -->
-                </div>
-                <!-- main-panel ends -->
-            </div>
-            <!-- page-body-wrapper ends -->
+    <!-- Page Title -->
+    <title>KPI tizimi</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('/img/log0.png') }}">
+
+    <!-- Sidebar Styles -->
+    <link rel="stylesheet" href="{{ asset('assets/vendors/simplebar/css/simplebar.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/vendors/simplebar.css') }}">
+
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+
+    <!-- SweetAlert2 Stylesheet -->
+    <link rel="stylesheet" href="{{ asset('plugins/sweetalert2/sweetalert2.min.css') }}">
+
+    <!-- DatePicker Stylesheet -->
+    <link rel="stylesheet" href="{{ asset('build/css/bootstrap-datetimepicker.min.css') }}">
+
+    <!-- Custom Stylesheets -->
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/color-style.css') }}">
+    <!-- Select2 css files -->
+    <link rel="stylesheet" href="{{ asset('plugins/select2/dist/css/select2.min.css') }}">
+    <!-- Table css file -->
+    <link rel="stylesheet" href="{{ asset('plugins/tabs/tabs.css') }}">
+    <!-- Font awesome min css file -->
+    <link rel="stylesheet" href="{{ asset('fonts/fonts/font-awesome.min.css') }}">
+    <!-- My style file -->
+    <link rel="stylesheet" href="{{ asset('css/myStyle.css') }}">
+    <style>
+        @font-face {
+            font-family: 'DejaVuSans';
+            src: url('{{ ('fonts/fonts/dejavu-sans.book.ttf') }}') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+    </style>
+    <!-- Additional Styles from Other Pages -->
+    @yield('styles')
+</head>
+<body class="app">
+<?php
+$userid = Auth::user()->id;
+// $settings = settings(); // Uncomment if settings are required
+?>
+
+    <!-- Sidebar -->
+    @include('layouts.blocks.sidebar')
+
+    <!-- Main Wrapper -->
+    <div class="wrapper d-flex flex-column min-vh-100 bg-light" style="padding-right: 0!important;">
+        <!-- Navbar -->
+        @include('layouts.blocks.navbar')
+
+        <!-- Content Area -->
+        <div class="body flex-grow-1 px-3">
+            @yield('content')
         </div>
-        <!-- container-scroller -->
-        <!-- plugins:js -->
-        <script src="/assets/vendors/js/vendor.bundle.base.js"></script>
-        <script src="/assets/vendors/js/vendor.bundle.addons.js"></script>
-        <script src="/assets/datepicker/js/jquery.js"></script>
-        <script src="/assets/datepicker/js/bootstrap-datepicker.js"></script>
-        <script src="/assets/datepicker/js/bootstrap.js"></script>
+        <!-- Content Area Ends -->
+    </div>
+    <!-- Main Wrapper Ends -->
+{{--@else--}}
+{{--    <!-- Unauthorized Access Message -->--}}
+{{--    <div class="section" role="main">--}}
+{{--        <div class="card">--}}
+{{--            <div class="card-body text-center">--}}
+{{--                    <span class="titleup text-danger">--}}
+{{--                        <i class="fa fa-exclamation-circle" aria-hidden="true"></i>&nbsp;--}}
+{{--                        {{ trans('app.You Are Not Authorized to Access This Page.') }}--}}
+{{--                    </span>--}}
+{{--            </div>--}}
+{{--        </div>--}}
+{{--    </div>--}}
+{{--@endif--}}
+</body>
 
-        <script src="/assets/vendors/chart.js/Chart.min.js"></script>
-        <script src="/assets/bower_components/chartist/dist/chartist.min.js"></script>
-        <script src="/assets/vendors/chart.js/Chart.min.js"></script>
+<!-- JQUERY SCRIPTS JS -->
+<script src="{{ asset('plugins/hyperform/dist/hyperform.js') }}"></script>
+<script>hyperform(window)</script>
+<script src="{{ asset('js/vendors/jquery-3.2.1.min.js') }}"></script>
+<script src="{{ asset('plugins/date-picker/jquery-ui.js') }}"></script>
 
-        <!-- endinject -->
-        <!-- Plugin js for this page-->
-        <!-- End plugin js for this page-->
-        <!-- inject:js -->
-        <script src="/assets/js/shared/off-canvas.js"></script>
-        <script src="/assets/js/shared/misc.js"></script>
-        <!-- endinject -->
-        <!-- Custom js for this page-->
-        <script src="/assets/js/demo_1/dashboard.js"></script>
-        <!-- End custom js for this page-->
-        <script src="/assets/js/custom.js"></script>
+<!-- Input Mask -->
+<script src="{{ asset('plugins/input-mask/input-mask.min.js') }}"></script>
 
+<!-- Select2 -->
+<script src="{{ asset('plugins/select2/dist/js/select2.min.js') }}"></script>
 
-{{--        <script src="/assets/js/shared/jquery.cookie.js" type="text/javascript"></script>--}}
-        @stack('scripts')
-    </body>
+<!-- Date Picker -->
+<script src="{{ asset('plugins/date-picker/date-picker.js') }}"></script>
+
+<!-- Bootstrap Bundle -->
+<script src="{{ asset('js/vendors/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('vendors/bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
+
+<!-- SweetAlert2 and Multi Select -->
+<script src="{{ asset('plugins/sweetalert2/sweetalert2.min.js') }}"></script>
+<script src="{{ asset('plugins/multipleselect/multiple-select.js') }}"></script>
+<script src="{{ asset('plugins/multipleselect/multi-select.js') }}"></script>
+
+<!-- Moment.js -->
+<script src="{{ asset('js/my_js_files/moment.js') }}"></script>
+
+<!-- Print Button -->
+<script src="{{ asset('plugins/print/dist/jQuery.print.min.js') }}"></script>
+
+<!-- Custom Scripts -->
+<script src="{{ asset('js/custom.js') }}"></script>
+<script src="{{ asset('js/my_js_files/myjs.js') }}"></script>
+
+<!-- CoreUI and Necessary Plugins -->
+<script src="{{ asset('/assets/vendors/@coreui/coreui/js/coreui.bundle.min.js') }}"></script>
+<script src="{{ asset('/assets/vendors/simplebar/js/simplebar.min.js') }}"></script>
+
+@yield('scripts')
+
 </html>
+

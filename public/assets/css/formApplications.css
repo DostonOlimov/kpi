@@ -1,0 +1,310 @@
+.nav-bg {
+    border: 0px !important;
+    background: var(--main-font-color) !important;
+}
+
+main {
+    margin: 135px 0;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 50px;
+    /* column-gap: 25px; */
+}
+
+/* .col-md-4 {
+    min-width: 100%;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+} */
+/* .col-md-4-2 {
+    flex: 0 0 33.33333333%;
+    max-width: 33.33333333%;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+} */
+.form__organization__field {
+    flex: 1 1 calc(50% - 50px); /* Each field takes up 50% of the available space minus padding */
+    max-width: 100%;
+    /* flex: 1 1 calc(50% - 50px); Each field takes up 50% of the available space minus padding
+    max-width: calc(100% - 50px);  */
+    min-height: 1px;
+}
+.form-control-file {
+    margin-bottom: 25px;
+}
+.card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 1px, rgba(0, 0, 0, 0.07) 0px 2px 2px,
+        rgba(0, 0, 0, 0.07) 0px 4px 4px, rgba(0, 0, 0, 0.07) 0px 8px 8px,
+        rgba(0, 0, 0, 0.07) 0px 16px 16px;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.card-body {
+    flex: 1 1 auto;
+    min-height: 1px;
+    padding: 1.25rem;
+}
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+.text-danger {
+    color: red;
+    margin-left: 4px;
+}
+.form-control {
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    height: calc(2em + 0.75rem + 2px);
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.3s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.form-control:focus {
+    outline: 0;
+    box-shadow: rgba(9, 30, 66, 0.25) 0px 4px 8px -2px,
+        rgba(9, 30, 66, 0.08) 0px 0px 0px 1px;
+    border: none;
+    border-color: transparent;
+}
+.btn {
+    display: inline-block;
+    font-weight: 400;
+    color: #212529;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    border: 1px solid transparent;
+    padding: 0.375rem 0.75rem;
+    font-size: 18px;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+        border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    color: #fff;
+    background-color: #0069d9;
+    border-color: #0062cc;
+}
+
+.btn-success {
+    color: #fff;
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.btn-success:hover {
+    color: #fff;
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+.form-group-buttons {
+    display: flex;
+    column-gap: 12px;
+    margin-top: 25px;
+}
+
+.file-upload-wrapper {
+    margin-top: 10px;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    border-radius: 25px;
+    box-shadow: rgba(136, 165, 191, 0.48) 6px 2px 16px 0px,
+        rgba(255, 255, 255, 0.8) -6px -2px 16px 0px;
+    padding: 12px 16px;
+    background: var(--main--bg-color);
+    width: 100%;
+}
+.file-upload-wrapper input[type="file"] {
+    display: none;
+}
+.file-upload-wrapper label {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+.file-upload-wrapper span {
+    margin-right: 7px;
+}
+.file-upload-wrapper .fa-paperclip,
+.file-upload-wrapper .fa-trash {
+    background-color: blue;
+    border-radius: 50%;
+    color: white;
+    font-size: 20px;
+    padding: 13px 14px 13px 14px;
+    margin-right: 10px;
+}
+.form-control-file {
+    display: flex;
+    flex-direction: column;
+}
+.cancel-upload {
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    transition: all 0.2s ease-in-out;
+}
+.cancel-upload:active {
+    transform: scale(0.5);
+}
+.cancel-upload:disabled:active {
+    transform: none;
+}
+.cancel-upload:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+.fa-mirrored {
+    margin-right: 3px;
+    transform: scaleX(-1);
+}
+.py-3 {
+    float: right;
+    margin-bottom: 25px;
+}
+.py-3 button,
+.py-3 a {
+    padding: 9px 16px;
+    text-transform: uppercase;
+    font-size: 16px;
+    font-weight: 600;
+}
+.cardBodyContract {
+    display: flex;
+    width: 100%;
+    padding: 3.6rem;
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+        rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+}
+.titleContract {
+    text-transform: uppercase;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 95px;
+    font-size: 22px;
+}
+.titleContract_info {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+    font-size: 17px;
+}
+.introContract {
+    font-weight: 500;
+    text-align: justify;
+}
+.introContract .first-line {
+    margin-left: 55px;
+}
+.introContract__name {
+    font-weight: 700;
+}
+.titleContract_section {
+    margin: 30px 0;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.tableContract {
+    margin-bottom: 55px;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.tableContract td,
+.tableContract th {
+    border: 2px solid black;
+    padding: 0.75rem;
+    font-size: 15px;
+    text-align: center;
+    font-weight: 800;
+}
+.Contract-Info-Warning {
+    font-family: sans-serif;
+    font-weight: 600;
+    line-height: 1.6;
+    font-size: 14px;
+    text-align: justify;
+}
+.ContractCustomer {
+    display: flex;
+    justify-content: space-between;
+    column-gap: 25px;
+    align-items: flex-start;
+}
+.ContractCustomer_card {
+    max-width: 50%;
+    text-align: start;
+    font-weight: bold;
+    line-height: 2;
+}
+.ContractCustomer_card span {
+    display: flex;
+}
+.submit_div{
+    position: relative; /* Set child div as absolute */
+   padding-top: 20px;
+}
+.submit_button{
+    position: absolute; /* Set child div as absolute */
+    top: 50%; /* Place child div at 50% from the top of the parent div */
+    left: 50%; /* Place child div at 50% from the left of the parent div */
+    transform: translate(-50%, -50%); /* Move the child div back by half its own width and height */
+    font-size: 18px;
+    text-decoration: none;
+    color: #fff;
+    padding: 9px 12px;
+    background-color: #0ad70a;
+}
+.select2-container--default .select2-selection--single {
+    height: calc(2em + 0.75rem + 2px) !important;
+    padding: 0.375rem 0.75rem !important;
+}
+@media only screen and (max-width: 600px) {
+    .row {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        column-gap: 10px;
+    }
+    .form-control {
+        width: 100%;
+    }
+}
+
+

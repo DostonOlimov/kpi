@@ -27,7 +27,7 @@
                 <div class="col-lg-4 mx-auto">
                     <div class="auto-form-wrapper">
                         <div class="d-flex justify-content-center">
-                            <img style="width: 200px;" src="{{ url('/assets/images/logoNEW.png') }}" alt="logo">
+                            <img style="width: 200px;" src="{{ url('/assets/images/logoNE.png') }}" alt="logo">
                         </div>
                         <form action="{{ route('authenticate') }}" method="POST">
                             @csrf

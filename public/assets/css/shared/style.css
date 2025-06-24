@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------
  [Master Stylesheet]
 
-  Project:	Star Admin Free 
+  Project:	Star Admin Free
   Version:	3.5
 -------------------------------------------------------------------*/
 /*-------------------------------------------------------------------
@@ -1603,7 +1603,7 @@ select.form-control:focus::-ms-value {
 .col-form-label-sm {
   padding-top: calc(0.5rem + 1px);
   padding-bottom: calc(0.5rem + 1px);
-  font-size: 0.875rem;
+  font-size: 1 rem;
   line-height: 1; }
 
 .form-control-plaintext {
@@ -1624,7 +1624,7 @@ select.form-control:focus::-ms-value {
 .form-control-sm {
   height: calc(1.5em + 0.5rem + 2px);
   padding: 0.5rem 0.81rem;
-  font-size: 0.875rem;
+  font-size: 1 rem;
   line-height: 1;
   border-radius: 0.2rem; }
 
@@ -1701,7 +1701,7 @@ textarea.form-control {
   max-width: 100%;
   padding: 0.25rem 0.5rem;
   margin-top: .1rem;
-  font-size: 0.875rem;
+  font-size: 1 rem;
   line-height: 1.5;
   color: #fff;
   background-color: rgba(40, 167, 69, 0.9);
@@ -1782,7 +1782,7 @@ textarea.form-control {
   max-width: 100%;
   padding: 0.25rem 0.5rem;
   margin-top: .1rem;
-  font-size: 0.875rem;
+  font-size: 1 rem;
   line-height: 1.5;
   color: #fff;
   background-color: rgba(220, 53, 69, 0.9);
@@ -1905,7 +1905,7 @@ textarea.form-control {
   background-color: transparent;
   border: 1px solid transparent;
   padding: 0.4rem 1rem;
-  font-size: 0.875rem;
+  font-size: 1 rem;
   line-height: 1;
   border-radius: 0.1875rem;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; }
@@ -2318,13 +2318,13 @@ fieldset:disabled a.btn {
 
 .btn-lg, .btn-group-lg > .btn {
   padding: 0.94rem 1.94rem;
-  font-size: 0.875rem;
+  font-size: 1 rem;
   line-height: 1.5;
   border-radius: 0.1875rem; }
 
 .btn-sm, .btn-group-sm > .btn {
   padding: 0.5rem 0.81rem;
-  font-size: 0.875rem;
+  font-size: 1 rem;
   line-height: 1.5;
   border-radius: 0.1875rem; }
 
@@ -2552,7 +2552,7 @@ input[type="button"].btn-block {
   display: block;
   padding: 0.5rem 1.5rem;
   margin-bottom: 0;
-  font-size: 0.875rem;
+  font-size: 1 rem;
   color: #6c757d;
   white-space: nowrap; }
 
@@ -2771,7 +2771,7 @@ input[type="button"].btn-block {
 .input-group-sm > .input-group-prepend > .btn,
 .input-group-sm > .input-group-append > .btn {
   padding: 0.5rem 0.81rem;
-  font-size: 0.875rem;
+  font-size: 1 rem;
   line-height: 1;
   border-radius: 0.2rem; }
 
@@ -2955,7 +2955,7 @@ input[type="button"].btn-block {
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
   padding-left: 0.5rem;
-  font-size: 0.875rem; }
+  font-size: 1 rem; }
 
 .custom-select-lg {
   height: calc(1.5em + 1rem + 2px);
@@ -3641,7 +3641,7 @@ input[type="button"].btn-block {
   flex-wrap: wrap;
   padding: 0.56rem 1.13rem;
   margin-bottom: 1rem;
-  font-size: 0.875rem;
+  font-size: 1 rem;
   list-style: none;
   background-color: transparent;
   border-radius: 0.25rem; }
@@ -3725,7 +3725,7 @@ input[type="button"].btn-block {
 
 .pagination-sm .page-link {
   padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
+  font-size: 1 rem;
   line-height: 1.5; }
 
 .pagination-sm .page-item:first-child .page-link {
@@ -4263,7 +4263,7 @@ a.close.disabled {
 .toast {
   flex-basis: 350px;
   max-width: 350px;
-  font-size: 0.875rem;
+  font-size: 1 rem;
   background-color: rgba(255, 255, 255, 0.85);
   background-clip: padding-box;
   border: 1px solid rgba(0, 0, 0, 0.1);
@@ -4560,7 +4560,7 @@ a.close.disabled {
   word-spacing: normal;
   white-space: normal;
   line-break: auto;
-  font-size: 0.875rem;
+  font-size: 1 rem;
   word-wrap: break-word;
   background-color: #fff;
   background-clip: padding-box;
@@ -7736,7 +7736,7 @@ h6 {
 p,
 a:not([href]):not([tabindex]) {
   color: #212529;
-  font-size: 0.875rem; }
+  font-size: 1 rem; }
 
 .h1,
 h1 {
@@ -7763,7 +7763,7 @@ h6 {
   font-size: 1rem; }
 
 p {
-  font-size: 0.875rem; }
+  font-size: 1 rem; }
 
 .display-1 {
   font-size: 3.75rem; }
@@ -8475,7 +8475,7 @@ pre {
 
 /* Buttons */
 .btn {
-  font-size: 0.875rem;
+  font-size: 1 rem;
   line-height: 1;
   font-family: "roboto", sans-serif; }
   .btn i {
@@ -8512,9 +8512,9 @@ pre {
       margin-right: 0;
       font-size: 1rem; }
   .btn.btn-sm, .btn-group-sm > .btn {
-    font-size: 0.875rem; }
+    font-size: 1 rem; }
   .btn.btn-lg, .btn-group-lg > .btn {
-    font-size: 0.875rem; }
+    font-size: 1 rem; }
   .btn.btn-xs {
     padding: 0.5rem 0.75rem;
     font-size: 0.625rem; }
@@ -9110,7 +9110,7 @@ pre {
       margin-top: 0; }
 
 .form-check .form-check-label {
-  font-size: 0.875rem;
+  font-size: 1 rem;
   line-height: 1.5;
   padding-left: 10px; }
   .form-check .form-check-label input:checked + .input-helper:before {
@@ -9283,7 +9283,7 @@ pre {
       display: none; }
 
 .dropdown-menu {
-  font-size: 0.875rem;
+  font-size: 1 rem;
   border: 1px solid #dee2e6; }
   @media (max-width: 992px) {
     .dropdown-menu {
@@ -9361,7 +9361,7 @@ select.form-control {
   padding: 0.4375rem 0.75rem; }
 
 .form-group label {
-  font-size: 0.875rem;
+  font-size: 1 rem;
   line-height: 1;
   vertical-align: top; }
 
@@ -9387,7 +9387,7 @@ select.form-control {
     align-items: center;
     padding: 15px;
     font-family: "roboto", sans-serif;
-    font-size: 0.875rem; }
+    font-size: 1 rem; }
     .icons-list > div i {
       display: inline-block;
       font-size: 20px;
@@ -9400,7 +9400,7 @@ dl,
 ol,
 ul {
   padding-left: 1rem;
-  font-size: 0.875rem; }
+  font-size: 1 rem; }
   dl li,
   ol li,
   ul li {
@@ -9479,7 +9479,7 @@ ul {
   flex-direction: row;
   align-items: flex-start;
   padding: 0.75rem 1.5rem;
-  font-size: 0.875rem;
+  font-size: 1 rem;
   border-bottom: 1px solid #dee2e6; }
   .preview-list .preview-item:last-child {
     border-bottom: 0; }
@@ -9562,7 +9562,7 @@ ul {
   .table td,
   .table th {
     vertical-align: middle;
-    font-size: 0.875rem;
+    font-size: 1 rem;
     line-height: 1;
     white-space: nowrap;
     height: 35px;
@@ -9709,7 +9709,7 @@ ul {
       border-radius: 100%;
       margin-right: 10px;
       display: inline-block;
-      font-size: 0.875rem; }
+      font-size: 1 rem; }
 
 .rtl .chartjs-legend ul {
   padding-right: 0; }
@@ -9757,10 +9757,12 @@ ul {
 .auth {
   min-height: 100vh; }
   .auth.auth-bg-1 {
-    background: url("../../images/auth/login_1.jpg");
+    background: url("/img/dashboard/background2.jpg");
+      /*background-color: #a8e787;*/
+
     background-size: cover; }
   .auth.register-bg-1 {
-    background: url("../../images/auth/register.jpg") center center no-repeat;
+    /*background: url("../../images/auth/register.jpg") center center no-repeat;*/
     background-size: cover; }
   .auth.theme-one .auto-form-wrapper {
     background: #fff;

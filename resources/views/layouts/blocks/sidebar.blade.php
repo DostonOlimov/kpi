@@ -1,157 +1,207 @@
-<nav class="sidebar sidebar-offcanvas" id="sidebar">
-    <ul class="nav">
-        <img style="width: 100px; margin: auto;" src="{{ url('/assets/images/logoNEW.png') }}" alt="logo">
-        <li class="nav-item nav-profile">
-            <a href="#" class="nav-link">
-                <div class="text-wrapper">
-                    <p class="profile-name m-0">{{ auth()->user()->first_name. ' '.auth()->user()->last_name }}</p>
-                </div>
-            </a>
-        </li>
-        @if(auth()->user()->role_id == 1)
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="collapse" href="#employees" aria-expanded="false"
-                   aria-controls="ui-basic">
-                    <i class="menu-icon typcn typcn-coffee"></i>
-                    <span class="menu-title">Foydalanuvchilar</span>
-                    <i class="menu-arrow"></i>
-                </a>
-                <div class="collapse" id="employees">
-                    <ul class="nav flex-column sub-menu">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{route('employees.list')}}">Ro'yxatni ko'rish</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{route('roles.index')}}">Foydalanuvchi rollari</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{route('works.index')}}">Foydalanuvchi ish joylari</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{route('month.index')}}">Ish kunlari</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-        @elseif(auth()->user()->role_id == 3)
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="collapse" href="#profile" aria-expanded="false"
-                   aria-controls="ui-basic">
-                    <i class="menu-icon typcn typcn-coffee"></i>
-                    <span class="menu-title">Baholash ko'rsatkichlari</span>
-                    <i class="menu-arrow"></i>
-                </a>
-                <div class="collapse" id="profile">
-                    <ul class="nav flex-column sub-menu">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{route('profile.list')}}">Holatni tekshirish</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{route('profile.add2')}}">Ko'rsatkichlarni qo'shish</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{route('profile.upload')}}">Baholarni to'ldirish</a>
-                        </li>
+<div class="sidebar sidebar-dark sidebar-fixed " id="sidebar">
+    <div class="sidebar-brand d-none d-md-flex justify-content-around">
+        <h2 style="font-size: 20px; color: white; margin: 6px 22px 5px 0; !important;">KPI</h2>
+    </div>
+    <ul class="sidebar-nav" data-coreui="navigation" data-simplebar="">
+        <li class="nav-item"><a class="nav-link" href="/home">
+                <svg class="nav-icon">
+                    <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-home"></use>
+                </svg>Bosh sahifa</a></li>
 
-                    </ul>
-                </div>
-            </li>
-        @elseif(auth()->user()->role_id == 2)
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="collapse" href="#kpi" aria-expanded="false" aria-controls="ui-basic">
-                    <i class="menu-icon typcn typcn-coffee"></i>
-                    <span class="menu-title">Baholash ko'rsatkichlari</span>
-                    <i class="menu-arrow"></i>
-                </a>
-                <div class="collapse" id="kpi">
-                    <ul class="nav flex-column sub-menu">
-                    <li class="nav-item">
-                            <a class="nav-link" href="{{route('director.list')}}">Holatni tekshirish</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{route('director.add2')}}">Ko'rsatgichlar qo'shish</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{route('director.employees')}}">Bo'lim xodimlari</a>
-                        </li>
+        @if(auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)
+            <li class="nav-title">Foydalanuvchilar</li>
 
-                    </ul>
-                </div>
-            </li>
-        @elseif(auth()->user()->role_id == 6)
             <li class="nav-item">
-                <a class="nav-link" data-toggle="collapse" href="#kpi" aria-expanded="false" aria-controls="ui-basic">
-                    <i class="menu-icon typcn typcn-coffee"></i>
-                    <span class="menu-title">Xodimlar natijalari</span>
-                    <i class="menu-arrow"></i>
+                <a class="nav-link" href="{{ route('employees.list') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-people"></use>
+                    </svg>
+                    Ro'yxatni ko'rish
                 </a>
-                <div class="collapse" id="kpi">
-                    <ul class="nav flex-column sub-menu">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{route('bugalter.list')}}">Taqsimot holatini ko'rish</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{route('bugalter.add')}}">Summani kiritish</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{route('bugalter.check')}}">Holatni tekshirish</a>
-                        </li>
-                    </ul>
-                </div>
             </li>
-        @elseif(auth()->user()->role_id == 4)
+
             <li class="nav-item">
-                <a class="nav-link" data-toggle="collapse" href="#profile" aria-expanded="false"
-                   aria-controls="ui-basic">
-                    <i class="menu-icon typcn typcn-coffee"></i>
-                    <span class="menu-title">Shaxsiy profil</span>
-                    <i class="menu-arrow"></i>
+                <a class="nav-link" href="{{ route('roles.index') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-shield-alt"></use>
+                    </svg>
+                    Foydalanuvchi rollari
                 </a>
-                <div class="collapse" id="profile">
-                    <ul class="nav flex-column sub-menu">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{route('commission.list')}}">Xodimlar natijalari</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{route('days.select')}}">Xodimlar ish kunlari</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{route('commission.section')}}">Bo'limlar ro'yxati</a>
-                        </li>
-                    </ul>
-                </div>
             </li>
-        @elseif(auth()->user()->role_id == 7)
+
             <li class="nav-item">
-                <a class="nav-link" data-toggle="collapse" href="#profile" aria-expanded="false"
-                   aria-controls="ui-basic">
-                    <i class="menu-icon typcn typcn-coffee"></i>
-                    <span class="menu-title">Shaxsiy profil</span>
-                    <i class="menu-arrow"></i>
+                <a class="nav-link" href="{{ route('works.index') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-briefcase"></use>
+                    </svg>
+                    Foydalanuvchi ish joylari
                 </a>
-                <div class="collapse" id="profile">
-                    <ul class="nav flex-column sub-menu">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{route('commission.section')}}">Bo'limlar ro'yxati</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{route('commission.list')}}">Xodimlar ro'yxati</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{route('bugalter.list')}}">Oylik hisobotlar</a>
-                        </li>
-                    </ul>
-                </div>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('month.index') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-calendar"></use>
+                    </svg>
+                    Ish kunlari
+                </a>
             </li>
         @endif
+
+        @if(auth()->user()->role_id === \App\Models\User::ROLE_USER || auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)
+            <li class="nav-title">Baholash ko'rsatkichlari</li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('profile.list') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-check-circle"></use>
+                    </svg>
+                    Holatni tekshirish
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('profile.add2') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-plus"></use>
+                    </svg>
+                    Ko'rsatkichlarni qo'shish
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('profile.upload') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-cloud-upload"></use>
+                    </svg>
+                    Baholarni to'ldirish
+                </a>
+            </li>
+        @endif
+        @if(auth()->user()->role_id === \App\Models\User::ROLE_DIRECTOR || auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)
+            <li class="nav-title">Baholash ko'rsatkichlari</li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('director.list') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-task"></use>
+                    </svg>
+                    Holatni tekshirish
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('director.add2') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-plus"></use>
+                    </svg>
+                    Ko'rsatgichlar qo'shish
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('director.employees') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-user"></use>
+                    </svg>
+                    Bo'lim xodimlari
+                </a>
+            </li>
+        @endif
+        @if(auth()->user()->role_id === \App\Models\User::ROLE_ACCOUNTANT || auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)
+            <li class="nav-title">Xodimlar natijalari</li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('bugalter.list') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-spreadsheet"></use>
+                    </svg>
+                    Taqsimot holatini ko'rish
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('bugalter.add') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-dollar"></use>
+                    </svg>
+                    Summani kiritish
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('bugalter.check') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-check-circle"></use>
+                    </svg>
+                    Holatni tekshirish
+                </a>
+            </li>
+        @endif
+
+        @if(auth()->user()->role_id === \App\Models\User::ROLE_MANAGER || auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)
+            <li class="nav-title">Shaxsiy profil</li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('commission.list') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-chart-line"></use>
+                    </svg>
+                    Xodimlar natijalari
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('days.select') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-calendar"></use>
+                    </svg>
+                    Xodimlar ish kunlari
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('commission.section') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-building"></use>
+                    </svg>
+                    Bo'limlar ro'yxati
+                </a>
+            </li>
+        @endif
+
+        @if(auth()->user()->role_id === 7 || auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)
+            <li class="nav-title">Shaxsiy profil</li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('commission.section') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-building"></use>
+                    </svg>
+                    Bo'limlar ro'yxati
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('commission.list') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-user"></use>
+                    </svg>
+                    Xodimlar ro'yxati
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('bugalter.list') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>
+                    </svg>
+                    Oylik hisobotlar
+                </a>
+            </li>
+        @endif
+
+        <li class="nav-item"><a class="nav-link"></a></li>
     </ul>
-</nav>
-<style>
-    .nav-link {
-        white-space: normal !important;
-    }
-</style>
-
-<script>
-
-</script>
+    <button class="sidebar-toggler" type="button" data-coreui-toggle="unfoldable"></button>
+</div>
