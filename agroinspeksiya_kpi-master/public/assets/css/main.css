@@ -1,0 +1,642 @@
+/*
+* Typography
+*/
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,700);
+
+*,
+*:before,
+*:after {
+    box-sizing: border-box;
+}
+
+
+* {
+    box-sizing: border-box;
+}
+
+
+body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-color: #f0f0f0 !important;
+}
+
+ body a:hover , body a  {
+    text-decoration: none !important;
+    color: white;
+}
+
+body label {
+    color: black;
+}
+
+/* ----------------------------------------------------- +/- ACCARDION -------------------------------------------------------------------------- */
+
+.accordionB input[name=panel] {
+    display: none;
+}
+.accordionC input[name=panel-1] {
+    display: none;
+}
+.accordionD input[name=panel-2] {
+    display: none;
+}
+
+.accordionB label , .accordionC label ,  .accordionD label{
+    display: block;
+    height: 50px;
+    padding: 0;
+    background-color: #ffffff;
+    border-radius: 5px;
+    font-size: 1em;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.75);
+    color: black;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.865, 0.14, 0.095, 0.87);
+}
+
+
+
+.accordionB label:after , .accordionC label:after , .accordionD label:after{
+    content: "";
+    position: absolute;
+    margin-top: 16px;
+    right: 1em;
+    width: 1.2em;
+    height: 1.2em;
+    color: #eee;
+    text-align: center;
+    border-radius: 50%;
+    background: #27ae60;
+    box-shadow: inset 0 1px 6px rgba(0, 0, 0, 0.5), 0 1px 0 #fff;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.75);
+}
+
+
+.accordionB input:checked + label , .accordionC input:checked + label , .accordionD input:checked + label {
+    background-color:#0072b5 ;
+    color: white;
+}
+.accordionB input:checked + label:after  ,.accordionC input:checked + label:after , .accordionD input:checked + label:after {
+    content: "+";
+    line-height: 1.2em;
+}
+
+
+.accordionB .accordionB__content , .accordionC .accordionC__content, .accordionD .accordionD__content{
+    overflow: hidden;
+    height: 0px;
+    /*position: relative;*/
+    padding: 0 1.5em;
+    /*box-shadow: inset 4px 0 0 0 #27ae60, inset 0 3px 6px rgba(0, 0, 0, 0.75);*/
+    background: #e8e8e8;
+    /*background: linear-gradient(to bottom, #444444 0%, #222222 100%);*/
+    color: black;
+    transition: height 0.4s cubic-bezier(0.865, 0.14, 0.095, 0.87);
+}
+
+.accordionB .accordionB__content:not(:last-of-type) , .accordionC .accordionC__content:not(:last-of-type) , .accordionD .accordionD__content:not(:last-of-type){
+    box-shadow: inset 0 -2px 2px rgba(0, 0, 0, 0.25), inset 4px 0 0 0 #27ae60, inset 0 3px 6px rgba(0, 0, 0, 0.75);
+}
+.accordionB .accordionB__content .accordionB__header{
+    padding: 1em 0;
+}
+.accordionC .accordionC__content .accordionC__header{
+    padding: 1em 0;
+}
+.accordionD .accordionD__content .accordionD__header{
+    padding: 1em 0;
+}
+
+.accordionB .accordionB__content .accordionB__body,.accordionC .accordionC__content .accordionC__body,.accordionD .accordionD__content .accordionD__body {
+    font-size: 0.825em;
+    line-height: 1.4em;
+}
+
+input[name=panel]:checked ~ .accordionB__content.accordionB__content--small {
+    height: 150px;
+}
+
+input[name=panel]:checked ~ .accordionB__content.accordionB__content--med {
+    height: 200px;
+}
+
+input[name=panel]:checked ~ .accordionB__content.accordionB__content--large {
+    height: 300px;
+}
+input[name=panel-1]:checked ~ .accordionC__content.accordionC__content--small {
+    height: 150px;
+}
+
+input[name=panel-1]:checked ~ .accordionC__content.accordionC__content--med {
+    height: 200px;
+}
+
+input[name=panel-1]:checked ~ .accordionC__content.accordionC__content--large {
+    height: 300px;
+}
+input[name=panel-2]:checked ~ .accordionD__content.accordionD__content--small {
+    height: 150px;
+}
+
+input[name=panel-2]:checked ~ .accordionD__content.accordionD__content--med {
+    height: 200px;
+}
+
+input[name=panel-2]:checked ~ .accordionD__content.accordionD__content--large {
+    height: 300px;
+}
+
+/*--------------------------------------------------------------------------------------------------------------*/
+
+
+/*      NAVBAR PAGE  - begin     */
+
+
+
+.prof-nav {
+    display: flex;
+    height: 10vh !important;
+    color: black !important;
+    min-width: 99vw ;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #f0f0f0;
+    -webkit-box-shadow: 2px 10px 20px -2px #000000;
+    box-shadow: 2px 10px 20px -2px #000000;
+}
+
+.prof-nav h5 {
+    color: black !important;
+}
+
+.prof-nav>a:hover , .prof-nav>a {
+    text-decoration: none !important;
+    color: white;
+}
+
+.box , .box3{
+    width: 30vw;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.box1 {
+    justify-content: center;
+}
+
+.box1>img {
+    width: 90px;
+    height: 55px;
+}
+
+.box2 {
+    justify-content: space-around;
+    font-size: 1.1em;
+}
+.box3 {
+    width: 60%;
+    height: 100%;
+    margin-right: 5%;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.logOut {
+    margin-left: 20%;
+    width: 130px !important;
+
+}
+
+.box3>i {margin-right: 5%;}
+
+.dropdown-1 {
+    background-color: rgba(138, 126, 126, 0.109) !important;
+}
+
+/*      NAVBAR PAGE  - END     */
+
+
+
+/* ------------------------------------------------------------------------------------------------------------------------------- */
+
+
+
+/*      LOGIN PAGE  - begin     */
+
+
+form {
+    height: 60vh;
+    color: red ;
+    
+}
+
+.form-outline {
+    border: 1px solid black;
+}
+
+.form-outline:focus {
+    border: 1px solid rgba(23, 13, 163, 0.835);
+}
+
+
+
+
+/*      LOGIN PAGE  - END     */
+
+/* ------------------------------------------------------------------------------------------------------------------------------- */
+
+
+/*      NAV-MENU PAGE  - BEGIN     */
+
+.nav-menu {
+    display: flex;
+    width: 100%;
+    height: 10vh !important;
+    justify-content: space-evenly;
+    align-items: center;
+    background-color: #0072B5;
+}
+
+.dropdown-menu-dark {
+    background-color: #052035 !important;
+}
+.dropdown-menu  {
+    width: 22vw !important;
+
+}
+
+
+.sidebar {
+    width: 30%;
+    height: auto;
+    margin:0  0 0 0 ;
+}
+
+.accordion-item {
+    background-color: rgba(255, 255, 255, 0.534) !important ;
+    border-radius:0 10px 10px 0 !important;
+}
+
+.btnColor{
+    /*background-color: #0d6efd;  primary */
+}
+
+.accordion-button {
+    background-color: rgba(89, 146, 23, 0.452);
+    border-radius: 0 10px 10px 0  !important;
+}
+
+.col-666 {
+    position: absolute;
+    width: 36vw ;
+    left: 60% ;
+    top: 23.2vh;
+}
+.btn-drop {
+    transition: 2s ease-in-out;
+    overflow: hidden;
+}
+.tablinks {
+    background-color:green !important;
+}
+.tablinks:active { background-color:yellow !important;}
+.btn-drop:active
+{
+    background-color:red !important;
+}
+.btn-drop:hover {
+    border-bottom: 1px solid black;
+    background-color:#0C1021;
+}
+.tranform {
+    background-color:red;
+}
+.chip {
+    width: auto !important;
+    display: inline-block;
+    height: 30px;
+    border: 1px solid black !important;
+    border-radius: 25px;
+    padding: 0 5px 0 5px;
+}
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: white !important;
+}
+.field-answer-has_labaratory, .field-answer-with_contract, .field-answer-hasnt_labaratory {
+    display: none;
+}
+/*      NAV-MENU PAGE  - END     */
+
+
+/* ------------------------------------------------------------------------------------------------------------------------------- */
+
+/* ...............PAGE 11............... */
+.page1-3  , .page2-3 {
+    height: auto !important;
+}
+.page1-4 , .page2-4 {
+    width: 80% !important;
+    height: auto !important;
+    margin: 6vh auto !important;
+}
+.page2-2>form , .page1-5>form , .page2-5>form , .page3-1>form  {
+    width: 60% !important;
+    height: auto;
+    margin-top: 10vh;
+}
+ .page1-3>form  {
+    width: 80% !important;
+    height: auto;
+    margin-top: 10vh !important;
+}
+.page1-1>form ,.page1-2>form  {
+    width: 70% !important;
+    color: red;
+    height: auto;
+}
+.page1-2>form {
+    width: 60% !important;
+    height: auto;
+}
+ .page1-1 {
+     margin-top: 5vh !important;
+ }
+ .page1-2 {
+     margin-top: 5vh !important;
+ }
+.list-group-item.active {
+    background-color: #0072B5 !important;
+}
+.notHover {
+    background-color: #e1e5e6 !important;
+}
+a.bg-info:hover, a.bg-info:focus, button.bg-info:hover, button.bg-info:focus {
+     background-color: #e1e5e6 !important;
+}
+.margin-top {
+    margin-left: 2vw !important;
+    border-radius: 20px !important;
+    height: auto !important;
+}
+.margin-topSite , .mt-universal {
+    margin-left: 2vw !important;
+    border-radius: 20px !important;
+    height: auto !important;
+}
+.disabled {
+    color: #454d55 !important;
+}
+
+.active {
+    color: white !important;
+}
+
+.actived {
+    color: #0072B5 !important;
+}
+
+.pdf1 , .pdf2 {
+    width: 45vw;
+    height: 300px;
+    position: absolute;
+}
+.pdf2 {
+    left: 30vw;
+}
+
+.grid-input {
+    width: 80vw;
+    height: auto;
+    display: flex;
+}
+.br-btn {
+    border-radius: 30px !important;
+    width: 100px !important;
+}
+
+ .margin-top a{
+     height: 9vh !important;
+ }
+
+
+
+ .pod-li , .pod-li>a  {
+     list-style: none;
+     color: white !important;
+ }
+.page1-6>form , .page2-1>form , .page3-2>form , .page3-3>form {
+    width: 80%;
+    height: auto;
+    margin-top: 3vh;
+}
+
+.page2-1>form{
+    margin: 5vh auto;
+}
+
+.checkBoxes {    
+    height: 20vh !important;
+    margin-top: 10vh!important;
+}
+.checkBoxes>input {    
+    height: 20vh !important;
+}
+.textCheck {
+color: white !important;
+}
+.otishIcon {
+    display: flex !important;
+    margin: 30vh auto !important;
+    border-radius: 40px !important;
+    height: 12vh !important;
+    width: 30vw !important;
+    align-items: center;
+    transition: 3s ease !important;
+}
+.check-btns {
+    margin: 2vh auto !important;
+    padding-top: 4.5% !important;
+    color: black !important;
+    height: 15vh !important;
+}
+.otishIcon:hover .icon4{
+   animation-name: icon;
+   animation-duration: 1s;
+   animation-iteration-count: 3;
+   animation-fill-mode: forwards;
+}
+.icon4 {
+    display: inline-block !important;
+    transform: translateX(2vw) !important;
+    font-size: 1.5em !important;
+}
+
+.otishIcon {
+    display: flex !important;
+    margin: 20vh auto !important;
+    border-radius: 40px !important;
+    height: 8vh !important;
+    width: 40% !important;
+    align-items: center;
+    transition: 3s ease !important;
+}
+.otishIcon:hover .icon4{
+    animation-name: icon;
+    animation-duration: 1s;
+    animation-iteration-count: 3;
+    animation-fill-mode: forwards;
+}
+
+.txtArea {
+    width: 100%;
+}
+
+hr {
+    width: 100% !important;
+    color: #928585 !important;
+}
+#field {
+    margin-bottom:20px;
+}
+.adderDiv {
+    width: 33%;
+}
+.inputAdder {
+    width: 80% !important;
+}
+.input {
+width: 70% !important;
+}
+.accordion-button:not(.collapsed) {
+    background-color: #1388e4 !important;
+    color: white !important;
+}
+
+.accordion-button:not(.collapsed)::after {
+    background-image: url("/pics/check.png") !important;
+    background-color: #00000000;
+    transform: rotate(-360deg) !important;
+}
+.imExp {
+    background-color: #e8e8e8 ;
+}
+.table>:not(:last-child)>:last-child>* {
+    border-bottom-color: #c3baba2e !important;
+}
+.delBtn {
+    margin-left: 58%;
+}
+.mauto {
+    margin: auto !important;
+}
+.btnSave {
+    margin:1% 0 0 5% !important; ;
+}
+.btn-check:active+.btn-outline-primary,.btn-check:hover+.btn-outline-primary, .btn-check:checked+.btn-outline-primary, .btn-outline-primary.active, .btn-outline-primary.dropdown-toggle.show, .btn-outline-primary:active {
+    color: white !important;
+    background-color: #0072b5 !important;
+    border-color: #0d6efd;
+}
+
+#textArea {
+    width: 100% !important;
+    height: 60%;
+}
+#visiblity-two , #visiblity-one  {
+    display: none;
+}
+
+.mleft {
+    margin-left: 3vw;
+}
+
+
+.s2-togall-select .s2-unselect-label, .s2-togall-unselect .s2-select-label {
+    display: block !important;
+}
+
+
+
+
+
+
+@keyframes icon {
+    from {
+        margin-left: 2.4vw;
+    }
+    to{
+        margin-left: 1.2vw;
+    }
+}
+
+@media screen and (max-width:993px) {
+    .nav-menu {
+        height: 30vh !important;
+    }
+    .logOut {
+        height: 4vh;
+        border-radius: 25px !important;
+    }
+    .fa-sign-out-alt {
+        visibility: hidden;
+    }
+}
+
+@media screen and (max-width:800px) {
+    html , body {
+        width: 99vw;
+       overflow-x:hidden !important; ;
+    }
+    .nav-menu {
+        height: 30vh !important;
+    }
+
+    .prof-nav {
+        justify-content: space-between;
+    }
+    .box2 {
+        width: 30vw;
+        justify-content: space-between;
+    }
+    .logOut {
+        height: 4vh;
+        border-radius: 25px !important;
+    }
+    .margin-top a {
+        height: 8vh !important;
+    }
+    .margin-topSite a {
+        height: 6vh !important;
+    }
+
+    .margin-topSite a:nth-child(5) {
+        height: 13vh !important;
+    }
+    .margin-top {
+        width: 28% !important;
+    }
+    .margin-topSite {
+        width: 28% !important;
+    }
+    .delBtn {
+        margin-left: 0;
+    }
+    .fa-sign-out-alt {
+        visibility: hidden;
+    }
+
+
+    /*#fileWidget {*/
+    /*    width: 100% !important;*/
+    /*}*/
+    #textArea {
+        width: 100% !important;
+    }
+
+}

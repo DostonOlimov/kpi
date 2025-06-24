@@ -1,0 +1,23 @@
+{
+  "name": "chartict",
+  "description": "for charts",
+  "main": "chart",
+  "authors": [
+    "doston"
+  ],
+  "license": "no",
+  "keywords": [
+    "chart"
+  ],
+  "homepage": "yes",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "chartist": "^0.11.4"
+  }
+}
