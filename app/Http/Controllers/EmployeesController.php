@@ -6,7 +6,12 @@ namespace App\Http\Controllers;
 use App\Models\EmployeeDays;
 use App\Models\Month;
 use App\Models\Salaries;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -18,7 +23,7 @@ class EmployeesController extends Controller
 {
     public function index(Request $request)
     {
-        $users = User::with('role')->with('work_zone')->paginate(10);
+        $users = User::with('role')->with('work_zone')->latest('id')->paginate(20);
         return view('employees.list', compact('users'));
     }
     public function create()
@@ -33,8 +38,8 @@ class EmployeesController extends Controller
    /**
     * Store a newly created resource in storage.
     *
-    * @param  \Illuminate\Http\Request  $request
-    * @return \Illuminate\Http\Response
+    * @param Request $request
+    * @return RedirectResponse
     */
 
     public function store(Request $request)
@@ -42,8 +47,8 @@ class EmployeesController extends Controller
         $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255',],
-            'role_id' => ['integer'],
-            'salary' => ['required','numeric', 'min:1','max:99999999.999', 'regex:/^\d+(\.\d{1,2})?$/'],
+            'role_id' => ['required','integer'],
+            'salary' => ['required','numeric', 'min:100000','max:99999999.999', 'regex:/^\d+(\.\d{1,2})?$/'],
             'work_zone_id' => ['integer'],
             'username' => ['required', 'string', 'max:255', 'unique:users'],
             'lavozimi' => ['string','max:255'],
@@ -72,7 +77,7 @@ class EmployeesController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Application|Factory|View
      */
     public function show($id)
     {
@@ -86,7 +91,7 @@ class EmployeesController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Application|Factory|View
      */
     public function edit($id)
     {
@@ -100,9 +105,9 @@ class EmployeesController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return RedirectResponse
      */
     public function update(Request $request, $id)
     {
@@ -139,14 +144,14 @@ class EmployeesController extends Controller
                 ->first();
             $salary->to_date = date('Y-m-d ');
             $salary->save();
-            $new_salary = Salaries::create([
+            Salaries::create([
                 'user_id' => $id,
                 'salary' => $request->salary,
                 'from_date' => date('Y-m-d'),
             ]);
         }
-        $roles = $request->roles ?? [];
-        //$user->syncRole($roles);
+
+
         return redirect()->route('employees.list')
                         ->with('message','User updated successfully.');
     }
@@ -155,7 +160,7 @@ class EmployeesController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return RedirectResponse
      */
     public function destroy($id)
     {

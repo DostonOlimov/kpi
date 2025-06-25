@@ -1,53 +1,67 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="content-wrapper">
-        <!-- Page Title Header Starts-->
-        <div class="row page-title-header">
-            <div class="col-12">
-                <div class="page-header">
-                    <h4 class="page-title"><span class="text-primary">Kiritilgan summalar holati</span></h4>
-                </div>
-            </div>
+    <div class="section">
+        <!-- Page Header -->
+        <div class="page-header">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <i class="fe fe-clipboard mr-1"></i>&nbsp; {{ __('Kiritilgan summalar holati') }}
+                </li>
+            </ol>
         </div>
+
+        <!-- Table Section -->
         <div class="row">
-            <div class="col-lg-12 grid-margin stretch-card">
+            <div class="col-md-12">
                 <div class="card">
-                    <div class="card-body">
-                        <h4>Bugalteriyadan kiritilgan summalar jadvali</h4>
-                        <table class="table table-bordered table-responsive">
-                            <thead>
-                            <tr>
-                                <th> №</th>
-                                <th> Summa</th>
-                                <th> Hisobot oyi</th>
-                                <th> Holati</th>
-                                <th> Harakat</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @foreach($data as $key => $item)
-                                <tr>
-                                    <td>{{ $key + 1 }}</td>
-                                    <td>{{ number_format($item->summa, 0, ',', '.') }}</td>
-                                    <td>{{ $month[$item->month-1] }}</td>
-                                    <td>{{ ($item->status == 'active') ? 'Taqsimlangan' : 'Taqsimlanmagan'}}</td>
-                                    <td>
-                                        @if($item->status != 'active')
-                                            <a class="btn btn-primary" href="{{ route('bugalter.edit', [$item->id]) }}">O'zgartirish</a>
-                                            <a class="btn btn-info"
-                                               href="{{ route('bugalter.distribution', [$item->id]) }}">Taqsimlashga
-                                                berish</a>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                            </tbody>
-                        </table>
+
+                    <div class="card-header">
+                        <h4 class="mb-0">{{ __('Bugalteriyadan kiritilgan summalar jadvali') }}</h4>
                     </div>
+
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped mb-0">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>{{ __('Summa') }}</th>
+                                    <th>{{ __('Hisobot oyi') }}</th>
+                                    <th>{{ __('Holati') }}</th>
+                                    <th>{{ __('Harakat') }}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach($data as $key => $item)
+                                    <tr>
+                                        <td>{{ $key + 1 }}</td>
+                                        <td>{{ number_format($item->summa, 0, ',', '.') }}</td>
+                                        <td>{{ $month[$item->month - 1] }}</td>
+                                        <td>
+                                            {{ $item->status === 'active' ? __('Taqsimlangan') : __('Taqsimlanmagan') }}
+                                        </td>
+                                        <td>
+                                            @if($item->status !== 'active')
+                                                <a href="{{ route('bugalter.edit', [$item->id]) }}" class="btn btn-sm btn-primary">
+                                                    {{ __("O'zgartirish") }}
+                                                </a>
+                                                <a href="{{ route('bugalter.distribution', [$item->id]) }}" class="btn btn-sm btn-info">
+                                                    {{ __('Taqsimlashga berish') }}
+                                                </a>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
+
 @endsection
 

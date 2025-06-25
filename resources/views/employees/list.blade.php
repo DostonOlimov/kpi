@@ -72,12 +72,8 @@
                                     <td>{{ $user->created_at }}</td>
                                     <td>{{ $user->updated_at }}</td>
                                     <td>
-                                        <form action="{{ route('employees.destroy',$user->id) }}" method="Post">
-                                            <a class="btn btn-primary" href="{{ route('employees.edit',$user->id) }}">Tahrirlash</a>
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger">O'chirish</button>
-                                        </form>
+                                        <a href="{{ route('employees.edit',$user->id) }}" ><button type="button" class="btn btn-round btn-success"><i class="fa fa-pencil"></i>{{ trans('app.Edit')}}</button></a>
+                                        <button type="button" class="btn btn-round btn-danger sa-warning"  url="{!! url('/application-tahlil/delete', $user->id) !!}"><i class="fa fa-trash"></i>{{ trans('app.Delete')}}</button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -91,6 +87,26 @@
         </div>
     </div>
     </div>
+
+    <script>
+        $('body').on('click', '.sa-warning', function() {
+            console.log('sf');
+            var url = $(this).attr('url');
+
+            swal({
+                title: "Haqiqatdan ham o'chirishni xohlaysizmi?",
+                text: "O'chirgandan so'ng ma'lumotlarni qaytarib bo'lmaydi!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#297FCA",
+                confirmButtonText: "Tasdiqlash!",
+                cancelButtonText: "Bekor qilish",
+                closeOnConfirm: true
+            }).then((result) => {
+                window.location.href = url;
+            });
+        });
+    </script>
 @endsection
 
 

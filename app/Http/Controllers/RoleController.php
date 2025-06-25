@@ -2,98 +2,90 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Role;
+use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class RoleController extends Controller
 {
-      /**
-    * Display a listing of the resource.
-    *
-    * @return \Illuminate\Http\Response
-    */
-    public function index()
+    /**
+     * Display a listing of the roles.
+     */
+    public function index(): View
     {
-        $roles = Role::orderBy('id','asc')->paginate(10);
+        $roles = Role::orderBy('id', 'asc')->paginate(10);
         return view('roles.index', compact('roles'));
     }
 
     /**
-    * Show the form for creating a new resource.
-    *
-    * @return \Illuminate\Http\Response
-    */
-    public function create()
+     * Show the form for creating a new role.
+     */
+    public function create(): View
     {
         return view('roles.create');
     }
 
     /**
-    * Store a newly created resource in storage.
-    *
-    * @param  \Illuminate\Http\Request  $request
-    * @return \Illuminate\Http\Response
-    */
-    public function store(Request $request)
+     * Store a newly created role in storage.
+     */
+    public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:255',
         ]);
-        
-        Role::create($request->post());
 
-        return redirect()->route('roles.index')->with('success','Role muvaffaqatli yaratildi.');
+        Role::create($request->only('name'));
+
+        return redirect()->route('roles.index')
+            ->with('success', 'Role muvaffaqatli yaratildi.');
     }
 
     /**
-    * Display the specified resource.
-    *
-    * @param  \App\company  $company
-    * @return \Illuminate\Http\Response
-    */
-    public function show(Role $company)
+     * Display the specified role.
+     */
+    public function show(Role $role): View
     {
-        return view('roles.show',compact('role'));
+        return view('roles.show', compact('role'));
     }
 
     /**
-    * Show the form for editing the specified resource.
-    *
-    * @param  \App\Company  $company
-    * @return \Illuminate\Http\Response
-    */
-    public function edit(Role $role)
+     * Show the form for editing the specified role.
+     */
+    public function edit(Role $role): View
     {
-        return view('roles.edit',compact('role'));
+        return view('roles.edit', compact('role'));
     }
 
     /**
-    * Update the specified resource in storage.
-    *
-    * @param  \Illuminate\Http\Request  $request
-    * @param  \App\company  $company
-    * @return \Illuminate\Http\Response
-    */
-    public function update(Request $request, Role $role)
+     * Update the specified role in storage.
+     */
+    public function update(Request $request, Role $role): RedirectResponse
     {
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:255',
         ]);
-        
-        $role->fill($request->post())->save();
 
-        return redirect()->route('roles.index')->with('success','Ma\'lumotlar muvaffaqiyatli o\'zgartirildi');
+        $role->update($request->only('name'));
+
+        return redirect()->route('roles.index')
+            ->with('success', 'Ma\'lumotlar muvaffaqiyatli o\'zgartirildi.');
     }
 
     /**
-    * Remove the specified resource from storage.
-    *
-    * @param  \App\Company  $company
-    * @return \Illuminate\Http\Response
-    */
-    public function destroy(Role $role)
+     * Remove the specified role from storage.
+     * Prevent deletion if role is assigned to any users.
+     */
+    public function destroy(Role $role): RedirectResponse
     {
+        if ($role->users()->exists()) {
+            return redirect()->route('roles.index')
+                ->with('error', 'Ushbu rol foydalanuvchilarga biriktirilganligi sababli o‘chirib bo‘lmaydi.');
+        }
+
         $role->delete();
-        return redirect()->route('roles.index')->with('success','Ma\'lumotlar o\'chirildi');
+
+        return redirect()->route('roles.index')
+            ->with('success', 'Ma\'lumotlar o\'chirildi.');
     }
 }

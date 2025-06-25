@@ -1,58 +1,92 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="content-wrapper">
-        <div class="row ">
-            <div class="col-lg-12 grid-margin stretch-card">
+    <div class="section">
+        <!-- Page Header -->
+        <div class="page-header">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <i class="fe fe-life-buoy mr-1"></i>&nbsp; {{ __("Bo'limlar ro'yxati") }}
+                </li>
+            </ol>
+        </div>
+
+        <!-- Page Content -->
+        <div class="row">
+            <div class="col-md-12">
                 <div class="card">
-                    <div class="card-body" style="background-color:white">
-                        <!-- <div class="col-lg-12 grid-margin stretch-card">
-                         <div class="card"> -->
-                        <!-- <div class="card-body"> -->
-                        <h2>Foydalanuvchilarning ish joylari</h2>
 
-                        <div class="pull-right mb-2">
-                            <a class="btn btn-success" href="{{ route('works.create') }}">  Yaratish</a>
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="tab_wrapper page-tab">
+                            <ul class="tab_list mb-0">
+                                <li class="active">
+                                    <a href="#">
+                                        <i class="fa fa-list fa-lg"></i>&nbsp; {{ __("Ro'yxat") }}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('works.create') }}">
+                                        <i class="fa fa-plus-circle fa-lg"></i>&nbsp; <strong>{{ __("Qo'shish") }}</strong>
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
-                        @if ($message = Session::get('success'))
-                            <div class="alert alert-success">
-                                <p>{{ $message }}</p>
-                            </div>
-                        @endif
-                        <table class="table table-bordered table-responsive">
-                            <thead>
-                            <tr>
-                                <th>Tartib raqam</th>
-                                <th>Nomi</th>
-                                <th>Yaratilgan vaqti</th>
-                                <th>O'zgartirilgan vaqti</th>
-                                <th width="280px">Action</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @foreach ($works as $work)
-                                <tr>
-                                    <td>{{ $work->id }}</td>
-                                    <td>{{ $work->name }}</td>
-                                    <td>{{ $work->created_at }}</td>
-                                    <td>{{ $work->updated_at }}</td>
-                                    <td>
-                                        <form action="{{ route('works.destroy',$work->id) }}" method="Post">
-                                            <a class="btn btn-primary" href="{{ route('works.edit',$work->id) }}">Tahrirlash</a>
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger">O'chirish</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @endforeach
-                            </tbody>
-                        </table>
-                        {!! $works->links() !!}
                     </div>
-                </div>
 
+                    <div class="card-body">
+                        <!-- Flash Messages -->
+                        @if ($message = Session::get('success'))
+                            <div class="alert alert-success">{{ $message }}</div>
+                        @elseif($message = Session::get('error'))
+                            <div class="alert alert-danger">{{ $message }}</div>
+                        @endif
+
+                        <!-- Table -->
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered nowrap display mt-3">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>{{ __('Nomi') }}</th>
+                                    <th>{{ __('Yaratilgan') }}</th>
+                                    <th>{{ __('O\'zgartirilgan') }}</th>
+                                    <th width="220px">{{ __('Harakatlar') }}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach ($works as $work)
+                                    <tr>
+                                        <td>{{ $work->id }}</td>
+                                        <td>{{ $work->name }}</td>
+                                        <td>{{ $work->created_at->format('Y-m-d H:i') }}</td>
+                                        <td>{{ $work->updated_at->format('Y-m-d H:i') }}</td>
+                                        <td>
+                                            <a href="{{ route('works.edit', $work->id) }}" class="btn btn-sm btn-primary">
+                                                {{ __('Tahrirlash') }}
+                                            </a>
+
+                                            <form action="{{ route('works.destroy', $work->id) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ __('Ish joyini o\'chirishga ishonchingiz komilmi?') }}')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    {{ __('O\'chirish') }}
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+
+                            <!-- Pagination -->
+                            <div class="mt-3">
+                                {!! $works->links() !!}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
     </div>
-</div>
-</div>
 @endsection

@@ -1,41 +1,76 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="content-wrapper">
-<div class="container mt-2">
+    <div class="section">
+        <!-- Page Header -->
+        <div class="page-header">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <i class="fe fe-life-buoy mr-1"></i>&nbsp; {{ __('Ish kunlarini tahrirlash') }}
+                </li>
+            </ol>
+        </div>
+
+        <!-- Page Content -->
         <div class="row">
-            <div class="col-lg-12 margin-tb">
-                <div class="pull-left">
-                    <h2>Tahrirlash</h2>
-                </div>
-                <div class="pull-right">
-                    <a class="btn btn-primary" href="{{ route('month.index') }}" enctype="multipart/form-data">
-                        Orqaga</a>
-                </div>
-            </div>
-        </div>
-        @if(session('status'))
-        <div class="alert alert-success mb-1 mt-1">
-            {{ session('status') }}
-        </div>
-        @endif
-        <form action="{{ route('month.update',$month->id) }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
-            <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-12">
-                    <div class="form-group">
-                        <strong>Ish kunlarini soni:</strong>
-                        <input type="hidden" name="month_id" value="{{ $month->month_id }}" class="form-control">
-                        <input type="text" name="days" value="{{ $month->days }}" class="form-control">
-                        @error('name')
-                        <div class="alert alert-danger mt-1 mb-1">{{ $message }}</div>
-                        @enderror
+            <div class="col-md-12">
+                <div class="card">
+
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="tab_wrapper page-tab">
+                            <ul class="tab_list mb-0">
+                                <li>
+                                    <a href="{{ route('month.index') }}">
+                                        <i class="fa fa-list fa-lg"></i>&nbsp; {{ __("Ro'yxat") }}
+                                    </a>
+                                </li>
+                                <li class="active">
+                                    <i class="fa fa-pencil fa-lg"></i>&nbsp; <strong>{{ __("Tahrirlash") }}</strong>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
+
+                    <div class="card-body">
+                        @if(session('status'))
+                            <div class="alert alert-success">{{ session('status') }}</div>
+                        @endif
+
+                        <form action="{{ route('month.update', $month->id) }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            @method('PUT')
+
+                            <input type="hidden" name="month_id" value="{{ $month->month_id }}">
+
+                            <div class="form-group">
+                                <label for="days"><strong>{{ __('Ish kunlari soni') }}:</strong></label>
+                                <input
+                                    type="text"
+                                    name="days"
+                                    id="days"
+                                    value="{{ old('days', $month->days) }}"
+                                    class="form-control"
+                                    placeholder="{{ __('Masalan: 22') }}"
+                                >
+                                @error('days')
+                                <div class="alert alert-danger mt-2">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <a href="{{ route('month.index') }}" class="btn btn-primary">
+                                    {{ __('Ortga') }}
+                                </a>
+                                <button type="submit" class="btn btn-success">
+                                    {{ __('Saqlash') }}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
                 </div>
-                <button type="submit" class="btn btn-primary ml-3">Saqlash</button>
             </div>
-        </form>
+        </div>
     </div>
-</div>
+
 @endsection

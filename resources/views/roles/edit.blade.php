@@ -1,19 +1,33 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="content-wrapper">
-<div class="container mt-2">
-        <div class="row">
-            <div class="col-lg-12 margin-tb">
-                <div class="pull-left">
-                    <h2>Tahrirlash</h2>
-                </div>
-                <div class="pull-right">
-                    <a class="btn btn-primary" href="{{ route('roles.index') }}" enctype="multipart/form-data">
-                        Orqaga</a>
-                </div>
-            </div>
+    <div class="section">
+        <div class="page-header">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><i class="fe fe-life-buoy mr-1"></i>&nbsp Ma'lumotlarini tahrirlash</li>
+            </ol>
         </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="panel panel-primary">
+                            <div class="tab_wrapper page-tab">
+                                <ul class="tab_list">
+                                    <li>
+                                        <a href="{{ route('roles.index') }}">
+                                            <span class="visible-xs"></span>
+                                            <i class="fa fa-list fa-lg">&nbsp;</i> {{ trans('app.Ro\'yxat')}}
+                                        </a>
+                                    </li>
+                                    <li class="active">
+                                        <span class="visible-xs"></span>
+                                        <i class="fa fa-pencil fa-lg">&nbsp;</i>
+                                        <b>{{ trans('app.Edit')}}</b>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
         @if(session('status'))
         <div class="alert alert-success mb-1 mt-1">
             {{ session('status') }}
@@ -33,9 +47,20 @@
                         @enderror
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary ml-3">Saqlash</button>
+                <div class="form-group col-md-12 text-center">
+                    <a class="btn btn-primary" href="{{ URL::previous() }}">
+                        {{ trans('app.Cancel') }}
+                    </a>
+                    <button type="submit" id="submitter" class="btn btn-success" onclick="disableButton()">
+                        {{ trans('app.Submit') }}
+                    </button>
+                </div>
+
             </div>
         </form>
-    </div>
+</div>
+</div>
+</div>
+</div>
 </div>
 @endsection

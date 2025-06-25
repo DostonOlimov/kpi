@@ -2,98 +2,90 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\WorkZone;
+use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class WorkController extends Controller
 {
-      /**
-    * Display a listing of the resource.
-    *
-    * @return \Illuminate\Http\Response
-    */
-    public function index()
+    /**
+     * Display a listing of the work zones.
+     */
+    public function index(): View
     {
-        $works = WorkZone::orderBy('id','asc')->paginate(10);
+        $works = WorkZone::orderBy('id', 'asc')->paginate(10);
         return view('works.index', compact('works'));
     }
 
     /**
-    * Show the form for creating a new resource.
-    *
-    * @return \Illuminate\Http\Response
-    */
-    public function create()
+     * Show the form for creating a new work zone.
+     */
+    public function create(): View
     {
         return view('works.create');
     }
 
     /**
-    * Store a newly created resource in storage.
-    *
-    * @param  \Illuminate\Http\Request  $request
-    * @return \Illuminate\Http\Response
-    */
-    public function store(Request $request)
+     * Store a newly created work zone in storage.
+     */
+    public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:255',
         ]);
-        
-        WorkZone::create($request->post());
 
-        return redirect()->route('works.index')->with('success','Ish joyi muvaffaqatli yaratildi.');
+        WorkZone::create($request->only('name'));
+
+        return redirect()->route('works.index')
+            ->with('success', 'Ish joyi muvaffaqatli yaratildi.');
     }
 
     /**
-    * Display the specified resource.
-    *
-    * @param  \App\company  $company
-    * @return \Illuminate\Http\Response
-    */
-    public function show(WorkZone $work)
+     * Display the specified work zone.
+     */
+    public function show(WorkZone $work): View
     {
-        return view('works.show',compact('work'));
+        return view('works.show', compact('work'));
     }
 
     /**
-    * Show the form for editing the specified resource.
-    *
-    * @param  \App\Company  $company
-    * @return \Illuminate\Http\Response
-    */
-    public function edit(WorkZone $work)
+     * Show the form for editing the specified work zone.
+     */
+    public function edit(WorkZone $work): View
     {
-        return view('works.edit',compact('work'));
+        return view('works.edit', compact('work'));
     }
 
     /**
-    * Update the specified resource in storage.
-    *
-    * @param  \Illuminate\Http\Request  $request
-    * @param  \App\company  $company
-    * @return \Illuminate\Http\Response
-    */
-    public function update(Request $request, WorkZone $work)
+     * Update the specified work zone in storage.
+     */
+    public function update(Request $request, WorkZone $work): RedirectResponse
     {
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:255',
         ]);
-        
-        $work->fill($request->post())->save();
 
-        return redirect()->route('works.index')->with('success','Ma\'lumotlar muvaffaqiyatli o\'zgartirildi');
+        $work->update($request->only('name'));
+
+        return redirect()->route('works.index')
+            ->with('success', 'Ma\'lumotlar muvaffaqiyatli o\'zgartirildi.');
     }
 
     /**
-    * Remove the specified resource from storage.
-    *
-    * @param  \App\Company  $company
-    * @return \Illuminate\Http\Response
-    */
-    public function destroy(WorkZone $work)
+     * Remove the specified work zone from storage.
+     */
+    public function destroy(WorkZone $work): RedirectResponse
     {
+        // Optional: Check for related models before deleting
+         if ($work->users()->exists()) {
+             return redirect()->route('works.index')
+                 ->with('error', 'Ushbu ish joyi bog\'langan foydalanuvchilar mavjudligi sababli o‘chirib bo‘lmaydi.');
+         }
+
         $work->delete();
-        return redirect()->route('works.index')->with('success','Ma\'lumotlar muvaffaqiyatli o\'chirildi');
+
+        return redirect()->route('works.index')
+            ->with('success', 'Ma\'lumotlar muvaffaqiyatli o\'chirildi.');
     }
 }

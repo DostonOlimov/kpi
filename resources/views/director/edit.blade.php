@@ -1,29 +1,35 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="content-wrapper">
-        <!-- Page Title Header Starts-->
-        <div class="row page-title-header">
-            <div class="col-12">
-                <div class="page-header">
-                    <h4 class="page-title"><span class="text-primary"></span> KPI me'zonlarini o'zgartirish </h4>
-                </div>
-            </div>
+    <div class="section">
+        <div class="page-header">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <i class="fe fe-settings mr-1"></i>&nbsp; {{ __("KPI me'zonlarini o'zgartirish") }}
+                </li>
+            </ol>
         </div>
+
         <div class="row">
-            <div class="col-md-6 grid-margin stretch-card">
+            <div class="col-md-8">
                 <div class="card">
+
+                    <div class="card-header">
+                        <h4 class="mb-0">{{ __("KPI baholash ma'lumotlari") }}</h4>
+                    </div>
+
                     <div class="card-body">
-                        <h4 class="card-title">KPI baholash ma'lumotlari</h4>
-                        <form class="forms-sample" action="{{ '/update/'.$id }}" method="post">
+                        <form action="{{ url('/update/'.$id) }}" method="POST">
                             @csrf
+
                             <div class="form-group">
-                                <label for="">Nomi</label>
-                                <textarea name="name" class="form-control" id="" rows="4"></textarea>
+                                <label for="name"><strong>{{ __('Nomi') }}</strong></label>
+                                <textarea name="name" class="form-control" id="name" rows="4" required></textarea>
                             </div>
+
                             <div class="form-group">
-                                <label for="">Turi</label>
-                                <select name="type" class="form-control" id="">
+                                <label for="type"><strong>{{ __('Turi') }}</strong></label>
+                                <select name="type" id="type" class="form-control" required>
                                     <option value="1">Ижро интизоми йўналиши</option>
                                     <option value="2">Асосий фаолият йўналишлари</option>
                                     <option value="3">Қонунчилик фаолият йўналиши</option>
@@ -32,21 +38,30 @@
                                     <option value="6">Самарадорлик ва натижадорлик кўрсаткичларидан чегирмалар</option>
                                 </select>
                             </div>
+
                             <div class="row">
-                                <div class="form-group col-6">
-                                    <label for="">Baholash(har bir ish uchun ball miqdori)</label>
-                                    <input name="ball" type="text" class="form-control" id="" placeholder="">
+                                <div class="form-group col-md-6">
+                                    <label for="ball"><strong>{{ __('Baholash (har bir ish uchun ball)') }}</strong></label>
+                                    <input name="ball" type="number" step="0.01" class="form-control" id="ball" required>
                                 </div>
-                                <div class="form-group col-6">
-                                    <label for="">Olinishi mumkin bo'lgan yuqori ball</label>
-                                    <input name="max_ball" type="text" class="form-control" id="" placeholder="">
+
+                                <div class="form-group col-md-6">
+                                    <label for="max_ball"><strong>{{ __("Yuqori ball miqdori") }}</strong></label>
+                                    <input name="max_ball" type="number" step="0.01" class="form-control" id="max_ball" required>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-success mr-2">Saqlash</button>
+
+                            <div class="text-center mt-3">
+                                <button type="submit" class="btn btn-success">
+                                    {{ __('Saqlash') }}
+                                </button>
+                            </div>
                         </form>
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
+
 @endsection
