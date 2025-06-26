@@ -15,7 +15,7 @@
     <title>KPI tizimi</title>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('/img/log0.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('/assets/images/logo.png') }}">
 
     <!-- Sidebar Styles -->
     <link rel="stylesheet" href="{{ asset('assets/vendors/simplebar/css/simplebar.css') }}">
@@ -48,6 +48,20 @@
             src: url('{{ ('fonts/fonts/dejavu-sans.book.ttf') }}') format('truetype');
             font-weight: normal;
             font-style: normal;
+        }
+        .sidebar-nav {
+            background-color: #172d50;
+        }
+        .page-header {
+            background-color: #1f6feb !important;
+        }
+        .sidebar-toggler,
+        .sidebar-brand,
+        #myBtn {
+            background-color: #071d40;
+        }
+        .header-sticky {
+            background-color: #08152c;
         }
     </style>
     <!-- Additional Styles from Other Pages -->
@@ -128,6 +142,34 @@ $userid = Auth::user()->id;
 <script src="{{ asset('/assets/vendors/simplebar/js/simplebar.min.js') }}"></script>
 
 @yield('scripts')
+<script>
+    function changeYear(year) {
+        $.ajax({
+            type: 'POST',
+            url: '/change-year',
+            data: { year: year, _token: "{{ csrf_token() }}" },
+            success: function () {
+                location.reload();
+            },
+            error: function (error) {
+                console.error('Error changing year', error);
+            }
+        });
+    }
+    function changeMonth(month) {
+        $.ajax({
+            type: 'POST',
+            url: '/change-month',
+            data: { month: month, _token: "{{ csrf_token() }}" },
+            success: function () {
+                location.reload();
+            },
+            error: function (error) {
+                console.error('Error changing month', error);
+            }
+        });
+    }
+</script>
 
 </html>
 

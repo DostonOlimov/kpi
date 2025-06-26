@@ -25,9 +25,7 @@
 
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h3 class="mb-0">{{ __('Oy ish kunlari') }}</h3>
-                        <a href="{{ route('month.create') }}" class="btn btn-success">
-                            <i class="fa fa-plus-circle"></i>&nbsp; {{ __('Yangi yaratish') }}
-                        </a>
+
                     </div>
 
                     <div class="card-body">
@@ -42,19 +40,15 @@
                                     <th>#</th>
                                     <th>{{ __('Oy nomi') }}</th>
                                     <th>{{ __('Ish kuni') }}</th>
-                                    <th>{{ __('Yaratilgan') }}</th>
-                                    <th>{{ __('O\'zgartirilgan') }}</th>
                                     <th width="200">{{ __('Amallar') }}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 @foreach ($roles as $role)
                                     <tr>
-                                        <td>{{ $role->id }}</td>
+                                        <td>{{ $loop->iteration }}</td>
                                         <td>{{ App\Models\Month::getMonth($role->month_id) }}</td>
                                         <td>{{ $role->days }}</td>
-                                        <td>{{ $role->created_at->format('Y-m-d H:i') }}</td>
-                                        <td>{{ $role->updated_at->format('Y-m-d H:i') }}</td>
                                         <td>
                                             <a href="{{ route('month.edit', $role->id) }}" class="btn btn-sm btn-primary">
                                                 {{ __('Tahrirlash') }}
@@ -72,7 +66,6 @@
                                 </tbody>
                             </table>
                             <div class="mt-3">
-                                {!! $roles->links() !!}
                             </div>
                         </div>
                     </div>

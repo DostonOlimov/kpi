@@ -1,6 +1,7 @@
 <div class="sidebar sidebar-dark sidebar-fixed " id="sidebar">
     <div class="sidebar-brand d-none d-md-flex justify-content-around">
-        <h2 style="font-size: 20px; color: white; margin: 6px 22px 5px 0; !important;">KPI</h2>
+        <img style="width:40px;" src="/assets/images/logo.png">
+        <h2 style="font-size: 20px; color: white; margin: 6px 22px 5px 0; !important;">ECOEKESPERTIZA</h2>
     </div>
     <ul class="sidebar-nav" data-coreui="navigation" data-simplebar="">
         <li class="nav-item"><a class="nav-link" href="/home">
@@ -46,6 +47,14 @@
                     Ish kunlari
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('kpis.index') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-chart-pie"></use>
+                    </svg>
+                    KPI Ko‘rsatkichlari
+                </a>
+            </li>
         @endif
 
         @if(auth()->user()->role_id === \App\Models\User::ROLE_USER || auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)
@@ -61,7 +70,7 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('profile.add2') }}">
+                <a class="nav-link" href="{{ route('profile.create') }}">
                     <svg class="nav-icon">
                         <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-plus"></use>
                     </svg>
@@ -91,7 +100,7 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('director.add2') }}">
+                <a class="nav-link" href="{{ route('director.add') }}">
                     <svg class="nav-icon">
                         <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-plus"></use>
                     </svg>

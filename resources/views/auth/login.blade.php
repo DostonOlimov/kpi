@@ -4,7 +4,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>O'zagroinspeksiya KPI baholash tizimi</title>
+    <title>KPI baholash tizimi</title>
     <!-- plugins:css -->
     <link rel="stylesheet" href="/assets/vendors/iconfonts/mdi/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="/assets/vendors/iconfonts/ionicons/dist/css/ionicons.css">
@@ -17,7 +17,7 @@
     <!-- inject:css -->
     <link rel="stylesheet" href="/assets/css/shared/style.css">
     <!-- endinject -->
-    <link rel="shortcut icon" href="/assets/images/favicon.ico"/>
+    <link rel="shortcut icon"  href="{{ url('/assets/images/logo.png') }}"/>
 </head>
 <body>
 <div class="container-scroller">
@@ -27,7 +27,7 @@
                 <div class="col-lg-4 mx-auto">
                     <div class="auto-form-wrapper">
                         <div class="d-flex justify-content-center">
-                            <img style="width: 200px;" src="{{ url('/assets/images/logoNE.png') }}" alt="logo">
+                            <img style="width: 200px;" src="{{ url('/assets/images/logo2.png') }}" alt="logo">
                         </div>
                         <form action="{{ route('authenticate') }}" method="POST">
                             @csrf
@@ -59,7 +59,7 @@
                         </form>
                     </div>
                     <hr>
-                    <p class="footer-text text-center">Copyright © {{ date('Y') }} O'ZAGROINSPEKSIYA. Barcha huquqlar himoyalangan.</p>
+                    <p class="footer-text text-center">Copyright © {{ date('Y') }} ECOEKSPERTIZA.UZ<br> Barcha huquqlar himoyalangan.</p>
                 </div>
             </div>
         </div>

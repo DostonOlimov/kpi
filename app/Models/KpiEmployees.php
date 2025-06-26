@@ -31,11 +31,9 @@ class KpiEmployees extends Model
     *@param int user_id, razdel , month , year
     *@return \App\Models\Director data
     */
-    public function getData(int $user_id , int $razdel,int $month , int $year){
+    public function getData(int $user_id , int $razdel){
         $data = $this::where('razdel', '=', $razdel)
             ->where('user_id', '=', $user_id)
-            ->where('month','=',$month)
-            ->where('year','=',$year)
             ->where('status', '=', 'active')
             ->get();
 
@@ -53,7 +51,7 @@ class KpiEmployees extends Model
 
         return $max_ball;
     }
-  
+
     public function CalculatePrasent(){
         $prasent =0;
         $this->works_count < $this->current_works ? $prasent = 100
@@ -74,7 +72,7 @@ class KpiEmployees extends Model
         foreach ($data as $key => $item)
         {
             $ball += $item->CalculateBall()-$item->fine_ball;
-           
+
         }
         return count($user) != 0 ?  round(1.25*($ball / count($user)),2) : 0;
     }
@@ -100,7 +98,7 @@ class KpiEmployees extends Model
             : $prasent = floor((100 * $this->current_works) / $this->works_count);
 
         return $prasent;
-       
+
     }
 
     public function getMaxBallAttribute()
@@ -110,6 +108,20 @@ class KpiEmployees extends Model
             : $max_ball = $this->weight * ( $this->current_works / $this->works_count);
 
         return $max_ball;
-       
+
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        $year = session('year') ?: (int)date('Y');
+        $month = session('month') ?: (int)date('m');
+
+        static::addGlobalScope(function ($query) use($year, $month) {
+            $query->where('year',$year)
+                ->where('month',$month);
+        });
+
     }
 }

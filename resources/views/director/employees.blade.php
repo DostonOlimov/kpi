@@ -15,13 +15,8 @@
             <div class="col-md-12">
                 <div class="card">
 
-                    <div class="card-header">
-                        <h4 class="mb-0">{{ __("Xodimlar ro'yxati") }}</h4>
-                    </div>
-
                     <div class="card-body">
                         <!-- Search Component -->
-                        <x-search url="director.employees" />
 
                         @if ($message = Session::get('success'))
                             <div class="alert alert-success">

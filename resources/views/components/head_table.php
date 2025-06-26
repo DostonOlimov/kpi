@@ -10,16 +10,13 @@
         border: 1px solid grey!important;
     }
 </style>
-<div class="content-wrapper">
-    <!-- Page Title Header Starts-->
-    <div class="row page-title-header">
-        <div class="col-12">
-            <div class="page-header">
-                <h4 class="page-title">
-                        <span class="text-primary">
-                            Давлат органи таркибий тузилмаси, ҳудудий ва идоравий мансуб ташкилотларнинг давлат фуқаролик хизматчиси фаолиятини ЭМСК асосида
-                        </span>
-                </h4>
-            </div>
-        </div>
+<div class="section">
+    <!-- Page Header -->
+    <div class="page-header">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <i class="fe fe-pie-chart mr-1"></i>&nbsp; Xo
+            </li>
+        </ol>
     </div>
+    <!-- search month component -->

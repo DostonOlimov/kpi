@@ -6,11 +6,6 @@ return[
     'Inventory'=>'Inventarizatsiya',
     'Home'=>'Home',
 
-    'Paxta tolasini sertifikatlashtirish avtomatlashtirilgan axborot tizimi'=>'Cotton fiber certification automated information system                          ',
-    'Qishloq xo‘jalik ekinlari urug‘larini sertifikatlashtirish avtomatlashtirilgan axborot tizimi'=>'Automated information system for agricultural crop seed certification',
-    'Sertifikatlashtirishni o\'tkazish uchun berilgan ariza bo\'yicha qarorlar ro\'yxati'=>'List of decisions on the application for certification',
-    '"Qishloq xo\'jaligi mahsulotlari sifatini baholash markazi" DM 2023 yil hosilidan jamg\'arilgan urug\'lik :name mahsulotlarini sertifikatlanishi bo\'yicha ma\'lumot' => '"Center for Quality Assessment of Agricultural Products" DM Information on the certification of seed :name products collected from the harvest of 2023',
-
     //Dashbord page
     'AGROINSPEKSIYA'=>'AGROINSPECTION',
     'Dashboard'=>'Asboblar paneli',

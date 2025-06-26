@@ -9,43 +9,25 @@ use App\Models\Month;
 use App\Models\TotalBall;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use \app\Models\User;
 use App\Rules\DirectorKpiExist;
-use Response;
 
 class EmployeeProfileController extends Controller
 {
     public function index(Request $request)
     {
         $user = auth()->user();
-        $month_id = Month::requestMonth($request);
-        $year = Month::requestYear($request);
         $kpi = new KpiEmployees();
-        $data1 = $kpi->getData($user->id,1,$month_id,$year);
-        $data2 = $kpi->getData($user->id,2,$month_id,$year);
-        $data3 = $kpi->getData($user->id,3,$month_id,$year);
-        $data4 = $kpi->getData($user->id,4,$month_id,$year);
-
+        $data1 = $kpi->getData($user->id,1);
+        $data2 = $kpi->getData($user->id,2);
+        $data3 = $kpi->getData($user->id,3);
+        $data4 = $kpi->getData($user->id,4);
 
         $data12 = TotalBall::select('month','current_ball')
             ->where('user_id','=',$user->id)
-            ->where('year','=',$year)
             ->pluck('current_ball','month');
-        // $balls = [];
-        // $labels = array();
 
-        // foreach($data12 as $key => $ball)
-        // {
-        //     $balls[Month::getMonth($key)] = $ball;
-        // }
-        // foreach (Month::getMonth() as $item)
-        // {
-        //     array_push($labels,$item);
-        // }
-        // array_push($labels,"Max ball");
-        // $balls["Max ball"] = 100;
         $ball = new TotalBall();
-        $balls = $ball->getEmployeesBalls($user->id,$year);
+        $balls = $ball->getEmployeesBalls($user->id);
         return view('kpi_forms.list', [
             'data1' => $data1,
             'data2' => $data2,
@@ -53,72 +35,34 @@ class EmployeeProfileController extends Controller
             'data4' => $data4,
 
             'balls' => $balls,
-            'month_name' => Month::getMonth($month_id),
+            'month_name' => Month::getMonth(session('month') ?? date('m')),
         ]);
     }
 
-    public function add2( Request $request)
-    {
-        return view('kpi_forms.select');
-    }
-
-    public function month_store(Request $request)
-    {
-        $user = auth()->user();
-        $request->validate([
-            'month_id' => ['required', new DirectorKpiExist('kpi_director', $user->work_zone_id,$request->month_id , $request->year)],
-        ],);
-
-        return redirect()->route('profile.create',[$request->month_id,$request->year]);
-    }
-
-    public function add(Request $request)
-    {
-        $user = auth()->user();
-        $data = DB::table('kpi_employee')
-            ->where('user_id', '=', $user->id)
-            ->where('razdel', '=', 1)
-            ->where('status', '=', 'active')
-            ->get();
-        return view('kpi_forms.addition', [
-            'data' => $data
-        ]);
-    }
-
-    public function create(Request $request,$month_id,$year)
+    public function create(Request $request)
     {
         $user = auth()->user();
         $data = Director::where('work_zone_id', '=', $user->work_zone_id)
             ->where('razdel', '=', 1)
             ->where('status', '=', 'active')
-            ->where('month', '=', $month_id)
-            ->where('year','=',$year)
             ->get();
         $data1 = KpiEmployees::where('user_id', '=', $user->id)
             ->where('razdel', '=', 1)
             ->where('status', '=', 'inactive')
-            ->where('month', '=', $month_id)
-            ->where('year','=',$year)
             ->get();
         $data2 = KpiEmployees::where('user_id', '=', $user->id)
             ->where('razdel', '=', 1)
             ->where('status', '=', 'active')
-            ->where('month','=',$month_id)
-            ->where('year','=',$year)
             ->first();
         $data3 = KpiEmployees::where('user_id', '=', $user->id)
             ->where('razdel', '=', 2)
             ->where('status', '=', 'active')
             ->where('band_id','=',1)
-            ->where('month','=',$month_id)
-            ->where('year','=',$year)
             ->first();
         $data4 = KpiEmployees::where('user_id', '=', $user->id)
             ->where('razdel', '=', 2)
             ->where('status', '=', 'active')
             ->where('band_id','=',2)
-            ->where('month','=',$month_id)
-            ->where('year','=',$year)
             ->first();
         $kpi_req = DB::table('kpi_required')
             ->where('razdel_id','=',2)
@@ -130,16 +74,16 @@ class EmployeeProfileController extends Controller
             return view('kpi_forms.create2', [
                 'data3' => $data3,
                 'data4' => $data4,
-                'month' => $month_id,
+                'month' => session('month') ?? date('m'),
                 'kpi_req' => $kpi_req,
-                'year' => $year
+                'year' => session('year') ?? date('Y'),
             ]);
         }
         return view('kpi_forms.create', [
             'data' => $data,
             'data1' => $data1,
-            'month' => $month_id,
-            'year' => $year
+            'month' => session('month') ?? date('m'),
+            'year' => session('year') ?? date('Y'),
         ]);
     }
     public function save(Request $request)
@@ -263,18 +207,12 @@ class EmployeeProfileController extends Controller
     {
         $user = auth()->user();
 
-        $month = Month::requestMonth($request);
-        $year = Month::requestYear($request);
         $data1 = KpiEmployees::where('user_id', '=', $user->id)
             ->where('razdel', '=', 1)
-            ->where('month','=',$month)
-            ->where('year','=',$year)
             ->where('status', '=', 'active')
             ->get();
         $data2 = KpiEmployees::where('user_id', '=', $user->id)
             ->where('razdel', '=', 2)
-            ->where('month','=',$month)
-            ->where('year','=',$year)
             ->get();
 
         $razdel = DB::table('kpi_razdel')

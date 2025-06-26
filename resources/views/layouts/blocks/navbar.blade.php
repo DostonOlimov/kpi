@@ -1,4 +1,4 @@
-<header class="header header-sticky" style="background-color: #E5E6F1">
+<header class="header header-sticky" style="background-color: #cff0fa">
     <div class="container-fluid" style="flex-wrap: nowrap">
         <button class="header-toggler px-md-0 me-md-3" type="button"
             onclick="coreui.Sidebar.getInstance(document.querySelector('#sidebar')).toggle()">
@@ -32,14 +32,34 @@
             </div>
             <div class="title title-dashboard" style="width: 100%; text-align: center;">
                 <h1 style="text-transform: uppercase; font-size: 1.3rem; margin: 7px 15px">
-                    KPI tizimi
+                    DAVLAT EKOLOGIK EKSPERTIZASI MARKAZINING AVTOMATLASHGAN KPI TIZIMI
                 </h1>
+            </div>
+            <div>
+                <div class="dropdown" style="padding-right: 5px;">
+                    <div id="currentMonth" class="menu-year">
+                        @php
+                            $months = [
+                                1 => 'Yanvar', 2 => 'Fevral', 3 => 'Mart',
+                                4 => 'Aprel', 5 => 'May', 6 => 'Iyun',
+                                7 => 'Iyul', 8 => 'Avgust', 9 => 'Sentyabr',
+                                10 => 'Oktyabr', 11 => 'Noyabr', 12 => 'Dekabr'
+                            ];
+                            $currentMonth = session('month') ?? (int)date('m');
+                            echo $months[$currentMonth];
+                        @endphp
+                    </div>
+                    <div class="my-dropdown-year">
+                        @foreach($months as $key => $month)
+                            <a href="#" onclick="changeMonth('{{ $key }}')"><b>{{ $month }}</b></a>
+                        @endforeach
+                    </div>
+                </div>
             </div>
             <div>
                 <div class="dropdown">
                     <div id="currentYear" class="menu-year">@php echo session('year') ?  session('year') : date('Y'); @endphp </div>
                     <div class="my-dropdown-year">
-                        <a href="#" onclick="changeYear('2023')"><b>2023</b></a>
                         <a href="#" onclick="changeYear('2024')"><b>2024</b></a>
                         <a href="#" onclick="changeYear('2025')"><b>2025</b></a>
                     </div>

@@ -82,6 +82,19 @@ class Director extends Model
             $curent_works > $count_works ? $ijro = 100 : $ijro = $curent_works / $count_works * 100;
         }
         return $ijro;
-       
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        $year = session('year') ?: (int)date('Y');
+        $month = session('month') ?: (int)date('m');
+
+        static::addGlobalScope(function ($query) use($year, $month) {
+            $query->where('year',$year)
+                ->where('month',$month);
+        });
+
     }
 }

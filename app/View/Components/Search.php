@@ -18,7 +18,7 @@ class Search extends Component
     public function render()
     {
         $months = Month::getMonth();
-        $years = ['2022','2023'];
+        $years = ['2022','2023','2024','2025'];
         return view('components.search',compact('months','years'));
     }
 }

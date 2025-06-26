@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -12,12 +13,12 @@ class MonthController extends Controller
       /**
     * Display a listing of the resource.
     *
-    * @return \Illuminate\Http\Response
+    * @return Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
     */
     public function index()
     {
         $month = Month::getMonth();
-        $roles = Month::orderBy('id','asc')->paginate(10);
+        $roles = Month::orderBy('id','asc')->get();
         return view('month.index', compact('roles','month'));
     }
 
@@ -47,7 +48,7 @@ class MonthController extends Controller
             'month_id' => ['required', 'integer', 'unique:months'],
             'days' => 'integer'
         ]);
-        
+
         Month::create($request->post());
 
         return redirect()->route('month.index')->with('success','Oy ish kuni muvaffaqatli yaratildi.');
@@ -88,7 +89,7 @@ class MonthController extends Controller
             'month_id' => 'required',
             'days' => 'integer'
         ]);
-        
+
         $month->fill($request->post())->save();
 
         return redirect()->route('month.index')->with('success','Ma\'lumotlar muvaffaqiyatli o\'zgartirildi');
@@ -102,7 +103,7 @@ class MonthController extends Controller
     */
     public function destroy(Month $month)
     {
-        $month->delete();
+       // $month->delete();
         return redirect()->route('month.index')->with('success','Ma\'lumotlar o\'chirildi');
     }
 }

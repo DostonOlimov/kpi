@@ -82,4 +82,16 @@ class Month extends Model
         array_push($labels,"Max ball");
         return $labels;
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        $year = session('year') ?: date('Y');
+
+        static::addGlobalScope(function ($query) use($year) {
+            $query->where('year',$year);
+        });
+
+    }
 }

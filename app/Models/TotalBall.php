@@ -74,11 +74,10 @@ class TotalBall extends Model
         return true;
     }
 
-    public function getEmployeesBalls(int $user_id,int $year)
+    public function getEmployeesBalls(int $user_id)
     {
     $data1 = $this::select('month','current_ball')
         ->where('user_id','=',$user_id)
-        ->where('year','=',$year)
         ->pluck('current_ball','month');
     $balls = [];
     foreach($data1 as $key => $ball)
@@ -87,6 +86,19 @@ class TotalBall extends Model
     }
     $balls[] = ['year'=>"Max",'income'=>100];
     return $balls;
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        $year = session('year') ?: (int)date('Y');
+        $month = session('month') ?: (int)date('m');
+
+        static::addGlobalScope(function ($query) use($year, $month) {
+            $query->where('year',$year)
+                ->where('month',$month);
+        });
     }
 }
 

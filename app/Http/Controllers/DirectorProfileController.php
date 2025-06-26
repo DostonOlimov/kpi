@@ -8,89 +8,56 @@ use App\Models\KpiEmployees;
 use App\Models\Month;
 use App\Models\Razdel;
 use App\Models\User;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use App\Rules\MonthYearExists;
- 
+
 
 class DirectorProfileController extends Controller
 {
     public function index(Request $request)
     {
         $user = auth()->user();
-        $month_id = Month::requestMonth($request);
-        $year = Month::requestYear($request);
+
         // only razdel equal 1 from kpi_director
         $kpi = Director::where('razdel', '=', 1)
             ->where('status', '=', 'active')
-            ->where('work_zone_id','=',$user->work_zone_id)
-            ->where('month','=', $month_id)
-            ->where('year','=',$year);
+            ->where('work_zone_id','=',$user->work_zone_id);
+
         $data1 = $kpi->get();
         $SumWorksCount = $kpi->sum('works_count');
         //get kpi_employess has kpi_dir_id
         $kpi_emp = KpiEmployees::has('kpi_dir')
-            ->where('work_zone_id','=',$user->work_zone_id)
-            ->where('month','=', $month_id)
-            ->where('year','=',$year);
+            ->where('work_zone_id','=',$user->work_zone_id);
         $TotalWorksCount = $kpi_emp->sum('works_count');
         $TotalCurrentWorks = $kpi_emp->sum('current_works');
 
-        $month = Month::getMonth($month_id);
+        $month = Month::getMonth(session('month') ?? date('m'));
         $razdel = Razdel::all();
-       
+
         return view('director.list', compact('data1','SumWorksCount','TotalWorksCount','TotalCurrentWorks','razdel','month'));
     }
 
-        /**
-    * Display a listing of the resource.
-    *
-    * @return \Illuminate\Http\Response
-    */
-    public function add2( Request $request)
-    {
-        return view('director.select');
-    }
     /**
-     * @return \Illuminate\Http\Response
+     * @return Application|Factory|View
      */
-    public function month_store(Request $request)
-    {
-        $user = auth()->user();
-        $data = new Director();
-        $arr = $data->getTextMonthsName($user->id,$request->year);
-
-        $request->validate([
-            'month_id' => ['required', new MonthYearExists('months', $request->month_id .'-'. $request->year),
-                            Rule::NotIn($arr)],
-        ],
-        [
-            'month_id.not_in' => 'Ushbu oy uchun ma\'lumotlar to\'liq kiritilgan.'
-
-        ]);
-        return redirect()->route('director.add',['month'=>$request->month_id,'year'=>$request->year]);
-    }
-    /**
-     * @param int month_id
-     * @param int year
-     * @return \Illuminate\Http\Response
-     */
-    public function add(Request $request,$month_id,$year)
+    public function add(Request $request)
     {
         $user = auth()->user();
 
         $data = Director::where('user_id', '=', $user->id)
             ->where('razdel', '=', 1)
             ->where('status', '=', 'inactive')
-            ->where('month', '=',$month_id)
-            ->where('year','=',$year)
             ->get();
-        $month_name = Month::getMonth($month_id);
+        $month_name = Month::getMonth(session('month') ?? date('m'));
         return view('director.add', [
             'data' => $data,
-            'month_id' => $month_id,
-            'year' => $year,
+            'month_id' => session('month') ?? date('m'),
+            'year' => session('year') ?? date('y'),
             'month_name' => $month_name
         ]);
     }
@@ -123,7 +90,7 @@ class DirectorProfileController extends Controller
         $kpi_dir->status = 'inactive';
         $kpi_dir-> band_id = count($data) + 1;
         $kpi_dir->year = $year;
-        $kpi_dir->save();   
+        $kpi_dir->save();
         return 'ok';
     }
 
@@ -156,12 +123,7 @@ class DirectorProfileController extends Controller
     public function employees(Request $request)
     {
         $user = auth()->user();
-        $month = Month::requestMonth($request);
-        $year = Month::requestYear($request);
-        $users = User::with(['totalBalls' => function($query) use ($month,$year) {
-            $query->where('month', '=', $month)
-                ->where('year','=',$year);
-        }])
+        $users = User::with('totalBalls')
         ->where('work_zone_id','=',$user->work_zone_id)
         ->where('role_id','=',3)
         ->get();

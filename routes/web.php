@@ -1,11 +1,12 @@
 <?php
 
+use App\Http\Controllers\KpiController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\WorkController;
 use App\Http\Controllers\MonthController;
 use App\Http\Controllers\EmployeeDaysController;
-/*  
+/*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
@@ -29,6 +30,11 @@ use App\Http\Controllers\EmployeeDaysController;
 Route::get('login', [\App\Http\Controllers\AuthController::class, 'login'])->name('login');
 Route::post('authenticate', [\App\Http\Controllers\AuthController::class, 'authenticate'])->name('authenticate');
 Route::post('logout', [\App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
+
+Route::get('/home', [\App\Http\Controllers\AuthController::class, 'home'])->name('home')->middleware('auth');
+
+Route::post('/change-year', [\App\Http\Controllers\SessionController::class, 'changeYear']);
+Route::post('/change-month', [\App\Http\Controllers\SessionController::class, 'changeMonth']);
 
 
 Route::middleware('auth')->group(function () {
@@ -61,13 +67,10 @@ Route::middleware('auth')->group(function () {
     Route::group(['prefix' => 'director-profile'], function () {
         Route::get('/list', [\App\Http\Controllers\DirectorProfileController::class, 'index'])->name('director.list');
         Route::get('/employees', [\App\Http\Controllers\DirectorProfileController::class, 'employees'])->name('director.employees');
-        Route::get('/add/{month}/{year}', [\App\Http\Controllers\DirectorProfileController::class, 'add'])->name('director.add');
+        Route::get('/add', [\App\Http\Controllers\DirectorProfileController::class, 'add'])->name('director.add');
         Route::post('/store', [\App\Http\Controllers\DirectorProfileController::class, 'store'])->name('director.store');
         Route::post('/commit', [\App\Http\Controllers\DirectorProfileController::class, 'commit'])->name('director.commit');
         Route::get('/delete/{id}', [\App\Http\Controllers\DirectorProfileController::class, 'delete'])->name('director.delete');
-        Route::get('/warn', [\App\Http\Controllers\DirectorProfileController::class, 'warn'])->name('director.warn');
-        Route::get('/add2', [\App\Http\Controllers\DirectorProfileController::class, 'add2'])->name('director.add2');
-        Route::post('/month_store', [\App\Http\Controllers\DirectorProfileController::class, 'month_store'])->name('director.month_store');
 
     });
     Route::group(['prefix' => 'commission-profile'], function () {
@@ -90,11 +93,9 @@ Route::middleware('auth')->group(function () {
     Route::group(['prefix' => 'employee-profile'], function () {
         Route::get('/list', [\App\Http\Controllers\EmployeeProfileController::class, 'index'])->name('profile.list');
         Route::get('/add', [\App\Http\Controllers\EmployeeProfileController::class, 'add'])->name('profile.add');
-        Route::get('/create/{month}/{year}', [\App\Http\Controllers\EmployeeProfileController::class, 'create'])->name('profile.create');
+        Route::get('/create', [\App\Http\Controllers\EmployeeProfileController::class, 'create'])->name('profile.create');
         Route::post('/commit', [\App\Http\Controllers\EmployeeProfileController::class, 'commit'])->name('profile.commit');
         Route::post('/store', [\App\Http\Controllers\EmployeeProfileController::class, 'store'])->name('profile.store');
-        Route::get('/add2', [\App\Http\Controllers\EmployeeProfileController::class, 'add2'])->name('profile.add2');
-        Route::post('/month_store', [\App\Http\Controllers\EmployeeProfileController::class, 'month_store'])->name('profile.month_store');
 
         Route::post('/save', [\App\Http\Controllers\EmployeeProfileController::class, 'save'])->name('profile.save');
         Route::get('/delete/{id}', [\App\Http\Controllers\EmployeeProfileController::class, 'delete'])->name('profile.delete');
@@ -117,6 +118,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/export',[\App\Http\Controllers\BugalterController::class, 'get_summa'])->name('bugalter.export');
         Route::get('/calculate/{id}',[\App\Http\Controllers\BugalterController::class, 'calculate'])->name('bugalter.calculate');
     });
+
+    Route::resource('kpis', KpiController::class);
 });
 
 

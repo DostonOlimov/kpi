@@ -11,7 +11,7 @@
             </ol>
         </div>
     <!-- search month component -->
-    <x-search url="director.list"/>
+
     @php
     $ball = 0;
     $prasent = 0;

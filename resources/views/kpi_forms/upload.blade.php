@@ -1,11 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
-    @php $_GET ? $a = $_GET['month_id'] : $a = (int)date('m')  ;  @endphp
+    @php  $a = session('month') ?? (int)date('m')  ;  @endphp
     <!-- head table component -->
-    <x-head_table/>
-    <!-- search month component -->
-    <x-search url="profile.upload"/>
+    <div class="section">
+        <!-- Page Header -->
+        <div class="page-header">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <i class="fe fe-pie-chart mr-1"></i>&nbsp; Shaxsiy ko'rsatkichlarni kiritish
+                </li>
+            </ol>
+        </div>
 
         <div class="row">
             <div class="col-lg-12 grid-margin stretch-card">

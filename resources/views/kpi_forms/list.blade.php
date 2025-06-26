@@ -1,10 +1,16 @@
 @extends('layouts.app')
 
 @section('content')
-    <!-- head table component -->
-    <x-head_table/>
-    <!-- search month component -->
-    <x-search url="profile.list"/>
+    <div class="section">
+        <!-- Page Header -->
+        <div class="page-header">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <i class="fe fe-pie-chart mr-1"></i>&nbsp; Xodimning erishgan ko'rsatkichlari
+                </li>
+            </ol>
+        </div>
+
     <!--  table component -->
     <x-table :data1="$data1" :data2="$data2" :data3="$data3" :data4="$data4" />
 
