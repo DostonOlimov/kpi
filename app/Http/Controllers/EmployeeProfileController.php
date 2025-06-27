@@ -4,9 +4,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Director;
+use App\Models\Kpi;
 use App\Models\KpiEmployees;
 use App\Models\Month;
 use App\Models\TotalBall;
+use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Rules\DirectorKpiExist;
@@ -41,47 +43,10 @@ class EmployeeProfileController extends Controller
 
     public function create(Request $request)
     {
-        $user = auth()->user();
-        $data = Director::where('work_zone_id', '=', $user->work_zone_id)
-            ->where('razdel', '=', 1)
-            ->where('status', '=', 'active')
-            ->get();
-        $data1 = KpiEmployees::where('user_id', '=', $user->id)
-            ->where('razdel', '=', 1)
-            ->where('status', '=', 'inactive')
-            ->get();
-        $data2 = KpiEmployees::where('user_id', '=', $user->id)
-            ->where('razdel', '=', 1)
-            ->where('status', '=', 'active')
-            ->first();
-        $data3 = KpiEmployees::where('user_id', '=', $user->id)
-            ->where('razdel', '=', 2)
-            ->where('status', '=', 'active')
-            ->where('band_id','=',1)
-            ->first();
-        $data4 = KpiEmployees::where('user_id', '=', $user->id)
-            ->where('razdel', '=', 2)
-            ->where('status', '=', 'active')
-            ->where('band_id','=',2)
-            ->first();
-        $kpi_req = DB::table('kpi_required')
-            ->where('razdel_id','=',2)
-            ->get();
-        if($data2){
-            if($data3 && $data4){
-                return view('kpi_forms.warn');
-            }
-            return view('kpi_forms.create2', [
-                'data3' => $data3,
-                'data4' => $data4,
-                'month' => session('month') ?? (int)date('m'),
-                'kpi_req' => $kpi_req,
-                'year' => session('year') ?? (int)date('Y'),
-            ]);
-        }
+        $kpis = Kpi::whereNull('parent_id')->where('type',Kpi::TYPE_1)->with('children')->get();
+
         return view('kpi_forms.create', [
-            'data' => $data,
-            'data1' => $data1,
+            'kpis' => $kpis,
             'month' => session('month') ?? date('m'),
             'year' => session('year') ?? date('Y'),
         ]);

@@ -11,6 +11,10 @@ class Kpi extends Model
 {
     use HasFactory;
 
+    CONST TYPE_1 = 1;
+    CONST TYPE_2 = 2;
+    CONST TYPE_3 = 3;
+
     protected $fillable = ['parent_id', 'name', 'max_score'];
 
     public function parent(): BelongsTo

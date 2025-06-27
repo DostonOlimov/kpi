@@ -105,6 +105,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/upload', [ \App\Http\Controllers\EmployeeProfileController::class, 'upload' ])->name('profile.upload');
         Route::get('/download/{id}', [\App\Http\Controllers\EmployeeProfileController::class, 'download'])->name('profile.download');
         Route::post('/image.store', [ \App\Http\Controllers\EmployeeProfileController::class, 'ImageStore' ])->name('profile.image.store');
+
+        Route::post('/kpi-save', [ \App\Http\Controllers\EmployeeProfileController::class, 'KpiSave' ])->name('employee.kpi.save');
     });
     Route::group(['prefix' => 'bugalter'], function () {
         Route::get('/list', [\App\Http\Controllers\BugalterController::class, 'index'])->name('bugalter.list');
