@@ -31,7 +31,7 @@ Route::get('login', [\App\Http\Controllers\AuthController::class, 'login'])->nam
 Route::post('authenticate', [\App\Http\Controllers\AuthController::class, 'authenticate'])->name('authenticate');
 Route::post('logout', [\App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 
-Route::get('/home', [\App\Http\Controllers\AuthController::class, 'home'])->name('home')->middleware('auth');
+Route::get('/home', [\App\Http\Controllers\DashboardController::class, 'index'])->name('home');
 
 Route::post('/change-year', [\App\Http\Controllers\SessionController::class, 'changeYear']);
 Route::post('/change-month', [\App\Http\Controllers\SessionController::class, 'changeMonth']);

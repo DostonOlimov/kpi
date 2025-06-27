@@ -36,7 +36,7 @@ class DirectorProfileController extends Controller
         $TotalWorksCount = $kpi_emp->sum('works_count');
         $TotalCurrentWorks = $kpi_emp->sum('current_works');
 
-        $month = Month::getMonth(session('month') ?? date('m'));
+        $month = Month::getMonth(session('month') ?? (int)date('m'));
         $razdel = Razdel::all();
 
         return view('director.list', compact('data1','SumWorksCount','TotalWorksCount','TotalCurrentWorks','razdel','month'));
@@ -53,11 +53,11 @@ class DirectorProfileController extends Controller
             ->where('razdel', '=', 1)
             ->where('status', '=', 'inactive')
             ->get();
-        $month_name = Month::getMonth(session('month') ?? date('m'));
+        $month_name = Month::getMonth(session('month') ?? (int)date('m'));
         return view('director.add', [
             'data' => $data,
-            'month_id' => session('month') ?? date('m'),
-            'year' => session('year') ?? date('y'),
+            'month_id' => session('month') ?? (int)date('m'),
+            'year' => session('year') ?? (int)date('y'),
             'month_name' => $month_name
         ]);
     }

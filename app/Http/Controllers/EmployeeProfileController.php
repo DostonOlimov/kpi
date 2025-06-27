@@ -35,7 +35,7 @@ class EmployeeProfileController extends Controller
             'data4' => $data4,
 
             'balls' => $balls,
-            'month_name' => Month::getMonth(session('month') ?? date('m')),
+            'month_name' => Month::getMonth(session('month')  ?? (int)date('m')),
         ]);
     }
 
@@ -74,9 +74,9 @@ class EmployeeProfileController extends Controller
             return view('kpi_forms.create2', [
                 'data3' => $data3,
                 'data4' => $data4,
-                'month' => session('month') ?? date('m'),
+                'month' => session('month') ?? (int)date('m'),
                 'kpi_req' => $kpi_req,
-                'year' => session('year') ?? date('Y'),
+                'year' => session('year') ?? (int)date('Y'),
             ]);
         }
         return view('kpi_forms.create', [
