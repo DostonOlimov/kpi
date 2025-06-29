@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\KpiController;
+use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\WorkController;
@@ -122,6 +123,9 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::resource('kpis', KpiController::class);
+
+    Route::post('/tasks/store', [TaskController::class, 'store']);
+    Route::delete('/tasks/{id}', [TaskController::class, 'destroy']);
 });
 
 

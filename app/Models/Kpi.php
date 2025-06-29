@@ -26,4 +26,9 @@ class Kpi extends Model
     {
         return $this->hasMany(Kpi::class, 'parent_id');
     }
+
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class, 'kpi_id');
+    }
 }

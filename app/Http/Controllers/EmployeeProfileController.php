@@ -43,7 +43,12 @@ class EmployeeProfileController extends Controller
 
     public function create(Request $request)
     {
-        $kpis = Kpi::whereNull('parent_id')->where('type',Kpi::TYPE_1)->with('children')->get();
+        $kpis = Kpi::whereNull('parent_id')
+        ->where('type',Kpi::TYPE_1)
+        ->with(['children.tasks' => function ($query) {
+                $query->where('user_id', auth()->id());
+            }])
+        ->get();
 
         return view('kpi_forms.create', [
             'kpis' => $kpis,

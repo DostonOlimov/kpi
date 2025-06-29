@@ -69,17 +69,17 @@
                 </a>
             </li>
 
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a class="nav-link" href="{{ route('profile.create') }}">
                     <svg class="nav-icon">
                         <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-plus"></use>
                     </svg>
                     Ko'rsatkichlarni qo'shish
                 </a>
-            </li>
+            </li> --}}
 
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('profile.upload') }}">
+                <a class="nav-link" href="{{ route('profile.create') }}">
                     <svg class="nav-icon">
                         <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-cloud-upload"></use>
                     </svg>
