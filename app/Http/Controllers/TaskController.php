@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kpi;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -35,7 +36,7 @@ class TaskController extends Controller
 
     return response()->json([
         'id' => $task->id,
-        'title' => $task->title,
+        'title' => $task->name,
         'description' => $task->description,
         'file_url' => $filePath ? asset('storage/' . $filePath) : null,
     ]);

@@ -7,38 +7,165 @@ use App\Models\Director;
 use App\Models\Kpi;
 use App\Models\KpiEmployees;
 use App\Models\Month;
+use App\Models\Task;
 use App\Models\TotalBall;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Rules\DirectorKpiExist;
 
 class EmployeeProfileController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        $user = auth()->user();
-        $kpi = new KpiEmployees();
-        $data1 = $kpi->getData($user->id,1);
-        $data2 = $kpi->getData($user->id,2);
-        $data3 = $kpi->getData($user->id,3);
-        $data4 = $kpi->getData($user->id,4);
+        $userId = Auth::id();
 
-        $data12 = TotalBall::select('month','current_ball')
-            ->where('user_id','=',$user->id)
-            ->pluck('current_ball','month');
+        // Get user's KPIs with tasks and scores
+        $kpis = KPI::with([
+            'children' => function($query) use ($userId) {
+                $query->with([
+                    'tasks' => function($taskQuery) use ($userId) {
+                        $taskQuery->where('user_id', $userId)
+                            ->with(['comments.user']);
+                    }
+                ]);
+            }
+        ])
+            ->whereNull('parent_id')
+            ->get();
 
-        $ball = new TotalBall();
-        $balls = $ball->getEmployeesBalls($user->id);
-        return view('kpi_forms.list', [
-            'data1' => $data1,
-            'data2' => $data2,
-            'data3' => $data3,
-            'data4' => $data4,
+        // Process KPIs to add user-specific data
+        $kpis = $kpis->map(function($category) use ($userId) {
+            $category->user_tasks_count = 0;
+            $totalScore = 0;
+            $scoredChildren = 0;
 
-            'balls' => $balls,
-            'month_name' => Month::getMonth(session('month')  ?? (int)date('m')),
-        ]);
+            $category->children = $category->children->map(function($child) use ($userId, &$totalScore, &$scoredChildren) {
+                // Get user's tasks for this child
+                $child->user_tasks = $child->tasks->where('user_id', $userId);
+
+                // Count user tasks for this category
+                $userTasksCount = $child->user_tasks->count();
+
+                if ($child->score) {
+                    $totalScore += $child->score;
+                    $scoredChildren++;
+                }
+
+                return $child;
+            });
+
+            // Calculate average score for category
+            $category->average_score = $scoredChildren > 0 ? $totalScore / $scoredChildren : null;
+
+            return $category;
+        });
+
+        // Calculate user statistics
+        $userStats = $this->calculateUserStats($userId);
+
+        // Get achievements
+        $achievements = $this->getUserAchievements($userId, $userStats);
+
+        return view('kpi_forms.list', compact('kpis', 'userStats', 'achievements'));
+    }
+
+    private function calculateUserStats($userId)
+    {
+        $totalTasks = Task::where('user_id', $userId)->count();
+        $reviewedTasks = Task::where('user_id', $userId)
+            ->whereHas('comments')
+            ->count();
+
+        $scoredKPIs = KPI::whereHas('tasks', function($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })
+//            ->whereNotNull('kpi_scores')
+            ->count();
+
+        $averageScore =0;
+
+        $completionRate = $totalTasks > 0 ? ($reviewedTasks / $totalTasks) * 100 : 0;
+        $reviewRate = $totalTasks > 0 ? ($reviewedTasks / $totalTasks) * 100 : 0;
+
+        $totalKPIs = KPI::whereHas('tasks', function($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })->count();
+
+        $scoringProgress = $totalKPIs > 0 ? ($scoredKPIs / $totalKPIs) * 100 : 0;
+
+
+        return [
+            'total_tasks' => $totalTasks,
+            'reviewed_tasks' => $reviewedTasks,
+            'scored_kpis' => $scoredKPIs,
+            'average_score' => round($averageScore, 1),
+            'completion_rate' => round($completionRate, 1),
+            'review_rate' => round($reviewRate, 1),
+            'scoring_progress' => round($scoringProgress, 1)
+        ];
+    }
+
+    private function getUserAchievements($userId, $userStats)
+    {
+        $achievements = [];
+
+        // First Task Achievement
+        if ($userStats['total_tasks'] >= 1) {
+            $achievements[] = [
+                'icon' => '🎯',
+                'title' => 'First Step',
+                'description' => 'Submitted your first task'
+            ];
+        }
+
+        // Task Master Achievement
+        if ($userStats['total_tasks'] >= 10) {
+            $achievements[] = [
+                'icon' => '📝',
+                'title' => 'Task Master',
+                'description' => 'Submitted 10+ tasks'
+            ];
+        }
+
+        // High Performer Achievement
+        if ($userStats['average_score'] >= 80) {
+            $achievements[] = [
+                'icon' => '⭐',
+                'title' => 'High Performer',
+                'description' => 'Maintained 80+ average score'
+            ];
+        }
+
+        // Perfect Score Achievement
+        if ($userStats['average_score'] >= 95) {
+            $achievements[] = [
+                'icon' => '🏆',
+                'title' => 'Excellence',
+                'description' => 'Achieved 95+ average score'
+            ];
+        }
+
+        // Consistent Performer Achievement
+        if ($userStats['completion_rate'] >= 90) {
+            $achievements[] = [
+                'icon' => '🎖️',
+                'title' => 'Consistent Performer',
+                'description' => '90%+ task completion rate'
+            ];
+        }
+
+        // Feedback Champion Achievement
+        if ($userStats['review_rate'] >= 80) {
+            $achievements[] = [
+                'icon' => '💬',
+                'title' => 'Feedback Champion',
+                'description' => '80%+ of tasks reviewed'
+            ];
+        }
+
+        return $achievements;
     }
 
     public function create(Request $request)

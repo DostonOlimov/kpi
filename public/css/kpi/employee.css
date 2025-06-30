@@ -1,0 +1,112 @@
+/* Enhanced Styling */
+.stats-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.stats-icon {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tab-indicator {
+    width: 4px;
+    height: 40px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border-radius: 2px;
+}
+
+.search-box .form-control {
+    border-radius: 0.5rem;
+    padding-left: 0.75rem;
+}
+
+.search-box .input-group-text {
+    border-radius: 0.5rem 0 0 0.5rem;
+    background-color: #f8f9fa;
+}
+
+.employee-avatar .avatar-circle {
+    width: 45px;
+    height: 45px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.task-stats .stat-item {
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.task-stats .stat-item:hover {
+    background-color: #e9ecef !important;
+    transform: scale(1.05);
+}
+
+.progress {
+    border-radius: 10px;
+    background-color: #f8f9fa;
+}
+
+.progress-bar {
+    border-radius: 10px;
+    transition: width 0.6s ease;
+}
+
+.action-btn {
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+    transform: scale(1.01);
+    transition: all 0.2s ease;
+}
+
+.badge {
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.alert {
+    border-radius: 0.75rem;
+    border: none;
+}
+
+@media (max-width: 768px) {
+    .stats-card {
+        margin-bottom: 1rem;
+    }
+
+    .search-box {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .action-buttons .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* Animation for progress bars */
+@keyframes progressAnimation {
+    0% { width: 0%; }
+    100% { width: var(--progress-width); }
+}
+
+.progress-bar-animated {
+    animation: progressAnimation 1s ease-in-out;
+}

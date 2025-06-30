@@ -1,6 +1,6 @@
 <div class="sidebar sidebar-dark sidebar-fixed " id="sidebar">
     <div class="sidebar-brand d-none d-md-flex justify-content-around">
-        <img style="width:40px;" src="/assets/images/logo.png">
+        <img style="width:40px;" src="/assets/images/logo1.png">
         <h2 style="font-size: 20px; color: white; margin: 6px 22px 5px 0; !important;">ECOEKESPERTIZA</h2>
     </div>
     <ul class="sidebar-nav" data-coreui="navigation" data-simplebar="">
@@ -57,8 +57,7 @@
             </li>
         @endif
 
-        @if(auth()->user()->role_id === \App\Models\User::ROLE_USER || auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)
-            <li class="nav-title">Baholash ko'rsatkichlari</li>
+            <li class="nav-title">Shaxsiy ko'rsatkichlar</li>
 
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('profile.list') }}">
@@ -69,15 +68,6 @@
                 </a>
             </li>
 
-            {{-- <li class="nav-item">
-                <a class="nav-link" href="{{ route('profile.create') }}">
-                    <svg class="nav-icon">
-                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-plus"></use>
-                    </svg>
-                    Ko'rsatkichlarni qo'shish
-                </a>
-            </li> --}}
-
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('profile.create') }}">
                     <svg class="nav-icon">
@@ -86,25 +76,16 @@
                     Baholarni to'ldirish
                 </a>
             </li>
-        @endif
+
         @if(auth()->user()->role_id === \App\Models\User::ROLE_DIRECTOR || auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)
-            <li class="nav-title">Baholash ko'rsatkichlari</li>
+            <li class="nav-title">Bo'lim ko'rsatkichlari</li>
 
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('director.list') }}">
                     <svg class="nav-icon">
                         <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-task"></use>
                     </svg>
-                    Holatni tekshirish
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('director.add') }}">
-                    <svg class="nav-icon">
-                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-plus"></use>
-                    </svg>
-                    Ko'rsatgichlar qo'shish
+                    Xodimlarni tekshirish
                 </a>
             </li>
 

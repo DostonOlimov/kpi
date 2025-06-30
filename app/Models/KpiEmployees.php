@@ -122,6 +122,5 @@ class KpiEmployees extends Model
             $query->where('year',$year)
                 ->where('month',$month);
         });
-
     }
 }

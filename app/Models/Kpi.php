@@ -31,4 +31,9 @@ class Kpi extends Model
     {
         return $this->hasMany(Task::class, 'kpi_id');
     }
+
+    public function kpi_scores(): HasMany
+    {
+        return $this->hasMany(KpiScore::class, 'kpi_id');
+    }
 }

@@ -16,6 +16,17 @@ class WorkZone extends Model
     {
         return $this->hasMany(User::class,);
     }
+
+    public function tasks()
+    {
+        return $this->hasManyThrough(Task::class, User::class);
+    }
+
+    public function kpis()
+    {
+        return $this->hasManyThrough(KpiScore::class, User::class);
+    }
+
     public function getCountEmployeesAttribute()
     {
         return $this->users()->where('users.role_id','=',3)->count('id');

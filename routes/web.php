@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CommissionController;
+use App\Http\Controllers\KomissionController;
 use App\Http\Controllers\KpiController;
 use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
@@ -67,6 +69,7 @@ Route::middleware('auth')->group(function () {
     });
     Route::group(['prefix' => 'director-profile'], function () {
         Route::get('/list', [\App\Http\Controllers\DirectorProfileController::class, 'index'])->name('director.list');
+        Route::get('/check-user/{employee}', [\App\Http\Controllers\DirectorProfileController::class, 'check_user'])->name('director.check_user');
         Route::get('/employees', [\App\Http\Controllers\DirectorProfileController::class, 'employees'])->name('director.employees');
         Route::get('/add', [\App\Http\Controllers\DirectorProfileController::class, 'add'])->name('director.add');
         Route::post('/store', [\App\Http\Controllers\DirectorProfileController::class, 'store'])->name('director.store');
@@ -90,6 +93,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/section', [\App\Http\Controllers\KomissionController::class, 'section'])->name('commission.section');
 
         Route::get('/text', [\App\Http\Controllers\KomissionController::class, 'text'])->name('commission.text');
+
+        Route::post('/tasks/{task}/comment', [CommissionController::class, 'addComment'])->name('commission.task.comment');
+        Route::post('/kpi/{child}/score', [CommissionController::class, 'scoreKPI'])->name('commission.kpi.score');
     });
     Route::group(['prefix' => 'employee-profile'], function () {
         Route::get('/list', [\App\Http\Controllers\EmployeeProfileController::class, 'index'])->name('profile.list');
