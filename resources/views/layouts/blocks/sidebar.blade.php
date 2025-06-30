@@ -1,6 +1,6 @@
 <div class="sidebar sidebar-dark sidebar-fixed " id="sidebar">
     <div class="sidebar-brand d-none d-md-flex justify-content-around">
-        <img style="width:40px;" src="/assets/images/logo1.png">
+        <img style="width:40px;" src="/assets/images/logo.png">
         <h2 style="font-size: 20px; color: white; margin: 6px 22px 5px 0; !important;">ECOEKESPERTIZA</h2>
     </div>
     <ul class="sidebar-nav" data-coreui="navigation" data-simplebar="">
