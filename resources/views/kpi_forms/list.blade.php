@@ -91,10 +91,11 @@
                 @foreach ($kpis as $category)
                     <div class="category-result-card">
                         <div class="category-result-header" data-bs-toggle="collapse" data-bs-target="#category-{{ $category->id }}">
-                            <div class="category-info">
+                            <div class="category-info" style="width: 60%">
                                 <h4>{{ $category->name }}</h4>
                             </div>
-                            <div class="category-stats">
+                            <div style="width: 20%"></div>
+                            <div class="category-stats" style="width: 20%">
                                 <div class="task-count">
                                     <div>{{ $category->user_tasks_count ?? 0 }}</div>
                                     <div class="score-label">Vazifalar</div>
@@ -102,14 +103,15 @@
                                 <div class="category-score">
                                     @if($category->average_score)
                                         <span class="score-badge {{ $category->average_score >= 70 ? '' : ($category->average_score >= 40 ? 'medium-score' : 'low-score') }}">
-                                        {{ number_format($category->average_score, 1) }}/100
-                                    </span>
+                                            {{ number_format($category->total_ball, 1) }}/{{ number_format($category->max_ball, 1) }}
+                                             {{number_format($category->average_score)}}%
+                                        </span>
                                     @else
                                         <span class="score-badge no-score">Baholanmagan</span>
                                     @endif
                                     <div class="score-label">O‘rtacha baho</div>
                                 </div>
-                                <span class="expand-icon">▼</span>
+                                    <span class="expand-icon">▼</span>
                             </div>
                         </div>
 
@@ -117,32 +119,32 @@
                             @foreach ($category->children as $child)
                                 <div style="margin-bottom: 2rem; padding: 1.5rem; background: white; border-radius: 8px; border-left: 4px solid #007bff;">
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                                        <h5 style="color: #495057; margin: 0;">{{ $child->name }}</h5>
+                                        <h2 style="color: #495057; margin: 0;">{{ $child->name }}</h2>
                                         <div style="text-align: right;">
-                                            @if($child->score)
-                                                <span class="score-badge {{ $child->score >= 70 ? '' : ($child->score >= 40 ? 'medium-score' : 'low-score') }}">
-                                                {{ $child->score }}/100
+                                            @if($child->score?->score)
+                                                <span class="score-badge {{ $child->score->score / $child->max_score >= 0.7 ? '' : ($child->score->score/$child->max_score >= 0.4 ? 'medium-score' : 'low-score') }}">
+                                                {{ round($child->score->score) }}/{{ $child->max_score }}
                                             </span>
                                             @else
                                                 <span class="score-badge no-score">Baholanmagan</span>
                                             @endif
                                         </div>
                                     </div>
-
-                                    @if($child->feedback)
+                                    @if($child->score?->feedback)
                                         <div class="feedback-section">
-                                            <h6 class="feedback-title">Komissar fikri</h6>
-                                            <p class="feedback-text">{{ $child->feedback }}</p>
+                                            <h6 class="feedback-title">Baxo bo'yicha xulosa</h6>
+                                            <p class="feedback-text">{{ $child->score->feedback }}</p>
                                         </div>
                                     @endif
 
-                                    <div class="tasks-section">
+                                    @if($child->type == 1)
+                                        <div class="tasks-section">
                                         <h6 class="tasks-title">Siz bajargan vazifalar ({{ $child->user_tasks->count() }})</h6>
 
                                         @forelse ($child->user_tasks as $task)
                                             <div class="task-result-card">
                                                 <div class="task-result-header">
-                                                    <h6 class="task-title">{{ $task->title }}</h6>
+                                                    <h6 class="task-title">{{ $task->name }}</h6>
                                                     <span class="task-status {{ $task->comments->count() > 0 ? 'status-reviewed' : 'status-pending' }}">
                                                     {{ $task->comments->count() > 0 ? '✅ Ko‘rib chiqilgan' : '⏳ Ko‘rib chiqilmoqda' }}
                                                 </span>
@@ -188,6 +190,7 @@
                                             </div>
                                         @endforelse
                                     </div>
+                                    @endif
                                 </div>
                             @endforeach
                         </div>
@@ -196,23 +199,23 @@
             </div>
 
             <!-- Yutuqlar -->
-            @if($achievements ?? false)
-                <div class="progress-section fade-in">
-                    <h3 class="progress-title">🏆 Sizning yutuqlaringiz</h3>
+{{--            @if($achievements ?? false)--}}
+{{--                <div class="progress-section fade-in">--}}
+{{--                    <h3 class="progress-title">🏆 Sizning yutuqlaringiz</h3>--}}
 
-                    <div class="row">
-                        @foreach($achievements as $achievement)
-                            <div class="col-md-4 mb-3">
-                                <div class="performance-card bounce">
-                                    <span class="performance-icon">{{ $achievement['icon'] }}</span>
-                                    <div class="performance-label">{{ $achievement['title'] }}</div>
-                                    <div class="performance-description">{{ $achievement['description'] }}</div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            @endif
+{{--                    <div class="row">--}}
+{{--                        @foreach($achievements as $achievement)--}}
+{{--                            <div class="col-md-4 mb-3">--}}
+{{--                                <div class="performance-card bounce">--}}
+{{--                                    <span class="performance-icon">{{ $achievement['icon'] }}</span>--}}
+{{--                                    <div class="performance-label">{{ $achievement['title'] }}</div>--}}
+{{--                                    <div class="performance-description">{{ $achievement['description'] }}</div>--}}
+{{--                                </div>--}}
+{{--                            </div>--}}
+{{--                        @endforeach--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--            @endif--}}
         </div>
     </div>
 

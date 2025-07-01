@@ -25,14 +25,14 @@
                             </div>
                             <div class="stat-card pending">
                                 <div class="stat-number" id="pending-reviews">{{ $total - $checked ?? 0 }}</div>
-                                <div class="stat-label"><i class="fa fa-clock-o"></i> Baholanishi kutilyotgan</div>
+                                <div class="stat-label"><i class="fa fa-clock-o"></i> Yangi qo'shilgan</div>
                             </div>
                             <div class="stat-card completed">
                                 <div class="stat-number" id="reviewed-tasks">{{ $checked ?? 0 }}</div>
-                                <div class="stat-label"><i class="fa fa-check-circle"></i> Baholanganlar</div>
+                                <div class="stat-label"><i class="fa fa-check-circle"></i> Tekshirilgan</div>
                             </div>
                             <div class="stat-card scored">
-                                <div class="stat-number" id="scored-kpis">{{ $scoredKPIs ?? 0 }}</div>
+                                <div class="stat-number" id="scored-kpis">{{ $scored ?? 0 }}</div>
                                 <div class="stat-label"><i class="fa fa-star"></i> Baholangan KPIlar</div>
                             </div>
                         </div>
@@ -62,7 +62,7 @@
                                             <div class="child-stats">
                                                 <span><i class="fa fa-tasks"></i> {{ $child->tasks->count() }} ta vazifa</span>
                                                 <div class="child-score">
-                                                    <i class="fa fa-star-half-o"></i> Baho: {{ $child->score ?? 'Baholanmagan' }}
+                                                    <i class="fa fa-star-half-o"></i> Baho: {{ $child->score ? $child->score->score : 'Baholanmagan' }}
                                                 </div>
                                                 <span class="expand-icon"><i class="fa fa-chevron-down"></i></span>
                                             </div>
@@ -144,7 +144,7 @@
                                             @php
                                                 $userScore = $child->kpi_scores
                                                     ->where('user_id', $user->id)
-                                                    ->where('type', 'task') // change 'task' to your actual type if needed
+                                                    ->where('type', $type) // change 'task' to your actual type if needed
                                                     ->first();
                                             @endphp
 
@@ -158,10 +158,10 @@
                                                     <!-- Show current score with Edit button -->
                                                     <div class="current-score mt-2">
                                                         <span>Joriy baho:</span>
-                                                        <strong>{{ $userScore->score }}/{{ $child->max_score }}</strong>
-                                                        <button type="button" class="btn btn-sm btn-outline-primary ms-2 btn-edit-score" data-child-id="{{ $child->id }}">
-                                                            <i class="fa fa-edit"></i> Tahrirlash
-                                                        </button>
+                                                        <strong>{{ round($userScore->score) }}/{{ $child->max_score }}</strong>
+{{--                                                        <button type="button" class="btn btn-sm btn-close-white ms-2 btn-edit-score text-right" data-child-id="{{ $child->id }}">--}}
+{{--                                                            <i class="fa fa-edit"></i> Tahrirlash--}}
+{{--                                                        </button>--}}
                                                     </div>
 
                                                     <!-- Hidden form initially, shown when Edit is clicked -->
@@ -225,7 +225,6 @@
                                                 @endif
                                             </div>
                                             </div>
-                                        </div>
                                     </div>
                                 @endforeach
                             </div>
@@ -312,7 +311,7 @@
 
                 let formData = new FormData(this);
                 formData.append('user_id', userId);
-                formData.append('type', 1);
+                formData.append('type', {{$type}});
 
                 let submitBtn = form.find('button[type="submit"]');
                 let originalBtnText = submitBtn.html();

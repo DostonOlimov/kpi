@@ -4,75 +4,87 @@ namespace App\Http\Controllers;
 
 use App\Models\EmployeeSumma;
 use App\Models\KpiEmployees;
+use App\Models\KpiScore;
 use App\Models\TotalBall;
 use Illuminate\Http\Request;
 use App\Models\EmployeeDays;
 use App\Models\Month;
 use App\Models\User;
 use App\Rules\ExistMonthforEmployee;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
 class EmployeeDaysController extends Controller
 {
-      /**
-    * Display a listing of the resource.
-    *
-    * @return \Illuminate\Http\Response
-    */
-    public function index($month_id)
-    {
-        $roles = EmployeeDays::orderBy('id','desc')->paginate(10);
-        return view('days.index', compact('roles'));
-    }
        /**
     * Display a listing of the resource.
     *
-    * @return \Illuminate\Http\Response
+    * @return
     */
-    public function list($month_id,$year)
+    public function list()
     {
-        $users = User::with(['employeeDays' => function($query) use ($month_id,$year) {
-            $query->where('month_id', '=', $month_id)
-                ->where('year','=',$year);
-        }])
-            ->where('role_id','=',3)
-            ->get();
-        $days = Month::where('month_id','=',$month_id)
-            ->where('year','=',$year)
-            ->first()
-            ->days;
-        $date['month_name'] = Month::getMonth($month_id);
-        $date['month_id'] = $month_id;
-        $date['year'] = $year;
-        $date['days'] = $days;
-        return view('days.list', compact('users','date'));
-    }
-       /**
-    * Display a listing of the resource.
-    *
-    * @return \Illuminate\Http\Response
-    */
-    public function select()
-    {
-        $roles = EmployeeDays::orderBy('id','desc')->paginate(10);
-        return view('days.select', compact('roles'));
-    }
+        $month_id = session('month') ?? (int) date('m');
+        $year = session('year') ?? (int) date('Y');
 
+        $users = User::with(['working_days', 'work_zone'])->get();
+
+        $groupedUsers = $users->groupBy(fn($user) => $user->work_zone?->name ?? 'Boshqalar');
+
+        $days = Month::where('year','=',$year)->first()?->days;
+
+        $month_name = Month::getMonth($month_id);
+
+        return view('days.list', compact('users','days','groupedUsers','month_name','month_id','year',));
+    }
     /**
     * Show the form for creating a new resource.
     *
-    * @return \Illuminate\Http\Response
+    * @return Response
     */
-    public function createday($id,$month_id,$year)
+    public function createday(Request $request,User $user)
     {
-        return view('days.createday',['id' => $id,'month_id' => $month_id,'year' => $year]);
+
+        $validated = $request->validate([
+            'month' => 'required',
+            'year' => 'required|integer|min:2000|max:2100',
+            'days' => 'required|integer|min:0',
+        ]);
+
+        $days = Month::where('year','=',$validated['year'])->first()?->days;
+
+        $record = EmployeeDays::updateOrCreate([
+            'user_id'=>$user->id,
+            'month_id' => $validated['month'],
+            'year' => $validated['year'],
+        ],
+            [
+            'days' => $validated['days'],
+        ]);
+
+        KpiScore::updateOrCreate(
+            [
+                'kpi_id' => 8,
+                'user_id' => $user->id,
+                'type'    => 2,
+                'month'     => session('month') ?? (int)date('m'),
+                'year'      => session('year') ?? (int)date('Y'),
+            ],
+            [
+                'score'     => round(($validated['days'] / $days) * 7,2),
+                'is_active' => true,
+                'scored_by' => auth()->id(),
+                'scored_at' => now(),
+            ]
+        );
+
+        return response()->json(['success' => true, 'data' => $record]);
     }
 
     /**
     * Store a newly created resource in storage.
     *
     * @param  \Illuminate\Http\Request  $request
-    * @return \Illuminate\Http\Response
+    * @return Response
     */
     public function store(Request $request)
     {
@@ -118,30 +130,15 @@ class EmployeeDaysController extends Controller
             $ball->Calculate($user_id,$month,$year);
             $sum = new EmployeeSumma();
             $sum->CalculateSumma($user_id,$month,$year);
-            
+
         return redirect()->route('days.list',[$month,$year])->with('success','Ish kuni muvaffaqatli yaratildi.');
-    }
-     /**
-    * Store a newly created resource in storage.
-    *
-    * @param  \Illuminate\Http\Request  $request
-    * @return \Illuminate\Http\Response
-    */
-    public function store2(Request $request)
-    {
-
-        $request->validate([
-            'month_id' => ['required', new ExistMonthforEmployee('months', $request->year ,$request->month_id)],
-        ],);
-
-        return redirect()->route('days.list',[$request->month_id,$request->year]);
     }
 
     /**
     * Display the specified resource.
     *
     * @param  \App\company  $company
-    * @return \Illuminate\Http\Response
+    * @return Response
     */
     public function show()
     {
@@ -155,7 +152,7 @@ class EmployeeDaysController extends Controller
     * Show the form for editing the specified resource.
     *
     * @param  \App\Company  $company
-    * @return \Illuminate\Http\Response
+    * @return Response
     */
     public function edit($day)
     {
@@ -168,7 +165,7 @@ class EmployeeDaysController extends Controller
     *
     * @param  \Illuminate\Http\Request  $request
     * @param  \App\company  $company
-    * @return \Illuminate\Http\Response
+    * @return Response
     */
     public function update(Request $request,$day)
     {
@@ -184,7 +181,7 @@ class EmployeeDaysController extends Controller
             'days' => ['required','numeric', 'min:0',"max:{$d}", 'regex:/^\d+(\.\d{1,2})?$/'],
         ]);
         $days->days = $request->days;
-        $days->save(); 
+        $days->save();
 
         $kpi_req = DB::table('kpi_required')
             ->where('razdel_id','=',3)
@@ -204,7 +201,7 @@ class EmployeeDaysController extends Controller
         $ball->Calculate($user_id,$month,$year);
         $sum = new EmployeeSumma();
         $sum->CalculateSumma($user_id,$month,$year);
-       
+
         return redirect()->route('days.list',[$month,$year])->with('success','Ma\'lumotlar muvaffaqiyatli o\'zgartirildi');
     }
 
@@ -212,7 +209,7 @@ class EmployeeDaysController extends Controller
     * Remove the specified resource from storage.
     *
     * @param  \App\Company  $company
-    * @return \Illuminate\Http\Response
+    * @return Response
     */
     public function destroy(EmployeeDays $role)
     {

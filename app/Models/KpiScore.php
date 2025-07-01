@@ -19,6 +19,7 @@ class KpiScore extends Model
         'is_active',
         'scored_by',
         'scored_at',
+        'type'
     ];
 
     protected $casts = [

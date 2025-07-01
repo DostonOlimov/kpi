@@ -6,14 +6,12 @@ namespace App\Http\Controllers;
 use App\Models\Director;
 use App\Models\Kpi;
 use App\Models\KpiEmployees;
-use App\Models\Month;
 use App\Models\Task;
 use App\Models\TotalBall;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use App\Rules\DirectorKpiExist;
 
 class EmployeeProfileController extends Controller
 {
@@ -22,14 +20,19 @@ class EmployeeProfileController extends Controller
         $userId = Auth::id();
 
         // Get user's KPIs with tasks and scores
-        $kpis = KPI::with([
+        $kpis = Kpi::with([
             'children' => function($query) use ($userId) {
                 $query->with([
                     'tasks' => function($taskQuery) use ($userId) {
                         $taskQuery->where('user_id', $userId)
                             ->with(['comments.user']);
                     }
-                ]);
+                ])
+                    ->with([
+                        'kpi_scores' => function($taskQuery) use ($userId) {
+                            $taskQuery->where('user_id', $userId);
+                        }
+                    ]);
             }
         ])
             ->whereNull('parent_id')
@@ -38,26 +41,31 @@ class EmployeeProfileController extends Controller
         // Process KPIs to add user-specific data
         $kpis = $kpis->map(function($category) use ($userId) {
             $category->user_tasks_count = 0;
+            $category->total_ball = 0;
+            $category->max_ball = 0;
             $totalScore = 0;
             $scoredChildren = 0;
 
-            $category->children = $category->children->map(function($child) use ($userId, &$totalScore, &$scoredChildren) {
+            $category->children = $category->children->map(function($child) use ($category,$userId, &$totalScore, &$scoredChildren) {
                 // Get user's tasks for this child
                 $child->user_tasks = $child->tasks->where('user_id', $userId);
 
                 // Count user tasks for this category
                 $userTasksCount = $child->user_tasks->count();
 
-                if ($child->score) {
-                    $totalScore += $child->score;
+                $category->max_ball += $child->max_score;
+
+                if ($child_score = $child->kpi_scores->unique('kpi_id')->first()) {
+                    $totalScore += $child_score->score;
                     $scoredChildren++;
+                    $category->total_ball += $child_score->score;
                 }
 
                 return $child;
             });
 
             // Calculate average score for category
-            $category->average_score = $scoredChildren > 0 ? $totalScore / $scoredChildren : null;
+            $category->average_score = $category->max_ball > 0 ? 100 * ($category->total_ball / $category->max_ball) : null;
 
             return $category;
         });
@@ -65,33 +73,42 @@ class EmployeeProfileController extends Controller
         // Calculate user statistics
         $userStats = $this->calculateUserStats($userId);
 
-        // Get achievements
-        $achievements = $this->getUserAchievements($userId, $userStats);
-
-        return view('kpi_forms.list', compact('kpis', 'userStats', 'achievements'));
+        return view('kpi_forms.list', compact('kpis', 'userStats'));
     }
 
     private function calculateUserStats($userId)
     {
         $totalTasks = Task::where('user_id', $userId)->count();
         $reviewedTasks = Task::where('user_id', $userId)
-            ->whereHas('comments')
+            ->where('is_checked',true)
             ->count();
 
-        $scoredKPIs = KPI::whereHas('tasks', function($query) use ($userId) {
-            $query->where('user_id', $userId);
-        })
-//            ->whereNotNull('kpi_scores')
-            ->count();
+        $kpiTasks = Kpi::whereHas('tasks', function($taskQuery) use ($userId) {
+            $taskQuery->where('user_id', $userId);
+        })->count();
 
-        $averageScore =0;
+        $scoredKPIs = Kpi::whereHas('kpi_scores', function ($query) use ($userId) {
+            $query->where('user_id', $userId)
+                ->whereIn('type', [1, 2, 3]);
+        })->count();
 
-        $completionRate = $totalTasks > 0 ? ($reviewedTasks / $totalTasks) * 100 : 0;
+        $kpis = Kpi::with(['kpi_scores' => function ($query) use ($userId) {
+            $query->where('user_id', $userId)
+                ->whereIn('type', [1, 2, 3]);
+        }])->get();
+
+        $averageScore = $kpis->map(function ($kpi) {
+            $score = $kpi->kpi_scores->firstWhere('type', 3)
+                ?? $kpi->kpi_scores->firstWhere('type', 2)
+                ?? $kpi->kpi_scores->firstWhere('type', 1);
+
+            return $score?->score ?? 0;
+        })->sum();
+
+        $completionRate =  ($kpiTasks / 4) * 100;
         $reviewRate = $totalTasks > 0 ? ($reviewedTasks / $totalTasks) * 100 : 0;
 
-        $totalKPIs = KPI::whereHas('tasks', function($query) use ($userId) {
-            $query->where('user_id', $userId);
-        })->count();
+        $totalKPIs = 7;
 
         $scoringProgress = $totalKPIs > 0 ? ($scoredKPIs / $totalKPIs) * 100 : 0;
 
@@ -105,67 +122,6 @@ class EmployeeProfileController extends Controller
             'review_rate' => round($reviewRate, 1),
             'scoring_progress' => round($scoringProgress, 1)
         ];
-    }
-
-    private function getUserAchievements($userId, $userStats)
-    {
-        $achievements = [];
-
-        // First Task Achievement
-        if ($userStats['total_tasks'] >= 1) {
-            $achievements[] = [
-                'icon' => '🎯',
-                'title' => 'First Step',
-                'description' => 'Submitted your first task'
-            ];
-        }
-
-        // Task Master Achievement
-        if ($userStats['total_tasks'] >= 10) {
-            $achievements[] = [
-                'icon' => '📝',
-                'title' => 'Task Master',
-                'description' => 'Submitted 10+ tasks'
-            ];
-        }
-
-        // High Performer Achievement
-        if ($userStats['average_score'] >= 80) {
-            $achievements[] = [
-                'icon' => '⭐',
-                'title' => 'High Performer',
-                'description' => 'Maintained 80+ average score'
-            ];
-        }
-
-        // Perfect Score Achievement
-        if ($userStats['average_score'] >= 95) {
-            $achievements[] = [
-                'icon' => '🏆',
-                'title' => 'Excellence',
-                'description' => 'Achieved 95+ average score'
-            ];
-        }
-
-        // Consistent Performer Achievement
-        if ($userStats['completion_rate'] >= 90) {
-            $achievements[] = [
-                'icon' => '🎖️',
-                'title' => 'Consistent Performer',
-                'description' => '90%+ task completion rate'
-            ];
-        }
-
-        // Feedback Champion Achievement
-        if ($userStats['review_rate'] >= 80) {
-            $achievements[] = [
-                'icon' => '💬',
-                'title' => 'Feedback Champion',
-                'description' => '80%+ of tasks reviewed'
-            ];
-        }
-
-        return $achievements;
     }
 
     public function create(Request $request)

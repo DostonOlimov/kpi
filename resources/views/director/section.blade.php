@@ -5,20 +5,28 @@
     <div class="department-container">
         <div class="container-fluid">
             <!-- Department Header -->
-            <div class="department-header fade-in">
-                <h1 class="department-title">{{ $department->name }} Boshqaruv paneli</h1>
-                <p class="department-subtitle">Bo‘limingizning KPI ko‘rsatkichlari va jamoa faoliyatini kuzatib boring</p>
-                <div class="department-info">
-                    <div class="info-item">
-                        <i class="fa fa-users"></i> {{ $department->users->count() }} Jamoa a'zolari
-                    </div>
-                    <div class="info-item">
-                        <i class="fa fa-chart-bar"></i> {{ $departmentStats['total_kpis'] }} Faol topshiriqlar
-                    </div>
-                    <div class="info-item">
-                        <i class="fa fa-trophy"></i> Umumiy o‘rin: #{{ $departmentStats['department_rank'] }}
-                    </div>
-                </div>
+{{--            <div class="department-header fade-in">--}}
+{{--                <h1 class="department-title">{{ $department->name }} Boshqaruv paneli</h1>--}}
+{{--                <p class="department-subtitle">Bo‘limingizning KPI ko‘rsatkichlari va jamoa faoliyatini kuzatib boring</p>--}}
+{{--                <div class="department-info">--}}
+{{--                    <div class="info-item">--}}
+{{--                        <i class="fa fa-users"></i> {{ $department->users->count() }} Jamoa a'zolari--}}
+{{--                    </div>--}}
+{{--                    <div class="info-item">--}}
+{{--                        <i class="fa fa-chart-bar"></i> {{ $departmentStats['total_kpis'] }} Faol topshiriqlar--}}
+{{--                    </div>--}}
+{{--                    <div class="info-item">--}}
+{{--                        <i class="fa fa-trophy"></i> Umumiy o‘rin: #{{ $departmentStats['department_rank'] }}--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--            </div>--}}
+
+            <div class="page-header mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <i class="fa fa-line-chart mr-1"></i>&nbsp; Bo'lim ko'rsatkichlari
+                    </li>
+                </ol>
             </div>
 
             <!-- Department Statistics -->
@@ -53,19 +61,19 @@
             </div>
 
             <!-- Performance Chart Section -->
-            <div class="performance-chart-section fade-in">
-                <div class="chart-header">
-                    <h3 class="chart-title">Samaradorlik grafigi</h3>
-                    <div class="chart-filters">
-                        <button class="filter-btn active" data-period="week">Ushbu hafta</button>
-                        <button class="filter-btn" data-period="month">Ushbu oy</button>
-                        <button class="filter-btn" data-period="quarter">Ushbu chorak</button>
-                    </div>
-                </div>
-                <div id="performance-chart" style="height: 300px; background: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #6c757d;">
-                    <i class="fa fa-chart-line fa-2x me-2"></i> Samaradorlik grafigi shu yerda ko‘rsatiladi
-                </div>
-            </div>
+{{--            <div class="performance-chart-section fade-in">--}}
+{{--                <div class="chart-header">--}}
+{{--                    <h3 class="chart-title">Samaradorlik grafigi</h3>--}}
+{{--                    <div class="chart-filters">--}}
+{{--                        <button class="filter-btn active" data-period="week">Ushbu hafta</button>--}}
+{{--                        <button class="filter-btn" data-period="month">Ushbu oy</button>--}}
+{{--                        <button class="filter-btn" data-period="quarter">Ushbu chorak</button>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--                <div id="performance-chart" style="height: 300px; background: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #6c757d;">--}}
+{{--                    <i class="fa fa-chart-line fa-2x me-2"></i> Samaradorlik grafigi shu yerda ko‘rsatiladi--}}
+{{--                </div>--}}
+{{--            </div>--}}
 
             <!-- Users Performance Section -->
             <div class="users-performance-section slide-up">
@@ -136,7 +144,7 @@
                                                 {{ $child->department_tasks_count ?? 0 }} ta vazifa
                                             </div>
                                             <div class="child-score {{ $child->score ? '' : 'no-score' }}">
-                                                {{ $child->score ? number_format($child->score, 0) . '/100' : 'Baholanmagan' }}
+                                                {{ $child->score ? number_format($child->score->score, 0) . '/100' : 'Baholanmagan' }}
                                             </div>
                                         </div>
                                     </div>

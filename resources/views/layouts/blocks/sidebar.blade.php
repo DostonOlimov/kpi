@@ -130,19 +130,28 @@
         @endif
 
         @if(auth()->user()->role_id === \App\Models\User::ROLE_MANAGER || auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)
-            <li class="nav-title">Shaxsiy profil</li>
+            <li class="nav-title">Xodimlarni baholash</li>
+
+{{--            <li class="nav-item">--}}
+{{--                <a class="nav-link" href="{{ route('commission.list') }}">--}}
+{{--                    <svg class="nav-icon">--}}
+{{--                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-chart-line"></use>--}}
+{{--                    </svg>--}}
+{{--                    Xodimlar natijalari--}}
+{{--                </a>--}}
+{{--            </li>--}}
 
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('commission.list') }}">
+                <a class="nav-link" href="{{ route('commission.employee.list') }}">
                     <svg class="nav-icon">
-                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-chart-line"></use>
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-task"></use>
                     </svg>
-                    Xodimlar natijalari
+                    Xodimlarning topshiriqlari
                 </a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('days.select') }}">
+                <a class="nav-link" href="{{ route('days.list') }}">
                     <svg class="nav-icon">
                         <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-calendar"></use>
                     </svg>

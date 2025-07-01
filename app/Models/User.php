@@ -68,14 +68,18 @@ class User extends Authenticatable
         return $this->hasMany(TotalBall::class);
     }
 
-    public function employeeDays()
+    public function working_days()
     {
-        return $this->hasMany(EmployeeDays::class);
+        return $this->hasOne(EmployeeDays::class,'user_id','id');
     }
 
     public function tasks(): HasMany
     {
         return $this->hasMany(Task::class);
+    }
+    public function scores(): HasMany
+    {
+        return $this->hasMany(KpiScore::class);
     }
 
 }

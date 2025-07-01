@@ -5,10 +5,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Director;
 use App\Models\Kpi;
-use App\Models\KpiEmployees;
 use App\Models\KpiScore;
 use App\Models\Month;
-use App\Models\Razdel;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\WorkZone;
@@ -18,8 +16,6 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
-use App\Rules\MonthYearExists;
 
 
 class DirectorProfileController extends Controller
@@ -35,7 +31,7 @@ class DirectorProfileController extends Controller
 
     }
 
-    public function check_user(User $employee, Request $request)
+    public function check_user(int $type,User $employee, Request $request)
     {
         $kpis = Kpi::whereNull('parent_id')
             ->where('type',Kpi::TYPE_1)
@@ -46,12 +42,14 @@ class DirectorProfileController extends Controller
 
         $total = 0;
         $checked = 0;
+        $scored = 0;
 
         foreach ($kpis as $kpi) {
             foreach ($kpi->children as $child) {
                 $tasks = $child->tasks;
                 $total += $tasks->count();
                 $checked += $tasks->where('is_checked', true)->count();
+                $scored += $child->kpi_scores->where('user_id', $employee->id)->unique('kpi_id')->count();
             }
         }
 
@@ -62,6 +60,8 @@ class DirectorProfileController extends Controller
             'total' => $total,
             'checked' => $checked,
             'user' => $employee,
+            'scored' => $scored,
+            'type' => $type,
         ]);
     }
 
@@ -87,61 +87,6 @@ class DirectorProfileController extends Controller
         ]);
     }
 
-    public function store(Request $request)
-    {
-        $user = auth()->user();
-        $name = (string)$request->input('name');
-        $weight = (float)$request->input('weight');
-        $works = (int)$request->input('works');
-        $month = (int)$request->input('month_id');
-        $year = (int)$request->input('year');
-
-        $data = Director::where('user_id', '=', $user->id)
-            ->where('razdel', '=', 1)
-            ->where('status', '=', 'inactive')
-            ->where('month', '=',$month)
-            ->where('year','=',$year)
-            ->get();
-
-        $kpi_dir = new Director();
-        $kpi_dir->name = $name;
-        $kpi_dir->user_id = $user->id;
-        $kpi_dir->work_zone_id = $user->work_zone_id;
-        $kpi_dir->razdel = 1;
-        $kpi_dir->weight = $weight;
-        $kpi_dir->current_ball = 0;
-        $kpi_dir->works_count = $works;
-        $kpi_dir->month = $month;
-        $kpi_dir->status = 'inactive';
-        $kpi_dir-> band_id = count($data) + 1;
-        $kpi_dir->year = $year;
-        $kpi_dir->save();
-        return 'ok';
-    }
-
-    public function delete($id)
-    {
-        $data = DB::table('kpi_director');
-        $month_id = $data->find($id)->month;
-        $year = $data->find($id)->year;
-        $data->delete($id);
-        return redirect(route('director.add',[$month_id,$year]));
-    }
-
-    public function commit(Request $request)
-    {
-        $user = auth()->user();
-
-        $kpi_dir = new Director();
-        $kpi_dir->where('user_id', '=', $user->id)
-            ->where('razdel', '=', 1)
-            ->where('month','=',$request->month_id)
-            ->where('year','=',$request->year)
-            ->update([
-                'status' => 'active'
-            ]);
-        return 'ok';
-    }
  /**
      * @return \Illuminate\Http\Response
      */
@@ -311,7 +256,7 @@ class DirectorProfileController extends Controller
                     })->count();
 
                     if ($child->score) {
-                        $totalScore += $child->score;
+                        $totalScore += $child->score->score;
                         $scoredChildren++;
                     }
 

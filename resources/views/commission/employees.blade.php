@@ -7,7 +7,7 @@
         <div class="page-header mb-4">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">
-                    <i class="fa fa-users mr-1"></i>&nbsp; Bo'lim xodimlari ro'yxati
+                    <i class="fa fa-users mr-1"></i>&nbsp; Xodimlari ro'yxati
                 </li>
             </ol>
         </div>
@@ -269,7 +269,7 @@
                                         </td>
                                         <td class="px-4 py-3">
                                             <div class="action-buttons">
-                                                <a href="{!! url('director-profile/check-user' , ["type"=>1,"employee"=>$employee]) !!}"
+                                                <a href="{!! url('director-profile/check-user',["type"=>2,"employee"=>$employee]) !!}"
 {{--                                                <a href="{{ route('director.check_user', $employee) }}"--}}
                                                    class="btn btn-primary btn-sm me-1 action-btn"
                                                    data-bs-toggle="tooltip"

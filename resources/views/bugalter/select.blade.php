@@ -23,7 +23,7 @@
                             <div class="alert alert-success">{{ session('status') }}</div>
                         @endif
 
-                        <form action="{{ route('days.store2') }}" method="POST" enctype="multipart/form-data">
+                        <form action="#" method="POST" enctype="multipart/form-data">
                             @csrf
 
                             <div class="row">

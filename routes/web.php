@@ -60,22 +60,18 @@ Route::middleware('auth')->group(function () {
     Route::resource('roles', RoleController::class);
     Route::resource('works', WorkController::class);
     Route::resource('month', MonthController::class);
-    Route::resource('days', EmployeeDaysController::class);
+//    Route::resource('days', EmployeeDaysController::class);
     Route::group(['prefix' => 'days'], function () {
-        Route::get('/createday/{id}/{month_id}/{year}', [\App\Http\Controllers\EmployeeDaysController::class, 'createday'])->name('days.createday');
-        Route::get('/list/{month_id}/{year}', [\App\Http\Controllers\EmployeeDaysController::class, 'list'])->name('days.list');
-        Route::get('/select', [\App\Http\Controllers\EmployeeDaysController::class, 'select'])->name('days.select');
-        Route::post('/store2', [\App\Http\Controllers\EmployeeDaysController::class, 'store2'])->name('days.store2');
+        Route::post('/createday/{user}', [\App\Http\Controllers\EmployeeDaysController::class, 'createday'])->name('days.createday');
+        Route::get('/list', [\App\Http\Controllers\EmployeeDaysController::class, 'list'])->name('days.list');
     });
     Route::group(['prefix' => 'director-profile'], function () {
         Route::get('/list', [\App\Http\Controllers\DirectorProfileController::class, 'index'])->name('director.list');
-        Route::get('/check-user/{employee}', [\App\Http\Controllers\DirectorProfileController::class, 'check_user'])->name('director.check_user');
+        Route::get('/check-user/{type}/{employee}', [\App\Http\Controllers\DirectorProfileController::class, 'check_user'])->name('director.check_user');
         Route::get('/employees', [\App\Http\Controllers\DirectorProfileController::class, 'employees'])->name('director.employees');
         Route::get('/add', [\App\Http\Controllers\DirectorProfileController::class, 'add'])->name('director.add');
         Route::post('/store', [\App\Http\Controllers\DirectorProfileController::class, 'store'])->name('director.store');
         Route::post('/commit', [\App\Http\Controllers\DirectorProfileController::class, 'commit'])->name('director.commit');
-        Route::get('/delete/{id}', [\App\Http\Controllers\DirectorProfileController::class, 'delete'])->name('director.delete');
-
     });
     Route::group(['prefix' => 'commission-profile'], function () {
         Route::get('/list', [\App\Http\Controllers\KomissionController::class, 'index'])->name('commission.list');
@@ -96,6 +92,8 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/tasks/{task}/comment', [CommissionController::class, 'addComment'])->name('commission.task.comment');
         Route::post('/kpi/{child}/score', [CommissionController::class, 'scoreKPI'])->name('commission.kpi.score');
+
+        Route::get('/employee-list', [\App\Http\Controllers\CommissionController::class, 'employeeList'])->name('commission.employee.list');
     });
     Route::group(['prefix' => 'employee-profile'], function () {
         Route::get('/list', [\App\Http\Controllers\EmployeeProfileController::class, 'index'])->name('profile.list');

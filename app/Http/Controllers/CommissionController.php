@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\KPI;
 use App\Models\Task;
@@ -43,6 +44,9 @@ class CommissionController extends Controller
             'comment' => $request->comment
         ]);
 
+        $task->is_checked = true;
+        $task->save();
+
         return response()->json([
             'success' => true,
             'comment' => $comment->comment,
@@ -61,6 +65,7 @@ class CommissionController extends Controller
             'score' => "required|numeric|min:0|max:$maxScore",
             'feedback' => 'nullable|string|max:1000',
             'user_id' => 'required|exists:users,id',
+            'type' => 'required|integer'
         ]);
 
         KpiScore::updateOrCreate(
@@ -93,13 +98,13 @@ class CommissionController extends Controller
         ]);
     }
 
-    public function getStats()
+    public function employeeList()
     {
-        return response()->json([
-            'total_tasks' => Task::count(),
-            'pending_reviews' => Task::whereDoesntHave('comments')->count(),
-            'reviewed_tasks' => Task::whereHas('comments')->count(),
-            'scored_kpis' => KPI::whereNotNull('score')->count()
-        ]);
+        $user = auth()->user();
+        $users = User::with('tasks' )
+            ->whereNotIn('role_id',[User::ROLE_ADMIN,User::ROLE_MANAGER])
+            ->get();
+        return view('commission.employees', ["users" => $users]);
     }
+
 }
