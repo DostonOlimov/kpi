@@ -37,7 +37,8 @@ class User extends Authenticatable
         'lavozimi',
         'username',
         'password',
-        'created_at'
+        'created_at',
+        'photo'
     ];
     /**
      * The attributes that should be hidden for serialization.

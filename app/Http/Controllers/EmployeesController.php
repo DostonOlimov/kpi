@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use app\Models\User;
 use App\Models\Role;
@@ -44,35 +45,39 @@ class EmployeesController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255',],
-            'role_id' => ['required','integer'],
-            'salary' => ['required','numeric', 'min:100000','max:99999999.999', 'regex:/^\d+(\.\d{1,2})?$/'],
-            'work_zone_id' => ['integer'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'father_name' => ['nullable', 'string', 'max:255'],
+            'role_id' => ['required', 'integer', 'exists:roles,id'],
+            'work_zone_id' => ['nullable', 'integer', 'exists:work_zones,id'],
             'username' => ['required', 'string', 'max:255', 'unique:users'],
-            'lavozimi' => ['string','max:255'],
-            'password' => ['required', ],//Rules\Password::defaults()
+            'lavozimi' => ['nullable', 'string', 'max:255'],
+            'salary' => ['required', 'numeric', 'min:100000', 'max:99999999.99', 'regex:/^\d+(\.\d{1,2})?$/'],
+            'password' => ['required', 'string', 'min:6'],
+            'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
         ]);
-        $user = new User();
-        $user->first_name = $request->first_name;
-        $user->last_name = $request->last_name;
-        $user->father_name = $request->father_name;
-        $user->role_id = $request->role_id;
-        $user->lavozimi = $request->lavozimi;
-        $user->work_zone_id = $request->work_zone_id;
-        $user->username = $request->username;
-        $user->salary = $request->salary;
-        $user->password = Hash::make($request->password);
+
+        $user = new User($validated);
+        $user->password = Hash::make($validated['password']);
+
+        if ($request->hasFile('photo')) {
+            $filename = time() . '_' . uniqid() . '.' . $request->photo->extension();
+            $request->photo->storeAs('public/users', $filename);
+            $user->photo = $filename;
+        }
+
         $user->save();
-        $salary = Salaries::create([
-            'user_id'  =>  $user->id,
-            'salary' => $request->salary,
-            'from_date' => date('Y-m-d '),
+
+        Salaries::create([
+            'user_id' => $user->id,
+            'salary' => $validated['salary'],
+            'from_date' => now()->format('Y-m-d'),
         ]);
-        return redirect()->route('employees.list')
-            ->with('message','Foydalanuvchi muvaffaqiyatli yaratildi.');
+
+        return redirect()->route('employees.list')->with('message', 'Foydalanuvchi muvaffaqiyatli yaratildi.');
     }
+
     /**
      * Display the specified resource.
      *
@@ -115,13 +120,14 @@ class EmployeesController extends Controller
         $old_salary = $user->salary;
         $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255',],
+            'last_name' => ['required', 'string', 'max:255'],
             'role_id' => ['integer'],
             'work_zone_id' => ['integer'],
-            'salary' => ['required','numeric', 'min:1','max:99999999.999', 'regex:/^\d+(\.\d{1,2})?$/'],
-            'username' => ['required', 'string', 'max:255',],
-            'password' => ['required', ],//Rules\Password::defaults()
-            'lavozimi' => ['string','max:255'],
+            'salary' => ['required', 'numeric', 'min:1', 'max:99999999.999', 'regex:/^\d+(\.\d{1,2})?$/'],
+            'username' => ['required', 'string', 'max:255'],
+            'password' => ['required'], // Optional: use 'nullable'
+            'lavozimi' => ['nullable', 'string', 'max:255'],
+            'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'], // <= add this
         ]);
         $user -> update([
             'first_name' => $request->first_name,
@@ -138,6 +144,16 @@ class EmployeesController extends Controller
                 'password' => Hash::make($request->password),
             ]);
         }
+        if ($request->hasFile('photo')) {
+            // Remove old photo if exists
+            if ($user->photo && Storage::disk('public')->exists($user->photo)) {
+                Storage::disk('public')->delete($user->photo);
+            }
+
+            $path = $request->file('photo')->store('users', 'public');
+            $user->update(['photo' => $path]);
+        }
+
         if($old_salary != $request->salary) {
             $salary = Salaries::where('user_id', '=', $id)
                 ->where('to_date', '=', '9999-01-01')

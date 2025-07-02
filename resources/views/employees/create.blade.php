@@ -37,57 +37,58 @@
                         <form action="{{ route('employees.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="row">
-                                <div class="col-xs-12 col-sm-12 col-md-6">
+                               <div class="col-md-6">
                                     <div class="form-group">
-                                        <strong>User Name:</strong>
-                                        <input type="text" name="username" class="form-control" >
+                                        <label class="form-label">User Name:</label>
+                                        <input type="text" name="username" class="form-control" value="{{ old('username') }}">
                                         @error('username')
                                         <div class="alert alert-danger mt-1 mb-1">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-12 col-md-6">
+                               <div class="col-md-6">
                                     <div class="form-group">
-                                        <strong>Parol:</strong>
-                                        <input type="text" name="password" class="form-control" >
+                                        <label class="form-label">Parol:</label>
+                                        <input type="text" name="password" class="form-control" value="{{ old('password') }}">
                                         @error('password')
                                         <div class="alert alert-danger mt-1 mb-1">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-12 col-md-4">
+                                <div class="col-md-6">
                                     <div class="form-group">
-                                        <strong>Ismi:</strong>
-                                        <input type="text" name="first_name" class="form-control" >
+                                        <label class="form-label">Ismi:</label>
+                                        <input type="text" name="first_name" class="form-control" value="{{ old('first_name') }}">
                                         @error('first_name')
                                         <div class="alert alert-danger mt-1 mb-1">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-12 col-md-4">
+                                <div class="col-md-6">
                                     <div class="form-group">
-                                        <strong>Familiyasi:</strong>
-                                        <input type="text" name="last_name" class="form-control" >
+                                        <label class="form-label">Familiyasi:</label>
+                                        <input type="text" name="last_name" class="form-control" value="{{ old('last_name') }}">
                                         @error('last_name')
                                         <div class="alert alert-danger mt-1 mb-1">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-12 col-md-4">
+                                <div class="col-md-6">
                                     <div class="form-group">
-                                        <strong>Sharifi:</strong>
-                                        <input type="text" name="father_name" class="form-control" >
+                                        <label class="form-label">Sharifi:</label>
+                                        <input type="text" name="father_name" class="form-control" value="{{ old('father_name') }}">
                                         @error('father_name')
                                         <div class="alert alert-danger mt-1 mb-1">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-12 col-md-6">
+                               <div class="col-md-6">
                                     <div class="form-group">
-                                        <strong>Roli:</strong>
+                                        <label class="form-label">Roli:</label>
                                         <select name="role_id" class="form-control" id="" >
+                                            <option value="">Rolni tanlang...</option>
                                             @foreach($roles as $role)
-                                                <option value="{{$role->id}}">{{$role->name}}</option>
+                                                <option @if(old('role_id') == $role->id) selected @endif value="{{$role->id}}">{{$role->name}}</option>
                                             @endforeach
                                         </select>
                                         @error('role_id')
@@ -95,12 +96,13 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-12 col-md-6">
+                               <div class="col-md-6">
                                     <div class="form-group">
-                                        <strong>Ish joyi:</strong>
+                                        <label class="form-label">Ish joyi:</label>
                                         <select name="work_zone_id" class="form-control" id="work_zone_id">
+                                            <option value="">Bo'limni tanlang...</option>
                                             @foreach($works as $work)
-                                                <option value="{{$work->id}}">{{$work->name}}</option>
+                                                <option @if(old('work_zone_id') == $work->id) selected @endif value="{{$work->id}}">{{$work->name}}</option>
                                             @endforeach
                                         </select>
                                         @error('work_zone_id')
@@ -108,20 +110,29 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-12 col-md-6">
+                               <div class="col-md-6">
                                     <div class="form-group">
-                                        <strong>Lavozimi:</strong>
-                                        <input type="text" name="lavozimi" class="form-control" >
+                                        <label class="form-label">Lavozimi:</label>
+                                        <input type="text" name="lavozimi" class="form-control" value="{{ old('lavozimi') }}">
                                         @error('lavozimi')
                                         <div class="alert alert-danger mt-1 mb-1">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-12 col-md-6">
+                               <div class="col-md-6">
                                     <div class="form-group">
-                                        <strong>Oylik maoshi:</strong>
-                                        <input type="number" step="0.01" name="salary" class="form-control"placeholder="so'm" >
+                                        <label class="form-label">Oylik maoshi:</label>
+                                        <input type="number" step="0.01" name="salary" class="form-control" placeholder="so'm" value="{{ old('salary') }}" >
                                         @error('salary')
+                                        <div class="alert alert-danger mt-1 mb-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                               <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Foydalanuvchi rasmi (foto):</label>
+                                        <input type="file" name="photo" class="form-control">
+                                        @error('photo')
                                         <div class="alert alert-danger mt-1 mb-1">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -142,15 +153,4 @@
             </div>
         </div>
     </div>
-<style>
-        .forms-sample input{
-            font-size: 16px;
-            font-weight: bold;
-        }
-        .forms-sample select{
-            font-size: 16px;
-            font-weight: bold;
-        }
-    </style>
-
 @endsection
