@@ -172,7 +172,7 @@
                                 <tbody class="table-group-divider">
                                 @foreach ($users as $index => $employee)
                                     @php
-                                        $totalTasks = 4;
+                                        $totalTasks = 7;
                                         $checkedTasks = $employee->scores->unique('kpi_id')->count();
                                         $pendingTasks = $totalTasks - $checkedTasks;
                                         $completionPercentage = $totalTasks > 0 ? round(($checkedTasks / $totalTasks) * 100) : 0;

@@ -27,9 +27,9 @@ class KpiScore extends Model
         'updated_at' => 'datetime',
     ];
 
-    public function task()
+    public function kpis()
     {
-        return $this->belongsTo(Task::class);
+        return $this->belongsTo(Kpi::class);
     }
 
     public function user()

@@ -1,6 +1,6 @@
 <div class="sidebar sidebar-dark sidebar-fixed " id="sidebar">
     <div class="sidebar-brand d-none d-md-flex justify-content-around">
-        <img style="width:40px;" src="/assets/images/logo.png">
+        <img style="width:40px;" src="/assets/images/logo4.png">
         <h2 style="font-size: 20px; color: white; margin: 6px 22px 5px 0; !important;">ECOEKESPERTIZA</h2>
     </div>
     <ul class="sidebar-nav" data-coreui="navigation" data-simplebar="">
@@ -98,36 +98,36 @@
                 </a>
             </li>
         @endif
-        @if(auth()->user()->role_id === \App\Models\User::ROLE_ACCOUNTANT || auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)
-            <li class="nav-title">Xodimlar natijalari</li>
+{{--        @if(auth()->user()->role_id === \App\Models\User::ROLE_ACCOUNTANT || auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)--}}
+{{--            <li class="nav-title">Xodimlar natijalari</li>--}}
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('bugalter.list') }}">
-                    <svg class="nav-icon">
-                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-spreadsheet"></use>
-                    </svg>
-                    Taqsimot holatini ko'rish
-                </a>
-            </li>
+{{--            <li class="nav-item">--}}
+{{--                <a class="nav-link" href="{{ route('bugalter.list') }}">--}}
+{{--                    <svg class="nav-icon">--}}
+{{--                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-spreadsheet"></use>--}}
+{{--                    </svg>--}}
+{{--                    Taqsimot holatini ko'rish--}}
+{{--                </a>--}}
+{{--            </li>--}}
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('bugalter.add') }}">
-                    <svg class="nav-icon">
-                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-dollar"></use>
-                    </svg>
-                    Summani kiritish
-                </a>
-            </li>
+{{--            <li class="nav-item">--}}
+{{--                <a class="nav-link" href="{{ route('bugalter.add') }}">--}}
+{{--                    <svg class="nav-icon">--}}
+{{--                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-dollar"></use>--}}
+{{--                    </svg>--}}
+{{--                    Summani kiritish--}}
+{{--                </a>--}}
+{{--            </li>--}}
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('bugalter.check') }}">
-                    <svg class="nav-icon">
-                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-check-circle"></use>
-                    </svg>
-                    Holatni tekshirish
-                </a>
-            </li>
-        @endif
+{{--            <li class="nav-item">--}}
+{{--                <a class="nav-link" href="{{ route('bugalter.check') }}">--}}
+{{--                    <svg class="nav-icon">--}}
+{{--                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-check-circle"></use>--}}
+{{--                    </svg>--}}
+{{--                    Holatni tekshirish--}}
+{{--                </a>--}}
+{{--            </li>--}}
+{{--        @endif--}}
 
         @if(auth()->user()->role_id === \App\Models\User::ROLE_MANAGER || auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)
             <li class="nav-title">Xodimlarni baholash</li>
@@ -160,45 +160,54 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('commission.section') }}">
+                <a class="nav-link" href="{{ route('days.behavior') }}">
                     <svg class="nav-icon">
-                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-building"></use>
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-people"></use>
                     </svg>
-                    Bo'limlar ro'yxati
+                    Odob axloq normalari
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('days.activity') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-lightbulb"></use>
+                    </svg>
+                    Tashabbuskorlik ko'rsatkichlari
+                </a>
+            </li>
+
         @endif
 
-        @if(auth()->user()->role_id === 7 || auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)
-            <li class="nav-title">Shaxsiy profil</li>
+{{--        @if(auth()->user()->role_id === 7 || auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)--}}
+{{--            <li class="nav-title">Shaxsiy profil</li>--}}
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('commission.section') }}">
-                    <svg class="nav-icon">
-                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-building"></use>
-                    </svg>
-                    Bo'limlar ro'yxati
-                </a>
-            </li>
+{{--            <li class="nav-item">--}}
+{{--                <a class="nav-link" href="{{ route('commission.section') }}">--}}
+{{--                    <svg class="nav-icon">--}}
+{{--                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-building"></use>--}}
+{{--                    </svg>--}}
+{{--                    Bo'limlar ro'yxati--}}
+{{--                </a>--}}
+{{--            </li>--}}
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('commission.list') }}">
-                    <svg class="nav-icon">
-                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-user"></use>
-                    </svg>
-                    Xodimlar ro'yxati
-                </a>
-            </li>
+{{--            <li class="nav-item">--}}
+{{--                <a class="nav-link" href="{{ route('commission.list') }}">--}}
+{{--                    <svg class="nav-icon">--}}
+{{--                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-user"></use>--}}
+{{--                    </svg>--}}
+{{--                    Xodimlar ro'yxati--}}
+{{--                </a>--}}
+{{--            </li>--}}
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('bugalter.list') }}">
-                    <svg class="nav-icon">
-                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>
-                    </svg>
-                    Oylik hisobotlar
-                </a>
-            </li>
-        @endif
+{{--            <li class="nav-item">--}}
+{{--                <a class="nav-link" href="{{ route('bugalter.list') }}">--}}
+{{--                    <svg class="nav-icon">--}}
+{{--                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>--}}
+{{--                    </svg>--}}
+{{--                    Oylik hisobotlar--}}
+{{--                </a>--}}
+{{--            </li>--}}
+{{--        @endif--}}
 
         <li class="nav-item"><a class="nav-link"></a></li>
     </ul>

@@ -1,14 +1,13 @@
 <?php
 
 use App\Http\Controllers\CommissionController;
-use App\Http\Controllers\KomissionController;
+use App\Http\Controllers\EmployeeDaysController;
 use App\Http\Controllers\KpiController;
 use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\WorkController;
 use App\Http\Controllers\MonthController;
-use App\Http\Controllers\EmployeeDaysController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -62,8 +61,14 @@ Route::middleware('auth')->group(function () {
     Route::resource('month', MonthController::class);
 //    Route::resource('days', EmployeeDaysController::class);
     Route::group(['prefix' => 'days'], function () {
-        Route::post('/createday/{user}', [\App\Http\Controllers\EmployeeDaysController::class, 'createday'])->name('days.createday');
-        Route::get('/list', [\App\Http\Controllers\EmployeeDaysController::class, 'list'])->name('days.list');
+        Route::post('/createday/{user}', [EmployeeDaysController::class, 'createday'])->name('days.createday');
+        Route::get('/list', [EmployeeDaysController::class, 'list'])->name('days.list');
+
+        Route::get('/behavior-list', [EmployeeDaysController::class, 'behavior'])->name('days.behavior');
+        Route::post('/create-behavior/{user}', [EmployeeDaysController::class, 'createBehavior'])->name('days.create.behavior');
+
+        Route::get('/activity-list', [EmployeeDaysController::class, 'activity'])->name('days.activity');
+        Route::post('/create-activity/{user}', [EmployeeDaysController::class, 'createActivity'])->name('days.create.activity');
     });
     Route::group(['prefix' => 'director-profile'], function () {
         Route::get('/list', [\App\Http\Controllers\DirectorProfileController::class, 'index'])->name('director.list');
