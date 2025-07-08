@@ -8,6 +8,7 @@ use App\Models\Kpi;
 use App\Models\KpiEmployees;
 use App\Models\Task;
 use App\Models\TotalBall;
+use App\Models\UserKpi;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,21 +23,27 @@ class EmployeeProfileController extends Controller
         // Get user's KPIs with tasks and scores
         $kpis = Kpi::with([
             'children' => function($query) use ($userId) {
-                $query->with([
-                    'tasks' => function($taskQuery) use ($userId) {
-                        $taskQuery->where('user_id', $userId)
-                            ->with(['comments.user']);
-                    }
-                ])
-                    ->with([
-                        'kpi_scores' => function($taskQuery) use ($userId) {
-                            $taskQuery->where('user_id', $userId);
-                        }
-                    ]);
+            $query->with([
+                'tasks' => function($taskQuery) use ($userId) {
+                $taskQuery->where('user_id', $userId)
+                    ->with(['comments.user']);
+                },
+                'kpi_scores' => function($scoreQuery) use ($userId) {
+                $scoreQuery->where('user_id', $userId);
+                }
+            ]);
             }
         ])
-            ->whereNull('parent_id')
-            ->get();
+        ->whereNull('parent_id')
+        ->whereHas('children', function($childQuery) use ($userId) {
+            $childQuery->whereHas('tasks', function($taskQuery) use ($userId) {
+            $taskQuery->where('user_id', $userId);
+            })
+            ->orWhereHas('kpi_scores', function($scoreQuery) use ($userId) {
+            $scoreQuery->where('user_id', $userId);
+            });
+        })
+        ->get();
 
         // Process KPIs to add user-specific data
         $kpis = $kpis->map(function($category) use ($userId) {
@@ -126,15 +133,22 @@ class EmployeeProfileController extends Controller
 
     public function create(Request $request)
     {
-        $kpis = Kpi::whereNull('parent_id')
-        ->where('type',Kpi::TYPE_1)
-        ->with(['children.tasks' => function ($query) {
-                $query->where('user_id', auth()->id());
-            }])
-        ->get();
+        $userId = auth()->id();
+
+        // Get KPIs from user_kpis (KpiEmployees) for the current user
+        $userKpis = UserKpi::where('user_id', $userId)
+            ->with(['kpi.parent', 'kpi.children.tasks'])
+            ->get();
+
+        // Extract the related KPIs
+        $kpis = $userKpis->pluck('kpi')->filter();
+
+        // Optionally, get unique parent KPIs
+        $parentKpis = $kpis->pluck('parent')->filter()->unique('id')->values();
 
         return view('kpi_forms.create', [
             'kpis' => $kpis,
+            'parent_kpis' => $parentKpis,
             'month' => session('month') ?? date('m'),
             'year' => session('year') ?? date('Y'),
         ]);

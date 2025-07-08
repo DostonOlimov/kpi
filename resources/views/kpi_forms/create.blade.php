@@ -27,147 +27,151 @@
                             @endif
 
                             <!-- KPI Kategoriyalar -->
-                            @foreach ($kpis as $category)
+                            @foreach ($parent_kpis as $category)
                                 <h4 class="category-title">{{ $category->name }}</h4>
 
                                 @foreach ($category->children as $child)
-                                    @php
-                                        $score =  $userScore = $child->kpi_scores
-                                                ->where('user_id',  auth()->id())
-                                                ->first();
+                                    @if($kpis->contains('id', $child->id))
+                                        @php
+                                            $score =  $userScore = $child->kpi_scores
+                                                    ->where('user_id',  auth()->id())
+                                                    ->first();
 
-                                    @endphp
-                                    <div class="kpi-child-card fade-in">
-                                        <!-- Kartochka sarlavhasi -->
-                                        <div class="kpi-child-header">
-                                            <h5>{{ $child->name }}</h5>
-                                        </div>
+                                        @endphp
+                                        <div class="kpi-child-card fade-in">
+                                            <!-- Kartochka sarlavhasi -->
+                                            <div class="kpi-child-header">
+                                                <h5>{{ $child->name }}</h5>
+                                            </div>
 
-                                        <!-- Kartochka tanasi -->
-                                        <div class="kpi-child-body" data-child-id="{{ $child->id }}">
-                                            <!-- Vazifalar bo‘limi -->
-                                            <h6 class="task-section-title">Sizning vazifalaringiz</h6>
+                                            <!-- Kartochka tanasi -->
+                                            <div class="kpi-child-body" data-child-id="{{ $child->id }}">
+                                                <!-- Vazifalar bo‘limi -->
+                                                <h6 class="task-section-title">Sizning bajargan vazifalaringiz</h6>
 
-                                            <div class="task-list">
-                                                @forelse ($child->tasks->where('user_id', auth()->id()) as $task)
-                                                    <div class="task-item" data-task-id="{{ $task->id }}">
-                                                        <div class="task-header">
-                                                            <div class="task-content flex-grow-1">
-                                                                <h6>{{ $task->name }}</h6>
-                                                                <p>{{ $task->description }}</p>
-                                                                @if ($task->file_path)
-                                                                    <a href="{{ asset('storage/' . $task->file_path) }}"
-                                                                       target="_blank"
-                                                                       class="task-file-link">
-                                                                        <i class="fa fa-paperclip"></i> Ilovani ko‘rish
-                                                                    </a>
+                                                <div class="task-list">
+                                                    @forelse ($child->tasks->where('user_id', auth()->id()) as $task)
+                                                        <div class="task-item" data-task-id="{{ $task->id }}">
+                                                            <div class="task-header">
+                                                                <div class="task-content flex-grow-1">
+                                                                    <h6>{{ $task->name }}</h6>
+                                                                    <p>{{ $task->description }}</p>
+                                                                    @if ($task->file_path)
+                                                                        <a href="{{ asset('storage/' . $task->file_path) }}"
+                                                                        target="_blank"
+                                                                        class="task-file-link">
+                                                                            <i class="fa fa-paperclip"></i> Ilovani ko‘rish
+                                                                        </a>
+                                                                    @endif
+                                                                </div>
+
+                                                                @if(!$score)
+                                                                    <div class="task-actions">
+                                                                        <button class="btn btn-sm btn-modern btn-edit-modern edit-task-btn">
+                                                                            <i class="fa fa-pencil-alt"></i> Tahrirlash
+                                                                        </button>
+                                                                        <button class="btn btn-sm btn-modern btn-delete-modern delete-task">
+                                                                            <i class="fa fa-trash"></i> O‘chirish
+                                                                        </button>
+                                                                    </div>
                                                                 @endif
                                                             </div>
 
-                                                            @if(!$score)
-                                                                <div class="task-actions">
-                                                                    <button class="btn btn-sm btn-modern btn-edit-modern edit-task-btn">
-                                                                        <i class="fa fa-pencil-alt"></i> Tahrirlash
+                                                            <!-- Tahrirlash formasi (standart holatda yashirin) -->
+                                                            <form class="edit-task-form d-none" enctype="multipart/form-data">
+                                                                @csrf
+                                                                <input type="hidden" name="task_id" value="{{ $task->id }}">
+
+                                                                <div class="mb-3">
+                                                                    <label class="form-label fw-semibold">Vazifa sarlavhasi</label>
+                                                                    <input type="text"
+                                                                        name="title"
+                                                                        class="form-control form-control-modern"
+                                                                        value="{{ $task->name }}"
+                                                                        required>
+                                                                </div>
+
+                                                                <div class="mb-3">
+                                                                    <label class="form-label fw-semibold">Tavsif</label>
+                                                                    <textarea name="description"
+                                                                            class="form-control form-control-modern"
+                                                                            rows="3"
+                                                                            required>{{ $task->description }}</textarea>
+                                                                </div>
+
+                                                                <div class="mb-3">
+                                                                    <label class="form-label fw-semibold">Fayl ilovasi</label>
+                                                                    <input type="file"
+                                                                        name="file"
+                                                                        class="form-control form-control-modern">
+                                                                </div>
+
+                                                                <div class="d-flex gap-2">
+                                                                    <button type="submit" class="btn btn-success btn-modern">
+                                                                        <i class="fa fa-save"></i> Saqlash
                                                                     </button>
-                                                                    <button class="btn btn-sm btn-modern btn-delete-modern delete-task">
-                                                                        <i class="fa fa-trash"></i> O‘chirish
+                                                                    <button type="button" class="btn btn-secondary btn-modern cancel-edit">
+                                                                        <i class="fa fa-times"></i> Bekor qilish
                                                                     </button>
                                                                 </div>
-                                                            @endif
+                                                            </form>
                                                         </div>
+                                                    @empty
+                                                        <div class="empty-state">
+                                                            <div class="empty-state-icon"><i class="fa fa-sticky-note"></i></div>
+                                                            <p>Hali hech qanday vazifa qo‘shilmagan. Quyida birinchi vazifangizni yarating!</p>
+                                                        </div>
+                                                    @endforelse
+                                                </div>
 
-                                                        <!-- Tahrirlash formasi (standart holatda yashirin) -->
-                                                        <form class="edit-task-form d-none" enctype="multipart/form-data">
-                                                            @csrf
-                                                            <input type="hidden" name="task_id" value="{{ $task->id }}">
+                                                @if(!$score)
+                                                    @if($child->tasks->count() == 0)
+                                                        <!-- Yangi vazifa qo‘shish -->
+                                                        <div class="task-form-section" id="add-task-form">
+                                                            <h6 class="task-form-title">Yangi vazifa qo‘shish</h6>
 
-                                                            <div class="mb-3">
-                                                                <label class="form-label fw-semibold">Vazifa sarlavhasi</label>
-                                                                <input type="text"
-                                                                       name="title"
-                                                                       class="form-control form-control-modern"
-                                                                       value="{{ $task->name }}"
-                                                                       required>
-                                                            </div>
+                                                            <form class="task-form" enctype="multipart/form-data">
+                                                                @csrf
+                                                                <input type="hidden" name="child_id" value="{{ $child->id }}">
 
-                                                            <div class="mb-3">
-                                                                <label class="form-label fw-semibold">Tavsif</label>
-                                                                <textarea name="description"
-                                                                          class="form-control form-control-modern"
-                                                                          rows="3"
-                                                                          required>{{ $task->description }}</textarea>
-                                                            </div>
+                                                                <div class="mb-3">
+                                                                    <input type="text"
+                                                                        name="title"
+                                                                        class="form-control form-control-modern"
+                                                                        placeholder="Vazifa sarlavhasini kiriting..."
+                                                                        required>
+                                                                </div>
 
-                                                            <div class="mb-3">
-                                                                <label class="form-label fw-semibold">Fayl ilovasi</label>
-                                                                <input type="file"
-                                                                       name="file"
-                                                                       class="form-control form-control-modern">
-                                                            </div>
+                                                                <div class="mb-3">
+                                        <textarea name="description"
+                                                class="form-control form-control-modern"
+                                                rows="3"
+                                                placeholder="Vazifa haqida yozing..."
+                                                required></textarea>
+                                                                </div>
 
-                                                            <div class="d-flex gap-2">
-                                                                <button type="submit" class="btn btn-success btn-modern">
-                                                                    <i class="fa fa-save"></i> Saqlash
+                                                                <div class="mb-3">
+                                                                    <input type="file"
+                                                                        name="file"
+                                                                        class="form-control form-control-modern">
+                                                                    <small class="form-text text-muted">Ixtiyoriy: vazifaga fayl biriktiring</small>
+                                                                </div>
+
+                                                                <button type="submit" class="btn btn-modern btn-add-modern">
+                                                                    <i class="fa fa-plus"></i> Vazifa qo‘shish
                                                                 </button>
-                                                                <button type="button" class="btn btn-secondary btn-modern cancel-edit">
-                                                                    <i class="fa fa-times"></i> Bekor qilish
-                                                                </button>
-                                                            </div>
-                                                        </form>
+                                                            </form>
+                                                        </div>
+                                                    @endif
+                                                @else
+                                                    <div class="current-score mt-2">
+                                                        <span>Joriy baho:</span>
+                                                        <strong>{{ round($score->score) }}/{{ $child->max_score }}</strong>
                                                     </div>
-                                                @empty
-                                                    <div class="empty-state">
-                                                        <div class="empty-state-icon"><i class="fa fa-sticky-note"></i></div>
-                                                        <p>Hali hech qanday vazifa qo‘shilmagan. Quyida birinchi vazifangizni yarating!</p>
-                                                    </div>
-                                                @endforelse
+                                                @endif
                                             </div>
-
-                                            @if(!$score)
-                                                <!-- Yangi vazifa qo‘shish -->
-                                                <div class="task-form-section">
-                                                    <h6 class="task-form-title">Yangi vazifa qo‘shish</h6>
-
-                                                    <form class="task-form" enctype="multipart/form-data">
-                                                        @csrf
-                                                        <input type="hidden" name="child_id" value="{{ $child->id }}">
-
-                                                        <div class="mb-3">
-                                                            <input type="text"
-                                                                   name="title"
-                                                                   class="form-control form-control-modern"
-                                                                   placeholder="Vazifa sarlavhasini kiriting..."
-                                                                   required>
-                                                        </div>
-
-                                                        <div class="mb-3">
-                                <textarea name="description"
-                                          class="form-control form-control-modern"
-                                          rows="3"
-                                          placeholder="Vazifa haqida yozing..."
-                                          required></textarea>
-                                                        </div>
-
-                                                        <div class="mb-3">
-                                                            <input type="file"
-                                                                   name="file"
-                                                                   class="form-control form-control-modern">
-                                                            <small class="form-text text-muted">Ixtiyoriy: vazifaga fayl biriktiring</small>
-                                                        </div>
-
-                                                        <button type="submit" class="btn btn-modern btn-add-modern">
-                                                            <i class="fa fa-plus"></i> Vazifa qo‘shish
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            @else
-                                                <div class="current-score mt-2">
-                                                    <span>Joriy baho:</span>
-                                                    <strong>{{ round($score->score) }}/{{ $child->max_score }}</strong>
-                                                </div>
-                                            @endif
                                         </div>
-                                    </div>
+                                    @endif
                                 @endforeach
                             @endforeach
 
@@ -202,6 +206,7 @@
                 contentType: false,
                 success: function (task) {
                     taskList.find('.empty-state').remove();
+
 
                     let taskHtml = `
                     <div class="task-item fade-in" data-task-id="${task.id}">

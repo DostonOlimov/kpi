@@ -14,7 +14,7 @@ class WorkController extends Controller
      */
     public function index(): View
     {
-        $works = WorkZone::orderBy('id', 'asc')->paginate(10);
+        $works = WorkZone::orderBy('id', 'asc')->paginate(25);
         return view('works.index', compact('works'));
     }
 

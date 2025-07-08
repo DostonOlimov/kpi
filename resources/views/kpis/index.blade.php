@@ -34,6 +34,9 @@
                         @if ($message = Session::get('success'))
                             <div class="alert alert-success">{{ $message }}</div>
                         @endif
+                        @if ($error = Session::get('error'))
+                            <div class="alert alert-danger">{{ $error }}</div>
+                        @endif
 
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped mt-3">

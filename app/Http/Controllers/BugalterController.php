@@ -14,13 +14,8 @@ class BugalterController extends Controller
 
     public function index(Request $request)
     {
-        $user = auth()->user();
-        $month_id = Month::requestMonth($request);
-        $year = Month::requestYear($request);
-
+        $month_id = session('month') ?? (int)date('m');
         $data = EmployeeSumma::with('users')
-            ->where('month','=',$month_id)
-            ->where('year','=',$year)
             ->get();
             $work_day = Month::where('month_id','=',$month_id)->first()->days ?? 21;
             $salary = [];
@@ -41,12 +36,12 @@ class BugalterController extends Controller
                 array_push($new_soliq, $item->new_ustama * 0.25);
                 array_push($new_total, $item->new_total);
             }
+
             return view('bugalter.list', compact('data','work_day','month_id','salary','ustama','soliq','jami','active','new_soliq','new_ustama','new_total'));
     }
 
     public function add()
     {
-        $user = auth()->user();
         $month = [
             'Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun', 'Iyul', 'Avgust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'
         ];
@@ -56,8 +51,6 @@ class BugalterController extends Controller
     }
     public function calculate($id)
     {
-        $user = auth()->user();
-      //  var_dump($id);die();
         $summa = DB::table('employees_summa')->find($id);
         $work_day = DB::table('months')
             ->where('month_id', '=', $summa->month)
@@ -82,7 +75,6 @@ class BugalterController extends Controller
     }
     public function edit($id)
     {
-        $user = auth()->user();
         $data = DB::table('bugalter_summa')
             ->where('id', '=', $id)
             ->first();

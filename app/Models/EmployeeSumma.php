@@ -77,4 +77,16 @@ class EmployeeSumma extends Model
     {
         return $this->belongsTo(User::class,'user_id','id');
     }
+    protected static function boot()
+    {
+        parent::boot();
+
+        $year = session('year') ?: (int)date('Y');
+        $month = session('month') ?: (int)date('m');
+
+        static::addGlobalScope(function ($query) use($year, $month) {
+            $query->where('year',$year)
+                ->where('month',$month);
+        });
+    }
 }

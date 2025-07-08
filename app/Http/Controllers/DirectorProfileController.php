@@ -34,10 +34,17 @@ class DirectorProfileController extends Controller
     public function check_user(int $type,User $employee, Request $request)
     {
         $kpis = Kpi::whereNull('parent_id')
-            ->where('type',Kpi::TYPE_1)
-            ->with(['children.tasks' => function ($query) use ($employee) {
-                $query->where('user_id', $employee->id);
+            ->where('type', Kpi::TYPE_1)
+            ->with(['children' => function ($query) use ($employee) {
+            $query->whereHas('tasks', function ($taskQuery) use ($employee) {
+                $taskQuery->where('user_id', $employee->id);
+            });
+            }, 'children.tasks' => function ($query) use ($employee) {
+            $query->where('user_id', $employee->id);
             }])
+            ->whereHas('children.tasks', function ($query) use ($employee) {
+            $query->where('user_id', $employee->id);
+            })
             ->get();
 
         $total = 0;

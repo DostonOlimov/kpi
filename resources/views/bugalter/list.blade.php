@@ -11,13 +11,6 @@
             </ol>
         </div>
 
-        <!-- Search Component -->
-        <div class="row mb-3">
-            <div class="col-md-12">
-                <x-search url="bugalter.list" />
-            </div>
-        </div>
-
         <!-- Table Card -->
         <div class="row">
             <div class="col-md-12">

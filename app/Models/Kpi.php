@@ -45,4 +45,26 @@ class Kpi extends Model
             ?? $scores->firstWhere('type', 2)
             ?? $scores->firstWhere('type', 1);
     }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_kpis')
+            ->withPivot('target_score', 'current_score')
+            ->withTimestamps();
+    }
+
+    public function isCategory()
+    {
+        return is_null($this->max_score);
+    }
+
+    public function scopeCategories($query)
+    {
+        return $query->whereNull('max_score');
+    }
+
+    public function scopeKpis($query)
+    {
+        return $query->whereNotNull('max_score');
+    }
 }

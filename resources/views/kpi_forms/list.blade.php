@@ -18,7 +18,7 @@
                 <div class="performance-card">
                     <span class="performance-icon">📝</span>
                     <div class="performance-number">{{ $userStats['total_tasks'] ?? 0 }}</div>
-                    <div class="performance-label">Topshirilgan vazifalar</div>
+                    <div class="performance-label">Bajarilgan vazifalar</div>
                     <div class="performance-description">Siz bajargan umumiy vazifalar soni</div>
                 </div>
 

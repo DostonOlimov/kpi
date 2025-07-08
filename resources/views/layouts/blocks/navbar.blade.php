@@ -32,7 +32,7 @@
             </div>
             <div class="title title-dashboard" style="width: 100%; text-align: center;">
                 <h1 style="text-transform: uppercase; font-size: 1.3rem; margin: 7px 15px">
-                    DAVLAT EKOLOGIK EKSPERTIZASI MARKAZINING AVTOMATLASHGAN KPI TIZIMI
+                   DAVLAT EKOLOGIK EKSPERTIZASI MARKAZINING AVTOMATLASHGAN KPI TIZIMI
                 </h1>
             </div>
             <div>

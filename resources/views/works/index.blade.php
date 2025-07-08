@@ -56,7 +56,7 @@
                                 <tbody>
                                 @foreach ($works as $work)
                                     <tr>
-                                        <td>{{ $work->id }}</td>
+                                        <td>{{ $loop->iteration }}</td>
                                         <td>{{ $work->name }}</td>
                                         <td>{{ $work->created_at->format('Y-m-d H:i') }}</td>
                                         <td>{{ $work->updated_at->format('Y-m-d H:i') }}</td>

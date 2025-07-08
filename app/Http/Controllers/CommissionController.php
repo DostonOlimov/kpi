@@ -8,6 +8,7 @@ use App\Models\KPI;
 use App\Models\Task;
 use App\Models\TaskComment;
 use App\Models\KPIScore;
+use App\Models\UserKpi;
 use Illuminate\Support\Facades\Auth;
 
 class CommissionController extends Controller
@@ -88,6 +89,10 @@ class CommissionController extends Controller
         Task::where('kpi_id', $childId)
             ->where('user_id', $request->user_id)
             ->update(['is_checked' => true]);
+
+        UserKpi::where('user_id', $request->user_id)
+            ->where('kpi_id', $childId)
+            ->update(['current_score' => $request->score]);
 
 
 

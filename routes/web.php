@@ -4,6 +4,7 @@ use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\EmployeeDaysController;
 use App\Http\Controllers\KpiController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\UserKPIController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\WorkController;
@@ -135,6 +136,13 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/tasks/store', [TaskController::class, 'store']);
     Route::delete('/tasks/{id}', [TaskController::class, 'destroy']);
+
+    Route::get('/user-kpis', [UserKPIController::class, 'index'])->name('user-kpis.index');
+    Route::get('/user-kpis/user/{userId}', [UserKPIController::class, 'getUserKPIs'])->name('user-kpis.user');
+    Route::post('/user-kpis', [UserKPIController::class, 'store'])->name('user-kpis.store');
+    Route::put('/user-kpis/{id}', [UserKPIController::class, 'update'])->name('user-kpis.update');
+    Route::delete('/user-kpis/{id}', [UserKPIController::class, 'destroy'])->name('user-kpis.destroy');
+    Route::get('/kpis/category/{categoryId}', [UserKPIController::class, 'getKPIsByCategory'])->name('kpis.by-category');
 });
 
 

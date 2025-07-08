@@ -21,14 +21,15 @@ class KpiController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'max_score' => 'nullable|integer',
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'max_score' => 'nullable|integer|min:0',
             'parent_id' => 'nullable|exists:kpis,id',
         ]);
 
-        Kpi::create($request->all());
-        return redirect()->route('kpis.index')->with('success', 'KPI saved.');
+        Kpi::create($validated);
+
+        return redirect()->route('kpis.index')->with('success', 'KPI muvaffaqiyatli yaratildi.');
     }
 
     public function edit(Kpi $kpi)
@@ -39,6 +40,14 @@ class KpiController extends Controller
 
     public function update(Request $request, Kpi $kpi)
     {
+        // Check if KPI has any related scores or tasks
+        $hasScore = $kpi->kpi_scores()->exists();
+        $hasTask = $kpi->tasks()->exists();
+
+        if ($hasScore || $hasTask) {
+            return redirect()->route('kpis.index')->with('error', 'KPI ni o\'zgartirib bo\'lmaydi, chunki unga bog\'liq vazifalar mavjud.');
+        }
+
         $request->validate([
             'name' => 'required',
             'max_score' => 'nullable|integer',
@@ -46,12 +55,20 @@ class KpiController extends Controller
         ]);
 
         $kpi->update($request->all());
-        return redirect()->route('kpis.index')->with('success', 'KPI updated.');
+        return redirect()->route('kpis.index')->with('success', 'KPI muvaffaqiyatli o\'zgartirildi.');
     }
 
     public function destroy(Kpi $kpi)
     {
-     //   $kpi->delete();
-        return redirect()->route('kpis.index')->with('success', 'KPI deleted.');
+        $hasScore = $kpi->kpi_scores()->exists();
+        $hasTask = $kpi->tasks()->exists();
+        $hasChild = $kpi->children()->exists();
+
+        if ($hasScore || $hasTask || $hasChild) {
+            return redirect()->route('kpis.index')->with('error', 'KPI ni o\'chirish mumkin emas, chunki unga bog\'liq vazifalar, ballar yoki osti kpilar mavjud.');
+        }
+
+        $kpi->delete();
+        return redirect()->route('kpis.index')->with('success', 'KPI muvaffaqiyatli o\'chirildi.');
     }
 }
