@@ -42,7 +42,7 @@
                             <table class="table table-bordered table-striped mt-3">
                                 <thead>
                                 <tr>
-                                    <th>#</th>
+                                    <th colspan="2">#</th>
                                     <th>{{ __('KPI nomi') }}</th>
                                     <th>{{ __('Maksimal ball') }}</th>
                                     <th>{{ __('Yaratilgan') }}</th>
@@ -53,7 +53,7 @@
                                 <tbody>
                                 @foreach ($kpis as $category)
                                     <tr class="table-primary">
-                                        <td>{{ $category->id }}</td>
+                                        <td style="text-align: center" colspan="2">{{ $loop->iteration }}</td>
                                         <td colspan="5">
                                             <strong>{{ $category->name }}</strong>
                                             <div class="float-end">
@@ -71,9 +71,10 @@
 
                                     @foreach ($category->children as $item)
                                         <tr>
-                                            <td>{{ $item->id }}</td>
+                                            <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                            <td style="text-align: center">{{ $loop->iteration }}</td>
                                             <td>— {{ $item->name }}</td>
-                                            <td>{{ $item->max_score }}</td>
+                                            <td style="text-align: center">{{ $item->max_score }}</td>
                                             <td>{{ $item->created_at->format('Y-m-d H:i') }}</td>
                                             <td>{{ $item->updated_at->format('Y-m-d H:i') }}</td>
                                             <td>
@@ -92,6 +93,7 @@
                                     @endforeach
                                 @endforeach
                                 </tbody>
+                                {{ $kpis->links() }}
                             </table>
                         </div>
                     </div>

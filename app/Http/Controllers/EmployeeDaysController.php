@@ -25,7 +25,7 @@ class EmployeeDaysController extends Controller
         $month_id = session('month') ?? (int) date('m');
         $year = session('year') ?? (int) date('Y');
 
-        $users = User::with(['working_days', 'work_zone'])->get();
+        $users = User::with(['working_days', 'work_zone'])->whereIn('role_id',[User::ROLE_DIRECTOR,User::ROLE_USER])->get();
 
         $groupedUsers = $users->groupBy(fn($user) => $user->work_zone?->name ?? 'Boshqalar');
 
@@ -92,7 +92,7 @@ class EmployeeDaysController extends Controller
         $month_id = session('month') ?? (int) date('m');
         $year = session('year') ?? (int) date('Y');
 
-        $users = User::with(['scores', 'work_zone'])->get();
+        $users = User::with(['scores', 'work_zone'])->whereIn('role_id',[User::ROLE_DIRECTOR,User::ROLE_USER])->get();
 
         $groupedUsers = $users->groupBy(fn($user) => $user->work_zone?->name ?? 'Boshqalar');
 
@@ -150,7 +150,7 @@ class EmployeeDaysController extends Controller
         $month_id = session('month') ?? (int) date('m');
         $year = session('year') ?? (int) date('Y');
 
-        $users = User::with(['scores', 'work_zone'])->get();
+        $users = User::with(['scores', 'work_zone'])->whereIn('role_id',[User::ROLE_DIRECTOR,User::ROLE_USER])->get();
 
         $groupedUsers = $users->groupBy(fn($user) => $user->work_zone?->name ?? 'Boshqalar');
 

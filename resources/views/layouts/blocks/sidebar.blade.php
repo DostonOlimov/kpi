@@ -77,7 +77,7 @@
                 </a>
             </li>
 
-        @if(auth()->user()->role_id === \App\Models\User::ROLE_DIRECTOR || auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)
+        @if(auth()->user()->role_id === \App\Models\User::ROLE_DIRECTOR)
             <li class="nav-title">Bo'lim ko'rsatkichlari</li>
 
              <li class="nav-item">
@@ -107,37 +107,7 @@
                 </a>
             </li>
         @endif
-        @if(auth()->user()->role_id === \App\Models\User::ROLE_ACCOUNTANT || auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)
-            <li class="nav-title">Xodimlar natijalari</li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('bugalter.list') }}">
-                    <svg class="nav-icon">
-                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-spreadsheet"></use>
-                    </svg>
-                    Taqsimot holatini ko'rish
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('bugalter.add') }}">
-                    <svg class="nav-icon">
-                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-dollar"></use>
-                    </svg>
-                    Summani kiritish
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('bugalter.check') }}">
-                    <svg class="nav-icon">
-                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-check-circle"></use>
-                    </svg>
-                    Holatni tekshirish
-                </a>
-            </li>
-        @endif
-
+      
         @if(auth()->user()->role_id === \App\Models\User::ROLE_MANAGER || auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)
             <li class="nav-title">Xodimlarni baholash</li>
 
@@ -224,6 +194,36 @@
 {{--                </a>--}}
 {{--            </li>--}}
 {{--        @endif--}}
+  @if(auth()->user()->role_id === \App\Models\User::ROLE_ACCOUNTANT || auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)
+            <li class="nav-title">Xodimlar natijalari</li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('bugalter.list') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-spreadsheet"></use>
+                    </svg>
+                    Taqsimot holatini ko'rish
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('bugalter.add') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-dollar"></use>
+                    </svg>
+                    Summani kiritish
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('bugalter.check') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-check-circle"></use>
+                    </svg>
+                    Holatni tekshirish
+                </a>
+            </li>
+        @endif
 
         <li class="nav-item"><a class="nav-link"></a></li>
     </ul>
