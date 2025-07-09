@@ -82,5 +82,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(KpiScore::class);
     }
+    public function kpis(): HasMany
+    {
+        return $this->hasMany(UserKpi::class);
+    }
+
+    public function working_kpis(): HasMany
+    {
+        return $this->hasMany(Kpi::class);
+    }
 
 }

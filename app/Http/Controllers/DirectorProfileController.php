@@ -27,6 +27,7 @@ class DirectorProfileController extends Controller
             ->where('work_zone_id','=',$user->work_zone_id)
             ->where('role_id','=',User::ROLE_USER)
             ->get();
+
        return view('director.employees', ["users" => $users]);
 
     }
@@ -71,32 +72,6 @@ class DirectorProfileController extends Controller
             'type' => $type,
         ]);
     }
-
-
-
-    /**
-     * @return Application|Factory|View
-     */
-    public function add(Request $request)
-    {
-        $user = auth()->user();
-
-        $data = Director::where('user_id', '=', $user->id)
-            ->where('razdel', '=', 1)
-            ->where('status', '=', 'inactive')
-            ->get();
-        $month_name = Month::getMonth(session('month') ?? (int)date('m'));
-        return view('director.add', [
-            'data' => $data,
-            'month_id' => session('month') ?? (int)date('m'),
-            'year' => session('year') ?? (int)date('y'),
-            'month_name' => $month_name
-        ]);
-    }
-
- /**
-     * @return \Illuminate\Http\Response
-     */
 
     public function employees($departmentId = null)
     {

@@ -125,7 +125,7 @@
                                                 </div>
 
                                                 @if(!$score)
-                                                    @if($child->tasks->count() == 0)
+                                                    @if($child->tasks->where('user_id',$userId)->count() == 0)
                                                         <!-- Yangi vazifa qo‘shish -->
                                                         <div class="task-form-section" id="add-task-form">
                                                             <h6 class="task-form-title">Yangi vazifa qo‘shish</h6>
@@ -207,6 +207,8 @@
                 success: function (task) {
                     taskList.find('.empty-state').remove();
 
+                    // Hide the add-task-form div on success
+                    form.closest('#add-task-form').css('display', 'none');
 
                     let taskHtml = `
                     <div class="task-item fade-in" data-task-id="${task.id}">
@@ -263,33 +265,38 @@
             let taskTitle = taskItem.find('h6').text();
 
             if (confirm(`"${taskTitle}" vazifasini o‘chirmoqchimisiz?`)) {
-                taskItem.css('position', 'relative').append('<div class="loading-overlay"><div class="spinner"></div></div>');
+            taskItem.css('position', 'relative').append('<div class="loading-overlay"><div class="spinner"></div></div>');
 
-                $.ajax({
-                    url: `/tasks/${taskId}`,
-                    type: 'DELETE',
-                    data: { _token: '{{ csrf_token() }}' },
-                    success: function () {
-                        taskItem.fadeOut(300, function () {
-                            $(this).remove();
+            $.ajax({
+                url: `/tasks/${taskId}`,
+                type: 'DELETE',
+                data: { _token: '{{ csrf_token() }}' },
+                success: function () {
+                taskItem.fadeOut(300, function () {
+                    $(this).remove();
 
-                            let taskList = taskItem.closest('.task-list');
-                            if (taskList.find('.task-item').length === 0) {
-                                taskList.html(`
-                                <div class="empty-state fade-in">
-                                    <div class="empty-state-icon"><i class="fa fa-sticky-note"></i></div>
-                                    <p>Hozircha hech qanday vazifa mavjud emas. Quyida yangi vazifa yarating.</p>
-                                </div>
-                            `);
-                            }
-                        });
-                        showNotification('Vazifa o‘chirildi!', 'success');
-                    },
-                    error: function () {
-                        taskItem.find('.loading-overlay').remove();
-                        showNotification('O‘chirishda xatolik yuz berdi.', 'error');
+                    let taskList = taskItem.closest('.task-list');
+                    if (taskList.find('.task-item').length === 0) {
+                    taskList.html(`
+                    <div class="empty-state fade-in">
+                        <div class="empty-state-icon"><i class="fa fa-sticky-note"></i></div>
+                        <p>Hozircha hech qanday vazifa mavjud emas. Quyida yangi vazifa yarating.</p>
+                    </div>
+                    `);
+                    // Show the add-task-form again if all tasks are deleted
+                    taskList.closest('.kpi-child-body').find('#add-task-form').css('display', '');
+                    } else {
+                    // Also show the add-task-form if it exists and is hidden
+                    taskList.closest('.kpi-child-body').find('#add-task-form').css('display', '');
                     }
                 });
+                showNotification('Vazifa o‘chirildi!', 'success');
+                },
+                error: function () {
+                taskItem.find('.loading-overlay').remove();
+                showNotification('O‘chirishda xatolik yuz berdi.', 'error');
+                }
+            });
             }
         });
 

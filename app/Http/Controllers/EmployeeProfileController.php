@@ -20,71 +20,57 @@ class EmployeeProfileController extends Controller
     {
         $userId = Auth::id();
 
-        // Get user's KPIs with tasks and scores
-        $kpis = Kpi::with([
-            'children' => function($query) use ($userId) {
-            $query->with([
-                'tasks' => function($taskQuery) use ($userId) {
-                $taskQuery->where('user_id', $userId)
-                    ->with(['comments.user']);
-                },
-                'kpi_scores' => function($scoreQuery) use ($userId) {
-                $scoreQuery->where('user_id', $userId);
-                }
-            ]);
+        // Get user's KPIs from user_kpis (UserKpi) with related kpi
+        $userKpis = UserKpi::with(['kpi.parent', 'kpi.children','kpi.tasks'])
+            ->where('user_id', $userId)
+            ->get();
+
+        // Group KPIs by parent (category)
+        $categories = [];
+        foreach ($userKpis as $userKpi) {
+            $kpi = $userKpi->kpi;
+            if (!$kpi) continue;
+            $parentId = $kpi->parent_id ?? $kpi->id;
+            if (!isset($categories[$parentId])) {
+                $categories[$parentId] = [
+                    'category' => $kpi->parent ?? $kpi,
+                    'children' => [],
+                    'total_current_score' => 0,
+                    'total_target_score' => 0,
+                ];
             }
-        ])
-        ->whereNull('parent_id')
-        ->whereHas('children', function($childQuery) use ($userId) {
-            $childQuery->whereHas('tasks', function($taskQuery) use ($userId) {
-            $taskQuery->where('user_id', $userId);
-            })
-            ->orWhereHas('kpi_scores', function($scoreQuery) use ($userId) {
-            $scoreQuery->where('user_id', $userId);
-            });
-        })
-        ->get();
+            $categories[$parentId]['children'][] = $kpi;
+            $categories[$parentId]['total_current_score'] += $userKpi->current_score;
+            $categories[$parentId]['total_target_score'] += $userKpi->target_score;
+        }
 
-        // Process KPIs to add user-specific data
-        $kpis = $kpis->map(function($category) use ($userId) {
-            $category->user_tasks_count = 0;
-            $category->total_ball = 0;
-            $category->max_ball = 0;
-            $totalScore = 0;
-            $scoredChildren = 0;
+        // Calculate average score for each category
+        foreach ($categories as &$cat) {
+            $cat['average_score'] = $cat['total_target_score'] > 0
+                ? 100 * ($cat['total_current_score'] / $cat['total_target_score'])
+                : null;
+        }
+        unset($cat);
 
-            $category->children = $category->children->map(function($child) use ($category,$userId, &$totalScore, &$scoredChildren) {
-                // Get user's tasks for this child
-                $child->user_tasks = $child->tasks->where('user_id', $userId);
+        // Convert to collection for view compatibility
+        $kpis = collect($categories);
+        // foreach ($kpis as $kpi) {
+        //     foreach ($kpi['children'] as &$child) {
+        //         dd($child->tasks->where('user_id',$userId)->get());// Add score attribute to each child
+        //     }
+        // }
 
-                // Count user tasks for this category
-                $userTasksCount = $child->user_tasks->count();
-
-                $category->max_ball += $child->max_score;
-
-                if ($child_score = $child->kpi_scores->unique('kpi_id')->first()) {
-                    $totalScore += $child_score->score;
-                    $scoredChildren++;
-                    $category->total_ball += $child_score->score;
-                }
-
-                return $child;
-            });
-
-            // Calculate average score for category
-            $category->average_score = $category->max_ball > 0 ? 100 * ($category->total_ball / $category->max_ball) : null;
-
-            return $category;
-        });
 
         // Calculate user statistics
         $userStats = $this->calculateUserStats($userId);
 
-        return view('kpi_forms.list', compact('kpis', 'userStats'));
+        return view('kpi_forms.list', compact('kpis', 'userStats','userId'));
     }
+
 
     private function calculateUserStats($userId)
     {
+        $totalKPIs = UserKpi::where('user_id', $userId)->count();
         $totalTasks = Task::where('user_id', $userId)->count();
         $reviewedTasks = Task::where('user_id', $userId)
             ->where('is_checked',true)
@@ -112,15 +98,14 @@ class EmployeeProfileController extends Controller
             return $score?->score ?? 0;
         })->sum();
 
-        $completionRate =  ($kpiTasks / 4) * 100;
+        $completionRate = $totalTasks > 0 ? ($kpiTasks / $totalKPIs) * 100 : 0;
         $reviewRate = $totalTasks > 0 ? ($reviewedTasks / $totalTasks) * 100 : 0;
-
-        $totalKPIs = 7;
 
         $scoringProgress = $totalKPIs > 0 ? ($scoredKPIs / $totalKPIs) * 100 : 0;
 
 
         return [
+            'total_kpis' => $totalKPIs,
             'total_tasks' => $totalTasks,
             'reviewed_tasks' => $reviewedTasks,
             'scored_kpis' => $scoredKPIs,
@@ -149,6 +134,7 @@ class EmployeeProfileController extends Controller
         return view('kpi_forms.create', [
             'kpis' => $kpis,
             'parent_kpis' => $parentKpis,
+            'userId'=> $userId,
             'month' => session('month') ?? date('m'),
             'year' => session('year') ?? date('Y'),
         ]);

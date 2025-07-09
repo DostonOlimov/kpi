@@ -109,18 +109,7 @@ class UserKPIController extends Controller
     {
         $userKpi = UserKPI::findOrFail($id);
 
-        // Only allow delete if current_score is 0 or KPI has no tasks
-        $canDelete = ($userKpi->current_score == 0);
-
-        // Check if KPI has no tasks (assuming relation 'tasks' exists on KPI model)
-        if (method_exists($userKpi->kpi, 'tasks')) {
-            $userKpi->load('kpi.tasks');
-            if ($userKpi->kpi->tasks->count() == 0) {
-                $canDelete = true;
-            }
-        }
-
-        if (!$canDelete) {
+        if ($userKpi->current_score || $userKpi->kpi->tasks->where('user_id',$userKpi->user_id)->count() > 0 ) {
             return response()->json([
                 'success' => false,
                 'message' => 'KPI ni o‘chirish mumkin emas. Unda joriy ball yoki bog‘liq vazifalar mavjud.'
@@ -139,6 +128,7 @@ class UserKPIController extends Controller
     {
         $kpis = KPI::where('parent_id', $categoryId)
             ->whereNotNull('max_score')
+            ->orderBy('parent_id')
             ->get();
 
         return response()->json($kpis);

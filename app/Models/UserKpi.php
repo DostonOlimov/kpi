@@ -10,7 +10,7 @@ class UserKpi extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['kpi_id', 'user_id','current_score','target_score'];
+    protected $fillable = ['kpi_id', 'user_id','month','year','current_score','target_score','ai_extracted_text','ai_score','ai_feedback'];
 
     public function kpi(): BelongsTo
     {

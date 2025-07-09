@@ -320,7 +320,7 @@
                                             <div class="row text-center mb-2">
                                                 <div class="col-4">
                                                     <small class="text-muted">Erishgan ko'rsatkichi</small>
-                                                    <div class="fw-bold">${userKpi.current_score}</div>
+                                                    <div class="fw-bold">${userKpi.current_score ?? 0}</div>
                                                 </div>
                                                 <div class="col-4">
                                                     <small class="text-muted">Max ko'rsatkich</small>

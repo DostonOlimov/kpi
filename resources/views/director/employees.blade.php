@@ -47,7 +47,7 @@
                                 </div>
                                 <div class="flex-grow-1">
                                     <h6 class="text-muted mb-1 small">Jami topshiriqlar</h6>
-                                    <h3 class="mb-0 fw-bold text-dark">{{ $users->sum(function($user) { return $user->tasks->count(); }) }}</h3>
+                                    <h3 class="mb-0 fw-bold text-dark">{{ $users->sum(function($user) { return $user->kpis->count(); }) }}</h3>
                                 </div>
                             </div>
                         </div>
@@ -64,7 +64,7 @@
                                 </div>
                                 <div class="flex-grow-1">
                                     <h6 class="text-muted mb-1 small">Tekshirilgan</h6>
-                                    <h3 class="mb-0 fw-bold text-dark">{{ $users->sum(function($user) { return $user->tasks->where('is_checked', true)->count(); }) }}</h3>
+                                    <h3 class="mb-0 fw-bold text-dark">{{ $users->sum(function($user) { return $user->kpis->whereNotNull('current_score')->count(); }) }}</h3>
                                 </div>
                             </div>
                         </div>
@@ -82,8 +82,8 @@
                                 <div class="flex-grow-1">
                                     <h6 class="text-muted mb-1 small">Kutilmoqda</h6>
                                     @php
-                                        $totalTasks = $users->sum(function($user) { return $user->tasks->count(); });
-                                        $completedTasks = $users->sum(function($user) { return $user->tasks->where('is_checked', true)->count(); });
+                                        $totalTasks = $users->sum(function($user) { return $user->kpis->count(); });
+                                        $completedTasks = $users->sum(function($user) { return $user->kpis->whereNotNull('current_score')->count(); });
                                         $pendingTasks = $totalTasks - $completedTasks;
                                     @endphp
                                     <h3 class="mb-0 fw-bold text-dark">{{ $pendingTasks }}</h3>
@@ -172,8 +172,8 @@
                                 <tbody class="table-group-divider">
                                 @foreach ($users as $index => $employee)
                                     @php
-                                        $totalTasks = 7;
-                                        $checkedTasks = $employee->scores->unique('kpi_id')->count();
+                                        $totalTasks = $employee->kpis->count();
+                                        $checkedTasks = $employee->kpis->whereNotNull('current_score')->count();
                                         $pendingTasks = $totalTasks - $checkedTasks;
                                         $completionPercentage = $totalTasks > 0 ? round(($checkedTasks / $totalTasks) * 100) : 0;
 

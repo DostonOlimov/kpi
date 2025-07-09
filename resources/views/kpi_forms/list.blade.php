@@ -17,17 +17,23 @@
             <div class="performance-overview fade-in">
                 <div class="performance-card">
                     <span class="performance-icon">📝</span>
+                    <div class="performance-number">{{ $userStats['total_kpis'] ?? 0 }}</div>
+                    <div class="performance-label">Biriktirilgan vazifalar</div>
+                    <div class="performance-description">Siz bajargan umumiy vazifalar soni</div>
+                </div>
+                <div class="performance-card">
+                    <span class="performance-icon">✅</span>
                     <div class="performance-number">{{ $userStats['total_tasks'] ?? 0 }}</div>
                     <div class="performance-label">Bajarilgan vazifalar</div>
                     <div class="performance-description">Siz bajargan umumiy vazifalar soni</div>
                 </div>
 
-                <div class="performance-card">
+                {{-- <div class="performance-card">
                     <span class="performance-icon">💬</span>
                     <div class="performance-number">{{ $userStats['reviewed_tasks'] ?? 0 }}</div>
                     <div class="performance-label">Ko‘rib chiqilgan vazifalar</div>
                     <div class="performance-description">Komissar fikri bildirilgan vazifalar</div>
-                </div>
+                </div> --}}
 
                 <div class="performance-card">
                     <span class="performance-icon">⭐</span>
@@ -90,9 +96,9 @@
 
                 @foreach ($kpis as $category)
                     <div class="category-result-card">
-                        <div class="category-result-header" data-bs-toggle="collapse" data-bs-target="#category-{{ $category->id }}">
+                        <div class="category-result-header" data-bs-toggle="collapse" data-bs-target="#category-{{ $category['category']->id }}">
                             <div class="category-info" style="width: 60%">
-                                <h4>{{ $category->name }}</h4>
+                                <h4>{{ $category['category']->name }}</h4>
                             </div>
                             <div style="width: 20%"></div>
                             <div class="category-stats" style="width: 20%">
@@ -101,10 +107,11 @@
                                     <div class="score-label">Vazifalar</div>
                                 </div>
                                 <div class="category-score">
-                                    @if($category->average_score)
-                                        <span class="score-badge {{ $category->average_score >= 70 ? '' : ($category->average_score >= 40 ? 'medium-score' : 'low-score') }}">
-                                            {{ number_format($category->total_ball, 1) }}/{{ number_format($category->max_ball, 1) }}
-                                             {{number_format($category->average_score)}}%
+                                    @if(array_key_exists('average_score',$category))
+                                        @php $averageScore = $category['average_score']; @endphp
+                                        <span class="score-badge {{ $averageScore >= 70 ? '' : ($averageScore >= 40 ? 'medium-score' : 'low-score') }}">
+                                            {{-- {{ number_format($category['total_ball'], 1) }}/{{ number_format($category['max_ball'], 1) }} --}}
+                                             {{number_format($averageScore)}}%
                                         </span>
                                     @else
                                         <span class="score-badge no-score">Baholanmagan</span>
@@ -115,8 +122,8 @@
                             </div>
                         </div>
 
-                        <div class="category-details collapse" id="category-{{ $category->id }}">
-                            @foreach ($category->children as $child)
+                        <div class="category-details collapse" id="category-{{ $category['category']->id }}">
+                            @foreach ($category['children'] as $child)
                                 <div style="margin-bottom: 2rem; padding: 1.5rem; background: white; border-radius: 8px; border-left: 4px solid #007bff;">
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                                         <h2 style="color: #495057; margin: 0;">{{ $child->name }}</h2>
@@ -139,9 +146,9 @@
 
                                     @if($child->type == 1)
                                         <div class="tasks-section">
-                                        <h6 class="tasks-title">Siz bajargan vazifalar ({{ $child->user_tasks->count() }})</h6>
+                                        <h6 class="tasks-title">Siz bajargan vazifalar ({{ $child->tasks->where('user_id', $userId)->count() }})</h6>
 
-                                        @forelse ($child->user_tasks as $task)
+                                        @forelse ($child->tasks->where('user_id', $userId) as $task)
                                             <div class="task-result-card">
                                                 <div class="task-result-header">
                                                     <h6 class="task-title">{{ $task->name }}</h6>

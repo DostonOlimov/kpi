@@ -15,7 +15,7 @@ class Kpi extends Model
     CONST TYPE_2 = 2;
     CONST TYPE_3 = 3;
 
-    protected $fillable = ['parent_id', 'name', 'max_score'];
+    protected $fillable = ['parent_id', 'name', 'max_score','user_id'];
 
     public function parent(): BelongsTo
     {
