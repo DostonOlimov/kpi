@@ -3,6 +3,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kpi;
 use App\Models\Task;
 use App\Models\UserKpi;
 use Illuminate\Http\Request;
@@ -13,51 +14,32 @@ class EmployeeProfileController extends Controller
     public function index()
     {
         $userId = Auth::id();
-        // Get user's KPIs from user_kpis (UserKpi) with related kpi
-        $userKpis = UserKpi::with(['kpi.parent', 'kpi.children','tasks'])
-            ->where('user_id', $userId)
+
+        // Get user's KPIs with tasks and scores
+        $constant_kpis = Kpi::with([
+                'children' => function($query) use ($userId) {
+                }
+            ])
+            ->whereNull('parent_id')
+            ->where('type','!=',Kpi::TYPE_1)
             ->get();
 
-        // Group KPIs by parent (category)
-        $categories = [];
-        foreach ($userKpis as $userKpi) {
-            $kpi = $userKpi->kpi;
-            if (!$kpi) continue;
-            $parentId = $kpi->parent_id ?? $kpi->id;
-            if (!isset($categories[$parentId])) {
-                $categories[$parentId] = [
-                    'category' => $kpi->parent ?? $kpi,
-                    'children' => [],
-                    'total_current_score' => 0,
-                    'total_target_score' => 0,
-                ];
-            }
-            $categories[$parentId]['children'][] = $kpi;
-            $categories[$parentId]['total_current_score'] += $userKpi->current_score;
-            $categories[$parentId]['total_target_score'] += $userKpi->target_score;
-        }
+        // Get KPIs from user_kpis (KpiEmployees) for the current user
+        $userKpis = UserKpi::where('user_id', $userId)
+            ->with(['kpi.parent', 'kpi.children','score','tasks'])
+            ->get();
 
-        // Calculate average score for each category
-        foreach ($categories as &$cat) {
-            $cat['average_score'] = $cat['total_target_score'] > 0
-                ? 100 * ($cat['total_current_score'] / $cat['total_target_score'])
-                : null;
-        }
-        unset($cat);
+        // Extract the related KPIs
+        $kpis = $userKpis->pluck('kpi')->filter();
 
-        // Convert to collection for view compatibility
-        $kpis = collect($categories);
-        // foreach ($kpis as $kpi) {
-        //     foreach ($kpi['children'] as &$child) {
-        //         dd($child->tasks->where('user_id',$userId)->get());// Add score attribute to each child
-        //     }
-        // }
+        // Optionally, get unique parent KPIs
+        $parentKpis = $kpis->pluck('parent')->filter()->unique('id')->values();
 
 
         // Calculate user statistics
         $userStats = $this->calculateUserStats($userId);
 
-        return view('kpi_forms.list', compact('kpis', 'userStats','userId'));
+        return view('employee_profile.list', compact('kpis', 'userStats','parentKpis','userKpis','constant_kpis'));
     }
 
 
@@ -111,7 +93,7 @@ class EmployeeProfileController extends Controller
         // Optionally, get unique parent KPIs
         $parentKpis = $kpis->pluck('parent')->filter()->unique('id')->values();
 
-        return view('kpi_forms.create', [
+        return view('employee_profile.create', [
             'user_kpis' => $userKpis,
             'kpis' => $kpis,
             'parent_kpis' => $parentKpis,

@@ -14,6 +14,7 @@ class Kpi extends Model
     CONST TYPE_1 = 1;
     CONST TYPE_2 = 2;
     CONST TYPE_3 = 3;
+    CONST TYPE_4 = 4;
 
     protected $fillable = ['parent_id', 'name', 'max_score','user_id'];
 

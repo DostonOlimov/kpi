@@ -28,6 +28,11 @@ class Task extends Model
           return $this->hasMany(TaskComment::class);
       }
 
+      public function scores(): HasMany
+      {
+          return $this->hasMany(TaskScore::class);
+      }
+
       public function user(): BelongsTo
       {
           return $this->belongsTo(User::class, 'user_id');

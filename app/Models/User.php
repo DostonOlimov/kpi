@@ -74,10 +74,6 @@ class User extends Authenticatable
     {
         return $this->hasMany(Task::class);
     }
-    public function scores(): HasMany
-    {
-        return $this->hasMany(KpiScore::class);
-    }
     public function kpis(): HasMany
     {
         return $this->hasMany(UserKpi::class);
