@@ -27,25 +27,10 @@ class Kpi extends Model
         return $this->hasMany(Kpi::class, 'parent_id');
     }
 
-    public function tasks(): HasMany
+    public function user_kpis(): HasMany
     {
-        return $this->hasMany(Task::class, 'kpi_id');
+        return $this->hasMany(UserKpi::class);
     }
-
-    public function kpi_scores(): HasMany
-    {
-        return $this->hasMany(KpiScore::class, 'kpi_id');
-    }
-    public function getScoreAttribute()
-    {
-        // Optionally pass user_id if needed
-        $scores = $this->kpi_scores;
-
-        return $scores->firstWhere('type', 3)
-            ?? $scores->firstWhere('type', 2)
-            ?? $scores->firstWhere('type', 1);
-    }
-
     public function users()
     {
         return $this->belongsToMany(User::class, 'user_kpis')

@@ -20,7 +20,7 @@
                         <!-- Statistics Cards -->
                         <div class="stats-container fade-in">
                             <div class="stat-card total">
-                                <div class="stat-number" id="total-tasks">{{ $total ?? 0 }}</div>
+                                <div class="stat-number" id="total-tasks">{{ $user_kpis->count() ?? 0 }}</div>
                                 <div class="stat-label"><i class="fa fa-tasks"></i> Umumiy vazifalar</div>
                             </div>
                             <div class="stat-card pending">
@@ -29,7 +29,7 @@
                             </div>
                             <div class="stat-card completed">
                                 <div class="stat-number" id="reviewed-tasks">{{ $checked ?? 0 }}</div>
-                                <div class="stat-label"><i class="fa fa-check-circle"></i> Tekshirilgan</div>
+                                <div class="stat-label"><i class="fa fa-check-circle"></i> Ko'rilgan</div>
                             </div>
                             <div class="stat-card scored">
                                 <div class="stat-number" id="scored-kpis">{{ $scored ?? 0 }}</div>
@@ -47,31 +47,32 @@
                         @endif
 
                         <!-- KPI Categories -->
-                        @foreach ($kpis as $category)
+                            @foreach ($parent_kpis as $parent)
                             <div class="category-section fade-in">
                                 <div class="category-header">
-                                    <h2 class="category-title">{{ $category->name }}</h2>
+                                    <h2 class="category-title">{{ $parent->name }}</h2>
                                 </div>
 
-                                @foreach ($category->children as $child)
-                                    <div class="child-kpi-card">
-                                        <div class="child-header" data-bs-toggle="collapse" data-bs-target="#child-{{ $child->id }}">
+                                @foreach ($user_kpis as $user_kpi)
+                                    @if($user_kpi->kpi->parent_id == $parent->id)
+                                        <div class="child-kpi-card">
+                                        <div class="child-header" data-bs-toggle="collapse" data-bs-target="#child-{{  $user_kpi->kpi?->id }}">
                                             <div class="child-info">
-                                                <h5><i class="fa fa-bars"></i> {{ $child->name }}</h5>
+                                                <h5><i class="fa fa-bars"></i> {{  $user_kpi->kpi?->name }}</h5>
                                             </div>
                                             <div class="child-stats">
-                                                <span><i class="fa fa-tasks"></i> {{ $child->tasks->count() }} ta vazifa</span>
+                                                <span><i class="fa fa-tasks"></i> {{ $user_kpi->tasks->count() }} ta vazifa</span>
                                                 <div class="child-score">
-                                                    <i class="fa fa-star-half-o"></i> Baho: {{ $child->score ? $child->score->score : 'Baholanmagan' }}
+                                                    <i class="fa fa-star-half-o"></i> Baho: {{  $user_kpi->current_score ? $user_kpi->current_score : 'Baholanmagan' }}
                                                 </div>
                                                 <span class="expand-icon"><i class="fa fa-chevron-down"></i></span>
                                             </div>
                                         </div>
 
-                                        <div class="tasks-section collapse" id="child-{{ $child->id }}">
+                                        <div class="tasks-section collapse" id="child-{{ $user_kpi->kpi?->id }}">
                                             <!-- Tasks Grid -->
                                             <div class="tasks-grid">
-                                                @forelse ($child->tasks as $task)
+                                                @forelse ($user_kpi->tasks as $task)
                                                     <div class="task-card" data-task-id="{{ $task->id }}">
                                                         <div class="task-header-info">
                                                             <div class="task-user">
@@ -142,10 +143,7 @@
 
                                             <!-- Scoring Section -->
                                             @php
-                                                $userScore = $child->kpi_scores
-                                                    ->where('user_id', $user->id)
-                                                    ->where('type', $type) // change 'task' to your actual type if needed
-                                                    ->first();
+                                                $userScore = $user_kpi->current_score;
                                             @endphp
 
                                                 <!-- Scoring Section -->
@@ -158,35 +156,35 @@
                                                     <!-- Show current score with Edit button -->
                                                     <div class="current-score mt-2">
                                                         <span>Joriy baho:</span>
-                                                        <strong>{{ round($userScore->score) }}/{{ $child->max_score }}</strong>
+                                                        <strong>{{ round($userScore) }}/{{ $user_kpi->kpi?->max_score }}</strong>
 {{--                                                        <button type="button" class="btn btn-sm btn-close-white ms-2 btn-edit-score text-right" data-child-id="{{ $child->id }}">--}}
 {{--                                                            <i class="fa fa-edit"></i> Tahrirlash--}}
 {{--                                                        </button>--}}
                                                     </div>
 
                                                     <!-- Hidden form initially, shown when Edit is clicked -->
-                                                    <form class="scoring-form d-none mt-3" data-child-id="{{ $child->id }}" data-max-score="{{ $child->max_score }}">
+                                                    <form class="scoring-form d-none mt-3" data-child-id="{{ $user_kpi->kpi?->id }}" data-max-score="{{ $user_kpi->kpi?->max_score }}">
                                                         @csrf
                                                         <input type="hidden" name="user_id" value="{{ $user->id }}">
                                                         <div class="score-input-group">
                                                             <div class="score-input">
-                                                                <label for="score-{{ $child->id }}">Bahosi (0-{{ $child->max_score }})</label>
+                                                                <label for="score-{{ $user_kpi->kpi?->id }}">Bahosi (0-{{ $user_kpi->kpi?->max_score }})</label>
                                                                 <input type="number"
-                                                                       id="score-{{ $child->id }}"
+                                                                       id="score-{{ $user_kpi->kpi?->id }}"
                                                                        name="score"
                                                                        class="form-control"
                                                                        min="0"
-                                                                       max="{{ $child->max_score }}"
-                                                                       value="{{ $userScore->score }}"
+                                                                       max="{{ $user_kpi->kpi?->max_score }}"
+                                                                       value="{{ $userScore }}"
                                                                        placeholder="Bahoni kiriting">
                                                             </div>
                                                             <div class="score-input">
-                                                                <label for="feedback-{{ $child->id }}">Fikr</label>
+                                                                <label for="feedback-{{ $user_kpi->kpi?->id }}">Fikr</label>
                                                                 <textarea name="feedback"
-                                                                          id="feedback-{{ $child->id }}"
+                                                                          id="feedback-{{ $user_kpi->kpi?->id }}"
                                                                           class="form-control"
                                                                           placeholder="Ixtiyoriy fikr..."
-                                                                          rows="2">{{ $userScore->feedback }}</textarea>
+                                                                          rows="2">{{ $user_kpi->score?->feedback }}</textarea>
                                                             </div>
                                                             <button type="submit" class="btn btn-modern btn-score">
                                                                 <i class="fa fa-star"></i> Bahoni saqlash
@@ -195,24 +193,24 @@
                                                     </form>
                                                 @else
                                                     <!-- Show scoring form if no score exists -->
-                                                    <form class="scoring-form mt-3" data-child-id="{{ $child->id }}" data-max-score="{{ $child->max_score }}">
+                                                    <form class="scoring-form mt-3" data-child-id="{{ $user_kpi->kpi?->id }}" data-max-score="{{ $user_kpi->kpi?->max_score }}">
                                                         @csrf
                                                         <input type="hidden" name="user_id" value="{{ $user->id }}">
                                                         <div class="score-input-group">
                                                             <div class="score-input">
-                                                                <label for="score-{{ $child->id }}">Bahosi (0-{{ $child->max_score }})</label>
+                                                                <label for="score-{{ $user_kpi->kpi?->id }}">Bahosi (0-{{ $user_kpi->kpi?->max_score }})</label>
                                                                 <input type="number"
-                                                                       id="score-{{ $child->id }}"
+                                                                       id="score-{{ $user_kpi->kpi?->id }}"
                                                                        name="score"
                                                                        class="form-control"
                                                                        min="0"
-                                                                       max="{{ $child->max_score }}"
+                                                                       max="{{ $user_kpi->kpi?->max_score }}"
                                                                        placeholder="Bahoni kiriting">
                                                             </div>
                                                             <div class="score-input">
-                                                                <label for="feedback-{{ $child->id }}">Fikr</label>
+                                                                <label for="feedback-{{ $user_kpi->kpi?->id }}">Fikr</label>
                                                                 <textarea name="feedback"
-                                                                          id="feedback-{{ $child->id }}"
+                                                                          id="feedback-{{ $user_kpi->kpi?->id }}"
                                                                           class="form-control"
                                                                           placeholder="Ixtiyoriy fikr..."
                                                                           rows="2"></textarea>
@@ -226,6 +224,7 @@
                                             </div>
                                             </div>
                                     </div>
+                                    @endif
                                 @endforeach
                             </div>
                         @endforeach

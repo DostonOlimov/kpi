@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 
     <!-- SweetAlert2 Stylesheet -->
-    <link rel="stylesheet" href="{{ asset('plugins/sweetalert2/sweetalert2.min.css') }}">
+{{--    <link rel="stylesheet" href="{{ asset('plugins/sweetalert2/sweetalert2.min.css') }}">--}}
 
     <!-- DatePicker Stylesheet -->
     <link rel="stylesheet" href="{{ asset('build/css/bootstrap-datetimepicker.min.css') }}">
@@ -123,7 +123,7 @@ $userid = Auth::user()->id;
 <script src="{{ asset('vendors/bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
 
 <!-- SweetAlert2 and Multi Select -->
-<script src="{{ asset('plugins/sweetalert2/sweetalert2.min.js') }}"></script>
+{{--<script src="{{ asset('plugins/sweetalert2/sweetalert2.min.js') }}"></script>--}}
 <script src="{{ asset('plugins/multipleselect/multiple-select.js') }}"></script>
 <script src="{{ asset('plugins/multipleselect/multi-select.js') }}"></script>
 

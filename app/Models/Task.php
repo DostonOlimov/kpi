@@ -12,7 +12,7 @@ class Task extends Model
     use HasFactory;
 
       protected $fillable = [
-        'kpi_id',
+        'user_kpi_id',
         'name',
         'description',
         'user_id',

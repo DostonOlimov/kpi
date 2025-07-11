@@ -109,7 +109,7 @@ class UserKPIController extends Controller
     {
         $userKpi = UserKPI::findOrFail($id);
 
-        if ($userKpi->current_score || $userKpi->kpi->tasks->where('user_id',$userKpi->user_id)->count() > 0 ) {
+        if ($userKpi->current_score || $userKpi->tasks->count() > 0 ) {
             return response()->json([
                 'success' => false,
                 'message' => 'KPI ni o‘chirish mumkin emas. Unda joriy ball yoki bog‘liq vazifalar mavjud.'
@@ -124,13 +124,21 @@ class UserKPIController extends Controller
         ]);
     }
 
-    public function getKPIsByCategory($categoryId)
+    public function getKPIsByCategory($categoryId,Request $request)
     {
-        $kpis = KPI::where('parent_id', $categoryId)
-            ->whereNotNull('max_score')
-            ->orderBy('parent_id')
-            ->get();
-
+        if($categoryId == 13){
+            $user_id = $request->get('user_id');
+            $kpis = KPI::where('parent_id', $categoryId)
+                ->where('user_id', $user_id)
+                ->whereNotNull('max_score')
+                ->orderBy('parent_id')
+                ->get();
+        }else{
+            $kpis = KPI::where('parent_id', $categoryId)
+                ->whereNotNull('max_score')
+                ->orderBy('parent_id')
+                ->get();
+        }
         return response()->json($kpis);
     }
 }

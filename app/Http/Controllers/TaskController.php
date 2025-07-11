@@ -11,36 +11,39 @@ use Illuminate\Support\Facades\Storage;
 class TaskController extends Controller
 {
     public function store(Request $request)
-{
-    $request->validate([
-        'title' => 'required|string|max:255',
-        'description' => 'required',
-        'child_id' => 'required|exists:kpis,id',
-        'file' => 'nullable|file|max:2048',
-    ]);
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required',
+            'child_id' => 'required',
+            'file' => 'nullable|file|max:5120|mimes:doc,docx,xls,xlsx,pdf',
+        ]);
 
-    $filePath = null;
-    if ($request->hasFile('file')) {
-        $filePath = $request->file('file')->store('tasks', 'public');
+        $filePath = null;
+        if ($request->hasFile('file')) {
+            $filePath = $request->file('file')->store('tasks', 'public');
+        }
+
+        $task = Task::createOrUpdate([
+            'user_kpi_id' => $request->child_id,
+            'user_id' => auth()->id(),
+            'month' =>  session('month') ?? date('m'),
+            'year' => session('year') ?? date('Y'),
+            ],
+            [
+
+            'name' => $request->title,
+            'description' => $request->description,
+            'file_path' => $filePath,
+        ]);
+
+        return response()->json([
+            'id' => $task->id,
+            'title' => $task->name,
+            'description' => $task->description,
+            'file_url' => $filePath ? asset('storage/' . $filePath) : null,
+        ]);
     }
-
-    $task = Task::create([
-        'kpi_id' => $request->child_id,
-        'name' => $request->title,
-        'description' => $request->description,
-        'file_path' => $filePath,
-        'user_id' => auth()->id(),
-        'month' =>  session('month') ?? date('m'),
-        'year' => session('year') ?? date('Y'),
-    ]);
-
-    return response()->json([
-        'id' => $task->id,
-        'title' => $task->name,
-        'description' => $task->description,
-        'file_url' => $filePath ? asset('storage/' . $filePath) : null,
-    ]);
-}
 
 public function destroy($id)
 {

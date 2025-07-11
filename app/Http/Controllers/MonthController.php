@@ -4,10 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use App\Models\Month;
 
 class MonthController extends Controller
@@ -15,8 +14,8 @@ class MonthController extends Controller
       /**
     * Display a listing of the resource.
     *
-    * @return Application|Factory|\Illuminate\Contracts\View\View|Response
-    */
+    * @return Application|Factory|View
+       */
     public function index()
     {
         $month = Month::getMonth();
@@ -27,8 +26,8 @@ class MonthController extends Controller
     /**
     * Show the form for creating a new resource.
     *
-    * @return Application|Factory|\Illuminate\Contracts\View\View|Response
-    */
+    * @return Application|Factory|View
+     */
     public function create()
     {
         $month = Month::getMonth();
@@ -38,12 +37,12 @@ class MonthController extends Controller
     }
 
     /**
-    * Store a newly created resource in storage.
-    *
-    * @param  \Illuminate\Http\Request  $request
-    * @return Response
-    */
-    public function store(Request $request)
+     * Store a newly created resource in storage.
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function store(Request $request): RedirectResponse
     {
         $request->validate([
            // 'month_id' => 'required',
@@ -57,35 +56,35 @@ class MonthController extends Controller
     }
 
     /**
-    * Display the specified resource.
-    *
-    * @param  \App\company  $company
-    * @return Response
-    */
+     * Display the specified resource.
+     *
+     * @param Month $company
+     * @return Application|Factory|View
+     */
     public function show(Month $company)
     {
         return view('month.show',compact('company'));
     }
 
     /**
-    * Show the form for editing the specified resource.
-    *
-    * @param  \App\Month  $month
-    * @return Response
-    */
+     * Show the form for editing the specified resource.
+     *
+     * @param Month $month
+     * @return Application|Factory|View
+     */
     public function edit(Month $month)
     {
         return view('month.edit',compact('month'));
     }
 
     /**
-    * Update the specified resource in storage.
-    *
-    * @param  \Illuminate\Http\Request  $request
-    * @param  \App\Month  $month
-    * @return Response
-    */
-    public function update(Request $request, Month $month)
+     * Update the specified resource in storage.
+     *
+     * @param Request $request
+     * @param Month $month
+     * @return RedirectResponse
+     */
+    public function update(Request $request, Month $month): RedirectResponse
     {
         $request->validate([
             'month_id' => 'required',
@@ -98,14 +97,14 @@ class MonthController extends Controller
     }
 
     /**
-    * Remove the specified resource from storage.
-    *
-    * @param  \App\Month  $month
-    * @return Response
-    */
-    public function destroy(Month $month)
+     * Remove the specified resource from storage.
+     *
+     * @param Month $month
+     * @return RedirectResponse
+     */
+    public function destroy(Month $month): RedirectResponse
     {
        // $month->delete();
-        return redirect()->route('month.index')->with('success','Ma\'lumotlar o\'chirildi');
+        return redirect()->route('month.index')->with('error','Ma\'lumotlar o\'chirib bo\'lmadi');
     }
 }

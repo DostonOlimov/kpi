@@ -6,6 +6,7 @@ use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DirectorProfileController;
 use App\Http\Controllers\EmployeeDaysController;
+use App\Http\Controllers\EmployeeKpiController;
 use App\Http\Controllers\EmployeeProfileController;
 use App\Http\Controllers\EmployeesController;
 use App\Http\Controllers\KpiController;
@@ -116,6 +117,14 @@ Route::middleware('auth')->group(function () {
     Route::put('/user-kpis/{id}', [UserKPIController::class, 'update'])->name('user-kpis.update');
     Route::delete('/user-kpis/{id}', [UserKPIController::class, 'destroy'])->name('user-kpis.destroy');
     Route::get('/kpis/category/{categoryId}', [UserKPIController::class, 'getKPIsByCategory'])->name('kpis.by-category');
+
+    Route::group(['prefix' => 'employee'], function () {
+        // Users listing
+        Route::get('/users', [EmployeeKpiController::class, 'index'])->name('employee.kpis.users');
+        // User KPIs management
+        Route::get('/users/{user}/kpis', [EmployeeKpiController::class, 'showKpis'])->name('employee.kpis');
+        Route::post('/user-kpis/toggle', [EmployeeKpiController::class, 'toggle'])->name('user-kpi.toggle');
+    });
 });
 
 

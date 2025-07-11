@@ -1,6 +1,6 @@
 <div class="sidebar sidebar-dark sidebar-fixed " id="sidebar">
     <div class="sidebar-brand d-none d-md-flex justify-content-around">
-        <img style="width:40px;" src="/assets/images/log3o.png">
+        <img style="width:40px;" src="/assets/images/logo.png">
         <h2 style="font-size: 20px; color: white; margin: 6px 22px 5px 0; !important;">ECOEKESPERTIZA</h2>
     </div>
     <ul class="sidebar-nav" data-coreui="navigation" data-simplebar="">
@@ -12,57 +12,51 @@
         @if(auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)
             <li class="nav-title">Foydalanuvchilar</li>
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('employees.list') }}">
-                    <svg class="nav-icon">
-                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-people"></use>
-                    </svg>
-                    Ro'yxatni ko'rish
-                </a>
-            </li>
+            @php
+                $navItems = [
+                      [
+                        'route' => 'employees.list',
+                        'icon'  => 'cil-people',
+                        'label' => 'Xodimlar',
+                    ],
+                    [
+                        'route' => 'works.index',
+                        'icon'  => 'cil-briefcase',
+                        'label' => 'Bo\'limlar',
+                    ],
+                    [
+                        'route' => 'month.index',
+                        'icon'  => 'cil-calendar',
+                        'label' => 'Oy kunlari',
+                    ],
+                    [
+                        'route' => 'kpis.index',
+                        'icon'  => 'cil-chart-pie',
+                        'label' => 'Baholash mezoni',
+                    ],
+                    [
+                        'route' => 'working-kpis.index',
+                        'icon'  => 'cil-description',
+                        'label' => 'KPI Ko‘rsatkichlari',
+                    ],
+                    [
+                        'route' => 'employee.kpis.users',
+                        'icon'  => 'cil-bar-chart',
+                        'label' => 'Shaxsiy KPI ko‘rsatkichlar',
+                    ],
+                ];
+            @endphp
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('roles.index') }}">
-                    <svg class="nav-icon">
-                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-shield-alt"></use>
-                    </svg>
-                    Foydalanuvchi rollari
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('works.index') }}">
-                    <svg class="nav-icon">
-                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-briefcase"></use>
-                    </svg>
-                    Foydalanuvchi ish joylari
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('month.index') }}">
-                    <svg class="nav-icon">
-                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-calendar"></use>
-                    </svg>
-                    Ish kunlari
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('kpis.index') }}">
-                    <svg class="nav-icon">
-                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-chart-pie"></use>
-                    </svg>
-                    KPI Ko‘rsatkichlari
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('working-kpis.index') }}">
-                    <svg class="nav-icon">
-                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-description"></use>
-                    </svg>
-                    Lavozim yo'riqnomalari
-                </a>
-            </li>
+            @foreach ($navItems as $item)
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs($item['route']) ? 'active' : '' }}" href="{{ route($item['route']) }}">
+                        <svg class="nav-icon">
+                            <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#{{ $item['icon'] }}"></use>
+                        </svg>
+                        {{ $item['label'] }}
+                    </a>
+                </li>
+            @endforeach
         @endif
 
         @if(auth()->user()->role_id != \App\Models\User::ROLE_ADMIN and auth()->user()->role_id != \App\Models\User::ROLE_MANAGER)
@@ -91,14 +85,14 @@
         @if(auth()->user()->role_id === \App\Models\User::ROLE_DIRECTOR)
             <li class="nav-title">Bo'lim ko'rsatkichlari</li>
 
-             <li class="nav-item">
-                <a class="nav-link" href="{{ route('user-kpis.index') }}">
-                    <svg class="nav-icon">
-                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-bar-chart"></use>
-                    </svg>
-                    Xodimlarning kpilari
-                </a>
-            </li>
+{{--             <li class="nav-item">--}}
+{{--                <a class="nav-link" href="{{ route('user-kpis.index') }}">--}}
+{{--                    <svg class="nav-icon">--}}
+{{--                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-bar-chart"></use>--}}
+{{--                    </svg>--}}
+{{--                    Xodimlarning kpilari--}}
+{{--                </a>--}}
+{{--            </li>--}}
 
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('director.list') }}">
@@ -130,14 +124,7 @@
 {{--                    Xodimlar natijalari--}}
 {{--                </a>--}}
 {{--            </li>--}}
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('user-kpis.index') }}">
-                    <svg class="nav-icon">
-                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-bar-chart"></use>
-                    </svg>
-                    Xodimlarning kpilari
-                </a>
-            </li>
+
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('commission.employee.list') }}">
                     <svg class="nav-icon">

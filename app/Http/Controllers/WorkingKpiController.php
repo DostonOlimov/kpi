@@ -39,7 +39,7 @@ class WorkingKpiController extends Controller
             'max_score' => 'required|integer|min:0',
         ]);
 
-        Kpi::create(
+        $kpi = Kpi::create(
             [
                 'name' => $request->input('name'),
                 'max_score' => $request->input('max_score'),
@@ -48,52 +48,74 @@ class WorkingKpiController extends Controller
             ]
         );
 
-        return redirect()->route('working-kpis.index')->with('success', 'KPI muvaffaqiyatli yaratildi.');
+        return redirect()->to(
+            route('working-kpis.show', $kpi->id) . '?user_id=' . $request->input('user_id')
+        )->with('success', 'KPI muvaffaqiyatli yaratildi.');
     }
 
-    public function edit(Request $request)
+    public function edit(Request $request,Kpi $working_kpi)
     {
-        $kpi = Kpi::findOrFail($request->input('kpi_id'));
-        $user = User::findOrFail($request->input('user_id'));
+        $kpi = $working_kpi;
+        $user = User::findOrFail($working_kpi->user_id);
 
         return view('working_kpis.edit', compact('kpi', 'user'));
     }
 
-    public function update(Request $request, Kpi $kpi)
+    public function update(Request $request, Kpi $working_kpi)
     {
         // Check if KPI has any related scores or tasks
-//        $hasScore = $kpi->user_kpis()->exists();
-//        $hasTask = $kpi->tasks()->exists();
-//
-//        if ($hasScore || $hasTask) {
-//            return redirect()->route('working_kpis.index')->with('error', 'KPI ni o\'zgartirib bo\'lmaydi, chunki unga bog\'liq vazifalar mavjud.');
-//        }
+        $hasScore = $working_kpi->user_kpis()->exists();
+
+        if ($hasScore) {
+            return  redirect()->to(
+                route('working-kpis.show', $working_kpi->id) . '?user_id=' . $working_kpi->user_id
+            )->with('error', 'Ko\'rsatkichni o\'zgartirib bo\'lmaydi, chunki unga bog\'liq vazifalar mavjud.');
+        }
 
         $request->validate([
             'name' => 'required',
         ]);
 
-        $kpi->update($request->all());
-        return redirect()->route('working-kpis.index')->with('success', 'KPI muvaffaqiyatli o\'zgartirildi.');
+        $working_kpi->update($request->all());
+
+        return redirect()->to(
+            route('working-kpis.show', $working_kpi->id) . '?user_id=' . $working_kpi->user_id
+        )->with('success', 'Ko\'rsatkich muvaffaqiyatli o\'zgartirildi.');
     }
 
-    public function destroy(Kpi $kpi)
+    public function destroy(Kpi $working_kpi)
     {
-        $hasScore = $kpi->kpi_scores()->exists();
-        $hasTask = $kpi->tasks()->exists();
-        $hasChild = $kpi->children()->exists();
+        $hasScore = $working_kpi->user_kpis()->exists();
+        $hasChild = $working_kpi->children()->exists();
 
-        if ($hasScore || $hasTask || $hasChild) {
-            return redirect()->route('working_kpis.index')->with('error', 'KPI ni o\'chirish mumkin emas, chunki unga bog\'liq vazifalar, ballar yoki osti kpilar mavjud.');
+        if ($hasScore || $hasChild) {
+            return  redirect()->to(
+                route('working-kpis.show', $working_kpi->id) . '?user_id=' . $working_kpi->user_id
+            )->with('error', 'Ushbu ko\'rsatkichni o\'zgartirib bo\'lmaydi, chunki unga bog\'liq vazifalar mavjud.');
         }
 
-        $kpi->delete();
-        return redirect()->route('working_kpis.index')->with('success', 'KPI muvaffaqiyatli o\'chirildi.');
+        $working_kpi->delete();
+        return redirect()->to(
+            route('working-kpis.show', $working_kpi->id) . '?user_id=' . $working_kpi->user_id
+        )->with('success',  'Ko\'rsatkich muvaffaqiyatli o\'chirildi.');
+    }
+
+    public function show(Kpi $kpi,Request $request)
+    {
+        $user_id = $request->get('user_id');
+        $user = User::findOrFail($user_id);
+
+        $userKpis = Kpi::where('user_id', $user_id)
+            ->whereNotNull('parent_id')
+            ->get();
+
+        return view('working_kpis.show', compact('user', 'userKpis'));
     }
 
     public function getUserKPIs($userId)
     {
         $userKpis = Kpi::where('user_id', $userId)
+            ->whereNotNull('parent_id')
             ->get();
 
         return response()->json($userKpis);

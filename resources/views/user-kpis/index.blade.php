@@ -112,7 +112,7 @@
                                 <div class="mb-3">
                                     <label class="form-label">To'planishi kerak bo'lgan ball</label>
                                     <input type="number" class="form-control" id="targetScore" min="0" placeholder="Eng yoqori ko'rsatkich" readonly>
-                            
+
                                 </div>
 
                                 <button type="submit" class="btn btn-success w-100">
@@ -178,7 +178,7 @@
 @endsection
 @section('scripts')
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
- 
+
     <script>
         $(document).ready(function() {
             // CSRF token setup
@@ -204,6 +204,8 @@
                 $('#selectedUserName').val(userName);
 
                 loadUserKPIs(selectedUserId);
+
+                $('#categorySelect').trigger('change');
             });
 
             // Category selection
@@ -212,7 +214,7 @@
                 $('#kpiSelect').prop('disabled', true).html('<option value="">Select KPI</option>');
 
                 if (categoryId) {
-                    $.get(`/kpis/category/${categoryId}`)
+                    $.get(`/kpis/category/${categoryId}?user_id=${selectedUserId}`)
                         .done(function(kpis) {
                             let options = '<option value="">Select KPI</option>';
                             kpis.forEach(function(kpi) {
@@ -249,7 +251,7 @@
                     kpi_id: $('#kpiSelect').val(),
                     target_score: $('#targetScore').val() || null
                 };
-            
+
                 if (!formData.kpi_id) {
                    showAlert('Iltimos, KPI ni tanlang', 'warning');
                     return;

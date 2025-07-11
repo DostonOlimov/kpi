@@ -9,7 +9,7 @@ class KpiController extends Controller
 {
     public function index()
     {
-        $kpis = Kpi::whereNull('parent_id')->with('children')->whereNull('user_id')->paginate(5);
+        $kpis = Kpi::whereNull('parent_id')->with('children')->whereNull('user_id')->paginate(10);
         return view('kpis.index', compact('kpis'));
     }
 
@@ -41,34 +41,32 @@ class KpiController extends Controller
     public function update(Request $request, Kpi $kpi)
     {
         // Check if KPI has any related scores or tasks
-        $hasScore = $kpi->kpi_scores()->exists();
-        $hasTask = $kpi->tasks()->exists();
+        $hasScore = $kpi->user_kpis()->exists();
 
-        if ($hasScore || $hasTask) {
-            return redirect()->route('kpis.index')->with('error', 'KPI ni o\'zgartirib bo\'lmaydi, chunki unga bog\'liq vazifalar mavjud.');
-        }
 
-        $request->validate([
-            'name' => 'required',
-            'max_score' => 'nullable|integer',
-            'parent_id' => 'nullable|exists:kpis,id',
-        ]);
+        return redirect()->route('kpis.index')->with('error', 'KPI ni o\'zgartirib bo\'lmaydi, chunki unga bog\'liq vazifalar mavjud.');
 
-        $kpi->update($request->all());
-        return redirect()->route('kpis.index')->with('success', 'KPI muvaffaqiyatli o\'zgartirildi.');
+//        $request->validate([
+//            'name' => 'required',
+//            'max_score' => 'nullable|integer',
+//            'parent_id' => 'nullable|exists:kpis,id',
+//        ]);
+//
+//        $kpi->update($request->all());
+//        return redirect()->route('kpis.index')->with('success', 'KPI muvaffaqiyatli o\'zgartirildi.');
     }
 
     public function destroy(Kpi $kpi)
     {
-        $hasScore = $kpi->kpi_scores()->exists();
-        $hasTask = $kpi->tasks()->exists();
-        $hasChild = $kpi->children()->exists();
+        return redirect()->route('kpis.index')->with('error', 'KPI ni o\'chirish mumkin emas, chunki unga bog\'liq vazifalar, ballar yoki osti kpilar mavjud.');
+//        $hasScore = $kpi->user_kpis()->exists();
+//        $hasChild = $kpi->children()->exists();
 
-        if ($hasScore || $hasTask || $hasChild) {
-            return redirect()->route('kpis.index')->with('error', 'KPI ni o\'chirish mumkin emas, chunki unga bog\'liq vazifalar, ballar yoki osti kpilar mavjud.');
-        }
-
-        $kpi->delete();
-        return redirect()->route('kpis.index')->with('success', 'KPI muvaffaqiyatli o\'chirildi.');
+//        if ($hasScore || $hasChild) {
+//            return redirect()->route('kpis.index')->with('error', 'KPI ni o\'chirish mumkin emas, chunki unga bog\'liq vazifalar, ballar yoki osti kpilar mavjud.');
+//        }
+//
+//        $kpi->delete();
+//        return redirect()->route('kpis.index')->with('success', 'KPI muvaffaqiyatli o\'chirildi.');
     }
 }

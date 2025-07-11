@@ -8,16 +8,27 @@
         transform: translateY(-2px);
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
-    .category-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border-radius: 10px;
-        padding: 15px;
-        margin-bottom: 15px;
+    .kpi-card {
+        border-left: 4px solid #4e73df; /* Accent border */
+        background: #f8f9fc;
+        transition: box-shadow 0.2s ease;
     }
-    .progress-custom {
-        height: 8px;
-        border-radius: 10px;
+
+    .kpi-card:hover {
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .kpi-title {
+        font-weight: 600;
+        color: #343a40;
+    }
+
+    .kpi-score {
+        background: #5aea60;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        color: #495057;
     }
     .user-avatar {
         width: 40px;
@@ -30,16 +41,13 @@
         color: white;
         font-weight: bold;
     }
-    .loading-spinner {
-        display: none;
-    }
 </style>
 @section('content')
     <div class="section">
         <div class="page-header">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">
-                    <i class="fe fe-bar-chart-2 mr-1"></i>&nbsp; {{ __('Xodimning lavozim yo\'riqnomasi') }}
+                    <i class="fe fe-bar-chart-2 mr-1"></i>&nbsp; {{ __('Xodimlarning funksioanal vazifalari') }}
                 </li>
             </ol>
         </div>
@@ -80,7 +88,7 @@
                 <div class="col-md-8">
                     <div class="card shadow-sm">
                         <div class="card-header bg-info text-white">
-                            <h5 class="mb-0"><i class="fa fa-chart-line me-2"></i>Xodimning KPI ko'rsatkichlari</h5>
+                            <h5 class="mb-0"><i class="fa fa-line-chart me-2"></i>Xodimning vazifa ko'rsatkichlari</h5>
                         </div>
                         <div class="card-body">
                             <div id="userKpisContainer">
@@ -95,79 +103,75 @@
             </div>
         </div>
 @endsection
-        @section('scripts')
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-            <script>
-                $(document).ready(function() {
+<script>
+    $(document).ready(function() {
 
-                    let selectedUserId = null;
+    let selectedUserId = null;
 
-                    // User selection
-                    $('.user-item').click(function(e) {
-                        e.preventDefault();
-                        $('.user-item').removeClass('active');
-                        $(this).addClass('active');
+    // User selection
+    $('.user-item').click(function(e) {
+    e.preventDefault();
+    $('.user-item').removeClass('active');
+    $(this).addClass('active');
 
-                        selectedUserId = $(this).data('user-id');
-                        const userName = $(this).find('h6').text();
+    selectedUserId = $(this).data('user-id');
+    const userName = $(this).find('h6').text();
 
-                        $('#selectedUserId').val(selectedUserId);
-                        $('#selectedUserName').val(userName);
+    $('#selectedUserId').val(selectedUserId);
+    $('#selectedUserName').val(userName);
 
-                        loadUserKPIs(selectedUserId);
-                    });
+    loadUserKPIs(selectedUserId);
+    });
 
-                    // Load user KPIs
-                    function loadUserKPIs(userId) {
-                        $('#userKpisContainer').html('<div class="text-center"><div class="spinner-border"></div></div>');
+    // Load user KPIs
+    function loadUserKPIs(userId) {
+         $('#userKpisContainer').html('<div class="text-center"><div class="spinner-border"></div></div>');
 
-                        $.get(`/working-kpis/user/${userId}`)
-                            .done(function(userKpis) {
-                                let html = '';
+         $.get(`/working-kpis/user/${userId}`)
+               .done(function(userKpis) {
+                     let html = '';
 
-                                if (userKpis.length === 0) {
-                                    html = `
+                     if (userKpis.length === 0) {
+                          html = `
                     <div class="text-center text-muted py-4">
                         <i class="fas fa-clipboard-list fa-2x mb-3"></i>
                         <p>Hech qanday ma'lumot topilmadi</p>
-                        <a href="/working-kpis/create?user_id=${userId}" class="btn btn-primary">
+                        <a href="/working-kpis/kpi-index?user_id=${userId}" class="btn btn-primary">
                             <i class="fa fa-plus"></i> Qoʻshish
                         </a>
                     </div>
                 `;
-                                } else {
-                                    userKpis.forEach(function(userKpi) {
-                                        const progress = (userKpi.actual_score / userKpi.target_score) * 100;
+                    } else {
+                          html += `
+                       <a href="/working-kpis/kpi-index?user_id=${userId}" class="btn btn-primary pb-2">
+                            <i class="fa fa-plus"></i> Ko'rsatkichlarni o'zagartirish
+                        </a>
+                    `;
+                    userKpis.forEach(function(userKpi) {
+                    const progress = (userKpi.actual_score / userKpi.target_score) * 100;
 
-                                        html += `
-                        <div class="kpi-card card mb-3">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <h6 class="card-title mb-0">${userKpi.name}</h6>
-                                    <a href="/working-kpis/${userKpi.id}/edit?user_id=${userId}&kpi_id=${userKpi.id}" class="btn btn-sm btn-outline-secondary">
-                                        <i class="fa fa-edit"></i> Tahrirlash
-                                    </a>
-                                </div>
-
-                                ${userKpi.target_score > 0 ? `
-                                    <div class="progress progress-custom">
-                                        <div class="progress-bar" style="width: ${Math.min(progress, 100)}%"></div>
-                                    </div>
-                                ` : ''}
+                    html += `
+                       <div class="kpi-card card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="kpi-title">${userKpi.name}</div>
+                                <div class="kpi-score">${userKpi.max_score}</div>
                             </div>
                         </div>
+                    </div>
                     `;
-                                    });
-                                }
+                    });
+                }
 
-                                $('#userKpisContainer').html(html);
-                            })
-                            .fail(function() {
-                                $('#userKpisContainer').html('<div class="alert alert-danger">Foydalanuvchi ma\'lumotlarini yuklashda xatolik yuz berdi</div>');
-                            });
-                    }
-
+                $('#userKpisContainer').html(html);
+                   })
+                       .fail(function() {
+                        $('#userKpisContainer').html('<div class="alert alert-danger">Foydalanuvchi ma\'lumotlarini yuklashda xatolik yuz berdi</div>');
+                        });
+                  }
 
                     // Show alert function
                     function showAlert(message, type) {
@@ -177,12 +181,12 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 `;
-                        $('body').append(alertHtml);
+               $('body').append(alertHtml);
 
-                        setTimeout(function() {
-                            $('.alert').fadeOut();
-                        }, 5000);
-                    }
-                });
-            </script>
+               setTimeout(function() {
+                   $('.alert').fadeOut();
+               }, 5000);
+         }
+    });
+</script>
 @endsection

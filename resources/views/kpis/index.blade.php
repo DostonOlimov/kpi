@@ -14,7 +14,7 @@
         <div class="page-header">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">
-                    <i class="fe fe-bar-chart-2 mr-1"></i>&nbsp; {{ __('KPI Ko‘rsatkichlari') }}
+                    <i class="fe fe-bar-chart-2 mr-1"></i>&nbsp; {{ __('Baholash mezonlari') }}
                 </li>
             </ol>
         </div>
@@ -25,9 +25,9 @@
 
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h3 class="mb-0">{{ __('KPI Ko‘rsatkichlari') }}</h3>
-                        <a href="{{ route('kpis.create') }}" class="btn btn-success">
-                            <i class="fa fa-plus-circle"></i>&nbsp; {{ __('Yangi KPI qo‘shish') }}
-                        </a>
+{{--                        <a href="{{ route('kpis.create') }}" class="btn btn-success">--}}
+{{--                            <i class="fa fa-plus-circle"></i>&nbsp; {{ __('Yangi KPI qo‘shish') }}--}}
+{{--                        </a>--}}
                     </div>
 
                     <div class="card-body">

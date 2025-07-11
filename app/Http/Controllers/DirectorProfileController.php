@@ -9,6 +9,7 @@ use App\Models\KpiScore;
 use App\Models\Month;
 use App\Models\Task;
 use App\Models\User;
+use App\Models\UserKpi;
 use App\Models\WorkZone;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -34,35 +35,28 @@ class DirectorProfileController extends Controller
 
     public function check_user(int $type,User $employee, Request $request)
     {
-        $kpis = Kpi::whereNull('parent_id')
-            ->where('type', Kpi::TYPE_1)
-            ->with(['children' => function ($query) use ($employee) {
-            $query->whereHas('tasks', function ($taskQuery) use ($employee) {
-                $taskQuery->where('user_id', $employee->id);
-            });
-            }, 'children.tasks' => function ($query) use ($employee) {
-            $query->where('user_id', $employee->id);
-            }])
-            ->whereHas('children.tasks', function ($query) use ($employee) {
-            $query->where('user_id', $employee->id);
-            })
+        $userKpis = UserKpi::where('user_id', $employee->id)
+            ->with(['kpi.parent', 'kpi.children'])
             ->get();
 
-        $total = 0;
-        $checked = 0;
-        $scored = 0;
+        // Extract the related KPIs
+        $kpis = $userKpis->pluck('kpi')->filter();
 
-        foreach ($kpis as $kpi) {
-            foreach ($kpi->children as $child) {
-                $tasks = $child->tasks;
-                $total += $tasks->count();
-                $checked += $tasks->where('is_checked', true)->count();
-                $scored += $child->kpi_scores->where('user_id', $employee->id)->unique('kpi_id')->count();
-            }
-        }
+        // Optionally, get unique parent KPIs
+        $parentKpis = $kpis->pluck('parent')->filter()->unique('id')->values();
+
+        $total = $userKpis->count();
+        $checked = UserKpi::where('user_id', $employee->id)
+            ->whereHas('tasks', function ($query) {
+                $query->where('is_checked', true);
+            })
+            ->count();
+        $scored = $userKpis->whereNotNull('current_score')->count();
 
         return view('director.checking', [
+            'user_kpis' => $userKpis,
             'kpis' => $kpis,
+            'parent_kpis' => $parentKpis,
             'month' => session('month') ?? date('m'),
             'year' => session('year') ?? date('Y'),
             'total' => $total,

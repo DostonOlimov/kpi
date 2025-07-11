@@ -64,10 +64,6 @@ class User extends Authenticatable
     {
         return $this->belongsTo(WorkZone::class);
     }
-    public function totalBalls()
-    {
-        return $this->hasMany(TotalBall::class);
-    }
 
     public function working_days()
     {
@@ -86,10 +82,18 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserKpi::class);
     }
-
+    public function user_kpis(): HasMany
+    {
+        return $this->hasMany(UserKpi::class);
+    }
     public function working_kpis(): HasMany
     {
         return $this->hasMany(Kpi::class);
+    }
+
+    public function getFullNameAttribute()
+    {
+        return $this->first_name. ' '. $this->last_name;
     }
 
 }
