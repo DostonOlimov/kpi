@@ -9,7 +9,7 @@ class KpiController extends Controller
 {
     public function index()
     {
-        $kpis = Kpi::whereNull('parent_id')->with('children')->whereNull('user_id')->paginate(10);
+        $kpis = Kpi::whereNull('parent_id')->with('children')->where('type','!=',Kpi::SELF_BY_PERSON)->paginate(10);
         return view('kpis.index', compact('kpis'));
     }
 

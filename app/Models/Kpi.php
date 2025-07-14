@@ -11,10 +11,11 @@ class Kpi extends Model
 {
     use HasFactory;
 
-    CONST TYPE_1 = 1;
-    CONST TYPE_2 = 2;
-    CONST TYPE_3 = 3;
-    CONST TYPE_4 = 4;
+    CONST SELF_BY_PERSON = 1;
+    CONST BEHAVIOUR = 2;
+    CONST ACTIVITY = 3;
+    CONST IJRO = 4;
+    CONST PERMANENT = 5;
 
     protected $fillable = ['parent_id', 'name', 'max_score','user_id'];
 

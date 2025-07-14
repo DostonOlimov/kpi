@@ -21,7 +21,7 @@ class UserKPIController extends Controller
         }
 
         $users = $query->get();
-        $kpis = KPI::with('children')->whereNull('parent_id')->where('type',Kpi::TYPE_1)->get();
+        $kpis = KPI::with('children')->whereNull('parent_id')->where('type',Kpi::SELF_BY_PERSON)->get();
 
         return view('user-kpis.index', compact('users', 'kpis'));
     }
@@ -31,7 +31,7 @@ class UserKPIController extends Controller
     {
         $userKpis = UserKpi::with('kpi')
             ->whereHas('kpi', function ($query) {
-                $query->where('type', Kpi::TYPE_1)
+                $query->where('type', Kpi::SELF_BY_PERSON)
                       ->whereNotNull('max_score');
             })
             ->where('user_id', $userId)

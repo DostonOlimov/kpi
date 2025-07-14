@@ -6,21 +6,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Task extends Model
 {
-    use HasFactory;
+    use SoftDeletes;
 
       protected $fillable = [
         'user_kpi_id',
         'name',
         'description',
-        'user_id',
-        'year',
-        'month',
-        'file_path',
         'type',
-        'is_completed'
+        'extracted_text',
+        'score',
+        'task_score_id'
     ];
 
       public function comments(): HasMany
@@ -33,22 +33,13 @@ class Task extends Model
           return $this->hasMany(TaskScore::class);
       }
 
-      public function user(): BelongsTo
+      public function task_score(): HasOne
       {
-          return $this->belongsTo(User::class, 'user_id');
+          return $this->hasOne(TaskScore::class,'id','task_score_id');
       }
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        $year = session('year') ?: (int)date('Y');
-        $month = session('month') ?: (int)date('m');
-
-        static::addGlobalScope(function ($query) use($year, $month) {
-            $query->where('year',$year)
-                ->where('month',$month);
-        });
-    }
-
+      public function user_kpi(): BelongsTo
+      {
+          return $this->belongsTo(UserKpi::class);
+      }
 }

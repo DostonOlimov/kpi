@@ -33,7 +33,9 @@
                                 <label>{{ __('Maksimal ball') }}</label>
                                 <input type="number" name="max_score" class="form-control" value="{{ old('max_score') }}" required>
                             </div>
-
+                            <a class="btn btn-primary" href="{{ URL::previous() }}">
+                                <i class="fa fa-warning" ></i>{{ trans('app.Cancel') }}
+                            </a>
                             <button type="submit" class="btn btn-success">
                                 <i class="fa fa-save"></i> {{ __('Saqlash') }}
                             </button>

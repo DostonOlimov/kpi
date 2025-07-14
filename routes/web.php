@@ -109,7 +109,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/working-kpis/user/{userId}', [WorkingKpiController::class, 'getUserKPIs'])->name('user-working-kpis.user');
 
     Route::post('/tasks/store', [TaskController::class, 'store']);
+    Route::post('/tasks/update/{id}', [TaskController::class, 'update']);
     Route::delete('/tasks/{id}', [TaskController::class, 'destroy']);
+    Route::post('/tasks/{id}/ai-score', [TaskController::class, 'aiScore']);
 
     Route::get('/user-kpis', [UserKPIController::class, 'index'])->name('user-kpis.index');
     Route::get('/user-kpis/user/{userId}', [UserKPIController::class, 'getUserKPIs'])->name('user-kpis.user');

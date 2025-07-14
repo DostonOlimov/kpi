@@ -15,7 +15,7 @@
     <title>KPI tizimi</title>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('/assets/images/logo.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('/assets/images/logdo.png') }}">
 
     <!-- Sidebar Styles -->
     <link rel="stylesheet" href="{{ asset('assets/vendors/simplebar/css/simplebar.css') }}">

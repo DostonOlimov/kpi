@@ -20,19 +20,19 @@
                         <!-- Statistics Cards -->
                         <div class="stats-container fade-in">
                             <div class="stat-card total">
-                                <div class="stat-number" id="total-tasks">{{ $user_kpis->count() ?? 0 }}</div>
-                                <div class="stat-label"><i class="fa fa-tasks"></i> Umumiy vazifalar</div>
+                                <div class="stat-number" id="total-tasks">{{ $user_kpis->count() ?? 0 }} / {{ $user_kpis->sum('target_score') ?? 0 }}</div>
+                                <div class="stat-label"><i class="fa fa-tasks"></i> Umumiy kpi ko'rsatkichlari</div>
                             </div>
                             <div class="stat-card pending">
-                                <div class="stat-number" id="pending-reviews">{{ $total - $checked ?? 0 }}</div>
-                                <div class="stat-label"><i class="fa fa-clock-o"></i> Yangi qo'shilgan</div>
+                                <div class="stat-number" id="pending-reviews">{{ $user_kpis->sum(function($user_kpi) { return $user_kpi->tasks->count(); }) }}</div>
+                                <div class="stat-label"><i class="fa fa-clock-o"></i>Bajarilgan topshiriqlar soni</div>
                             </div>
                             <div class="stat-card completed">
-                                <div class="stat-number" id="reviewed-tasks">{{ $checked ?? 0 }}</div>
-                                <div class="stat-label"><i class="fa fa-check-circle"></i> Ko'rilgan</div>
+                                <div class="stat-number" id="reviewed-tasks">{{ $user_kpis->sum(function($user_kpi) { return $user_kpi->tasks->whereNotNull('score')->count(); }) }}</div>
+                                <div class="stat-label"><i class="fa fa-check-circle"></i>Baholangan topshiriqlar</div>
                             </div>
                             <div class="stat-card scored">
-                                <div class="stat-number" id="scored-kpis">{{ $scored ?? 0 }}</div>
+                                <div class="stat-number" id="scored-kpis">{{  $user_kpis->whereNotNull('current_score')->count() }} / {{ $user_kpis->sum('current_score') }}</div>
                                 <div class="stat-label"><i class="fa fa-star"></i> Baholangan KPIlar</div>
                             </div>
                         </div>
@@ -47,23 +47,16 @@
                         @endif
 
                         <!-- KPI Categories -->
-                            @foreach ($parent_kpis as $parent)
-                            <div class="category-section fade-in">
-                                <div class="category-header">
-                                    <h2 class="category-title">{{ $parent->name }}</h2>
-                                </div>
-
-                                @foreach ($user_kpis as $user_kpi)
-                                    @if($user_kpi->kpi->parent_id == $parent->id)
-                                        <div class="child-kpi-card">
+                        @foreach ($user_kpis as $user_kpi)
+                                <div class="child-kpi-card">
                                         <div class="child-header" data-bs-toggle="collapse" data-bs-target="#child-{{  $user_kpi->kpi?->id }}">
-                                            <div class="child-info">
+                                            <div class="child-info" style="max-width: 75%">
                                                 <h5><i class="fa fa-bars"></i> {{  $user_kpi->kpi?->name }}</h5>
                                             </div>
                                             <div class="child-stats">
                                                 <span><i class="fa fa-tasks"></i> {{ $user_kpi->tasks->count() }} ta vazifa</span>
                                                 <div class="child-score">
-                                                    <i class="fa fa-star-half-o"></i> Baho: {{  $user_kpi->current_score ? $user_kpi->current_score : 'Baholanmagan' }}
+                                                    <i class="fa fa-star-half-o"></i> Baho: {{  $user_kpi->current_score ?? 'Baholanmagan' }}
                                                 </div>
                                                 <span class="expand-icon"><i class="fa fa-chevron-down"></i></span>
                                             </div>
@@ -97,40 +90,48 @@
                                                         </div>
 
                                                         <!-- Comments Section -->
-                                                        <div class="comments-section">
-                                                            <h6 class="comments-title"><i class="fa fa-comments"></i> Izohlar</h6>
+                                                        <div class="score-section mt-3">
+                                                            <div class="score-details" id="score-{{ $task->id }}">
+                                                                @if ($task->score)
+                                                                    <h6 class="score-title">
+                                                                        <i class="fa fa-star text-warning"></i> Baho
+                                                                    </h6>
 
-                                                            <div class="comments-list" id="comments-{{ $task->id }}">
-                                                                @forelse ($task->comments ?? [] as $comment)
-                                                                    <div class="comment-item">
-                                                                        <div class="comment-header">
-                                                                        <span class="comment-author">
-                                                                            <i class="fa fa-user-circle-o"></i> {{ $comment->user->first_name . ' ' . $comment->user->last_name }}
-                                                                        </span>
-                                                                            <span class="comment-date">
-                                                                            <i class="fa fa-calendar"></i> {{ $comment->created_at->format('Y-m-d H:i') }}
-                                                                        </span>
+                                                                    <div class="score-item p-3 rounded bg-light border">
+                                                                        <div class="d-flex justify-content-between mb-2">
+                                                                            <span class="score-author text-muted">
+                                                                                <i class="fa fa-user-circle-o"></i>
+                                                                                {{ $task->score->user ?? 'AI Baholovchi' }}
+                                                                            </span>
+                                                                                                                                    <span class="score-date text-muted">
+                                                                                <i class="fa fa-calendar"></i>
+                                                                                {{ $task->task_score->created_at?->format('d.m.Y') ?? 'Sana yo‘q' }}
+                                                                            </span>
                                                                         </div>
-                                                                        <p class="comment-text">{{ $comment->comment }}</p>
+                                                                        <p class="mb-1">
+                                                                            <strong>Baho:</strong>
+                                                                            {{ round($task->score) }}/{{ $task->userKpi->kpi->max_score ?? '10' }}
+                                                                        </p>
+                                                                        @if ($task->task_score->feedback)
+                                                                            <p class="mb-0"><strong>Fikr:</strong> {{ $task->task_score->feedback }}</p>
+                                                                        @endif
                                                                     </div>
-                                                                @empty
-                                                                    <p class="text-muted">Hozircha izohlar mavjud emas.</p>
-                                                                @endforelse
+                                                                @else
+                                                                    <p class="text-muted"></p>
+                                                                    <div class="text-center mt-2">
+                                                                        <h2 class="text-danger"><i class="fa fa-info-circle"></i> Hozircha baho mavjud emas. </h2>
+                                                                        <button
+                                                                            class="btn btn-sm btn-outline-primary ai-score-btn p-3"
+                                                                            data-task-id="{{ $task->id }}"
+                                                                        >
+                                                                            <i class="fa fa-magic"></i> AI baholash
+                                                                        </button>
+                                                                    </div>
+                                                                @endif
                                                             </div>
+                                                            <meta name="csrf-token" content="{{ csrf_token() }}">
+                                                        <!-- Add Comment Form -->
 
-                                                            <!-- Add Comment Form -->
-                                                            <form class="comment-form" data-task-id="{{ $task->id }}">
-                                                                @csrf
-                                                                <div class="mb-3">
-                                                                <textarea name="comment"
-                                                                          class="form-control"
-                                                                          placeholder="Vazifaga izoh kiriting..."
-                                                                          required></textarea>
-                                                                </div>
-                                                                <button type="submit" class="btn btn-modern btn-comment">
-                                                                    <i class="fa fa-comment"></i> Izoh qoldirish
-                                                                </button>
-                                                            </form>
                                                         </div>
                                                     </div>
                                                 @empty
@@ -224,9 +225,6 @@
                                             </div>
                                             </div>
                                     </div>
-                                    @endif
-                                @endforeach
-                            </div>
                         @endforeach
                     </div>
                 </div>
@@ -234,11 +232,64 @@
         </div>
     </div>
 @endsection
-
 @section('scripts')
     <script>
         $(document).ready(function () {
-            // Farzand bo'limlarini animatsiya bilan ochib-yopish
+
+            $(document).on('click', '.ai-score-btn', function () {
+                const button = $(this);
+                const taskId = button.data('task-id');
+                const scoreContainer = $(`#score-${taskId}`);
+
+                button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span>Baholanmoqda...');
+
+                $.ajax({
+                    url: `/tasks/${taskId}/ai-score`,
+                    type: 'POST',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function (response) {
+                        showNotification('AI tomonidan baho qo‘yildi!', 'success');
+
+                        // 🟡 Optional fallback if backend didn't return full data
+                        const score = response.score ?? '-';
+                        const feedback = response.feedback ?? 'Fikr mavjud emas';
+                        const maxScore = response.max_score ?? '10';
+
+                        // 🟢 Replace the score container content
+                        const scoreHtml = `
+                <div class="score-item p-3 rounded bg-light border fade-in">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="score-author text-muted">
+                            <i class="fa fa-user-circle-o"></i> AI
+                        </span>
+                        <span class="score-date text-muted">
+                            <i class="fa fa-calendar"></i> ${new Date().toLocaleDateString()}
+                        </span>
+                    </div>
+                    <p class="mb-1">
+                        <strong>Baho:</strong> ${score}/${maxScore}
+                    </p>
+                    <p class="mb-0">
+                        <strong>Fikr:</strong> ${feedback}
+                    </p>
+                </div>
+            `;
+                        scoreContainer.html(scoreHtml);
+                        button.remove(); // remove the button after scoring
+                    },
+                    error: function (xhr) {
+                        console.error(xhr);
+                        showNotification('AI baholashda xatolik yuz berdi.', 'error');
+                    },
+                    complete: function () {
+                        button.prop('disabled', false).html('<i class="fa fa-magic"></i> AI baholash');
+                    }
+                });
+            });
+
+
             $('.child-header').on('click', function () {
                 $(this).toggleClass('expanded');
                 let targetId = $(this).data('bs-target');

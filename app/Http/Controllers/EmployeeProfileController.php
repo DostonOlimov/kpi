@@ -21,7 +21,7 @@ class EmployeeProfileController extends Controller
                 }
             ])
             ->whereNull('parent_id')
-            ->where('type','!=',Kpi::TYPE_1)
+            ->where('type','!=',Kpi::SELF_BY_PERSON)
             ->get();
 
         // Get KPIs from user_kpis (KpiEmployees) for the current user
@@ -34,6 +34,7 @@ class EmployeeProfileController extends Controller
 
         // Optionally, get unique parent KPIs
         $parentKpis = $kpis->pluck('parent')->filter()->unique('id')->values();
+
 
 
         // Calculate user statistics
@@ -84,22 +85,12 @@ class EmployeeProfileController extends Controller
 
         // Get KPIs from user_kpis (KpiEmployees) for the current user
         $userKpis = UserKpi::where('user_id', $userId)
-            ->with(['kpi.parent', 'kpi.children','score','tasks'])
+            ->with(['kpi','score','tasks'])
             ->get();
-
-        // Extract the related KPIs
-        $kpis = $userKpis->pluck('kpi')->filter();
-
-        // Optionally, get unique parent KPIs
-        $parentKpis = $kpis->pluck('parent')->filter()->unique('id')->values();
 
         return view('employee_profile.create', [
             'user_kpis' => $userKpis,
-            'kpis' => $kpis,
-            'parent_kpis' => $parentKpis,
             'userId'=> $userId,
-            'month' => session('month') ?? date('m'),
-            'year' => session('year') ?? date('Y'),
         ]);
     }
 }

@@ -23,35 +23,27 @@
                                         {{ trans('app.Tahrirlash')}}
                                     </a>
                                 </li>
-                                <li class="btn-warning ">
-                                    <a href="{{ url()->previous() }}" class="text-white">
-                                        <span class="visible-xs"></span>
-                                        <i class="fa fa-warning fa-lg">&nbsp;</i> <b>
-                                            {{ trans('app.Cancel')}}</b>
-                                    </a>
-                                </li>
                             </ul>
                         </div>
                     </div>
-
                     <div class="card-body">
                         <form action="{{ route('working-kpis.update', $kpi->id) }}" method="POST">
                             @csrf
                             @method('PUT')
 
                             <input type="hidden" value="{{ $user->id }}" name="user_id">
-
                             <div class="form-group">
                                 <label>{{ __('Nomi') }}</label>
                                 <input type="text" name="name" class="form-control" value="{{ old('name', $kpi->name) }}" required>
                             </div>
-
                             <div class="form-group">
                                 <label>{{ __('Maksimal ball') }}</label>
                                 <input type="number" name="max_score" class="form-control"
                                        value="{{ old('max_score', $kpi->max_score) }}" required>
                             </div>
-
+                            <a class="btn btn-primary" href="{{ URL::previous() }}">
+                                <i class="fa fa-warning" ></i>{{ trans('app.Cancel') }}
+                            </a>
                             <button type="submit" class="btn btn-primary">
                                 <i class="fa fa-save"></i> {{ __('Saqlash') }}
                             </button>

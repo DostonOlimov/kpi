@@ -3,28 +3,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Director;
 use App\Models\Kpi;
-use App\Models\KpiScore;
-use App\Models\Month;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\UserKpi;
 use App\Models\WorkZone;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-
 
 class DirectorProfileController extends Controller
 {
     public function index(Request $request)
     {
+
         $user = auth()->user();
-        $users = User::with('tasks' )
+        $users = User::with('user_kpis' )
             ->where('work_zone_id','=',$user->work_zone_id)
             ->where('role_id','=',User::ROLE_USER)
             ->get();
@@ -39,30 +32,9 @@ class DirectorProfileController extends Controller
             ->with(['kpi.parent', 'kpi.children'])
             ->get();
 
-        // Extract the related KPIs
-        $kpis = $userKpis->pluck('kpi')->filter();
-
-        // Optionally, get unique parent KPIs
-        $parentKpis = $kpis->pluck('parent')->filter()->unique('id')->values();
-
-        $total = $userKpis->count();
-        $checked = UserKpi::where('user_id', $employee->id)
-            ->whereHas('tasks', function ($query) {
-                $query->where('is_checked', true);
-            })
-            ->count();
-        $scored = $userKpis->whereNotNull('current_score')->count();
-
         return view('director.checking', [
             'user_kpis' => $userKpis,
-            'kpis' => $kpis,
-            'parent_kpis' => $parentKpis,
-            'month' => session('month') ?? date('m'),
-            'year' => session('year') ?? date('Y'),
-            'total' => $total,
-            'checked' => $checked,
             'user' => $employee,
-            'scored' => $scored,
             'type' => $type,
         ]);
     }

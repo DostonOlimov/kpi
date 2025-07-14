@@ -26,7 +26,7 @@
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="{{ route('roles.create') }}">
+                                        <a href="">
                                             <span class="visible-xs"></span>
                                             <i class="fa fa-plus-circle fa-lg">&nbsp;</i> <b>
                                                 {{ trans('app.Qo\'shish')}}</b>
