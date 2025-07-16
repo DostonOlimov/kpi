@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Score;
+use App\Models\UserKpi;
 use App\Models\WorkZone;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -102,6 +104,91 @@ class EmployeeKpiController extends Controller
                 'is_active' => false,
                 'total_active_score' => $newTotal
             ]);
+        }
+    }
+
+    public function checkCompletion($kpiId)
+    {
+        try {
+            $userKpi = UserKpi::with(['tasks'])->findOrFail($kpiId);
+
+            $totalTasks = $userKpi->tasks->count();
+            $scoredTasks = $userKpi->tasks->filter(function($task) {
+                return $task->score !== null ;
+            });
+
+            $scoredTasksCount = $scoredTasks->count();
+            $unscoredCount = $totalTasks - $scoredTasksCount;
+
+            if ($unscoredCount > 0) {
+                return response()->json([
+                    'can_complete' => false,
+                    'unscored_count' => $unscoredCount,
+                    'total_tasks' => $totalTasks
+                ]);
+            }
+
+            // Calculate average score
+            $averageScore = $scoredTasks->avg(function($task) {
+                return $task->score;
+            });
+
+            return response()->json([
+                'can_complete' => true,
+                'average_score' => round($averageScore, 2),
+                'total_tasks' => $totalTasks,
+                'max_score' => $userKpi->target_score
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Tekshirishda xatolik yuz berdi.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Complete or update KPI score
+     */
+    public function completeKpi(Request $request)
+    {
+        $request->validate([
+            'kpi_id' => 'required|exists:user_kpis,id',
+            'score' => 'required|numeric|min:0|max:100',
+            'feedback' => 'nullable|string|max:1000'
+        ]);
+
+        try {
+            $userKpi = UserKpi::findOrFail($request->kpi_id);
+
+            if ($request->score > $userKpi->target_score) {
+                return response()->json(['message' => 'Ball maxsimal balldan oshmasligi kerak.'], 422);
+            }
+
+            $score = Score::create([
+                'user_kpi_id' => $userKpi->id,
+                'score' => $request->score,
+                'type' => Score::SCORE_BY_DIRECTOR,
+                'feedback' => $request->feedback,
+                'scored_by' => auth()->user()->id
+            ]);
+
+            // Update KPI with final score and feedback
+            $userKpi->update([
+                'current_score' => $request->score,
+                'score_id' => $score->id,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'KPI muvaffaqiyatli yakunlandi!'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'KPI yakunlashda xatolik yuz berdi.'
+            ], 500);
         }
     }
 

@@ -18,6 +18,7 @@ class Task extends Model
         'name',
         'description',
         'type',
+        'file_path',
         'extracted_text',
         'score',
         'task_score_id'

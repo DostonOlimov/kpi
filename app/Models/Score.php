@@ -9,6 +9,11 @@ class Score extends Model
 {
     use SoftDeletes;
 
+    const SCORE_BY_AI = 1;
+    const SCORE_BY_DIRECTOR = 2;
+    const SCORE_BY_MANAGER = 3;
+    const SCORE_BY_BOSS = 4;
+
     protected $table = 'scores';
 
     protected $fillable = [

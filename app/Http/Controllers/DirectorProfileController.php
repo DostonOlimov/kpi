@@ -26,17 +26,48 @@ class DirectorProfileController extends Controller
 
     }
 
-    public function check_user(int $type,User $employee, Request $request)
+    public function check_user(int $type, User $employee, Request $request)
     {
         $userKpis = UserKpi::where('user_id', $employee->id)
-            ->with(['kpi.parent', 'kpi.children'])
+            ->with(['kpi.parent', 'kpi.children', 'tasks']) // eager load tasks too
             ->get();
+
+        $reviewedTasks = $this->countReviewedTasks($userKpis);
 
         return view('director.checking', [
             'user_kpis' => $userKpis,
             'user' => $employee,
             'type' => $type,
+            'reviewed_tasks' => $reviewedTasks,
         ]);
+    }
+
+    public function stats(Request $request)
+    {
+        $userId = $request->get('user_id');
+
+        if (!$userId || !is_numeric($userId)) {
+            return response()->json(['error' => 'Invalid user_id'], 400);
+        }
+
+        $userKpis = UserKpi::where('user_id', $userId)
+            ->with('tasks') // eager load tasks
+            ->get();
+
+        $reviewedTasks = $this->countReviewedTasks($userKpis);
+
+        return response()->json([
+            'reviewed_tasks' => $reviewedTasks,
+            'total_score' => $userKpis->sum('current_score'),
+            'scored_kpis' => $userKpis->whereNotNull('current_score')->count()
+        ]);
+    }
+
+    private function countReviewedTasks($userKpis): int
+    {
+        return $userKpis->sum(fn($userKpi) =>
+        $userKpi->tasks->whereNotNull('score')->count()
+        );
     }
 
     public function employees($departmentId = null)

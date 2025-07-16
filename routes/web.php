@@ -72,6 +72,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/list', [DirectorProfileController::class, 'index'])->name('director.list');
         Route::get('/check-user/{type}/{employee}', [DirectorProfileController::class, 'check_user'])->name('director.check_user');
         Route::get('/employees', [DirectorProfileController::class, 'employees'])->name('director.employees');
+        Route::get('/stats', [DirectorProfileController::class, 'stats'])->name('director.stats');
         Route::get('/add', [DirectorProfileController::class, 'add'])->name('director.add');
         Route::post('/store', [DirectorProfileController::class, 'store'])->name('director.store');
         Route::post('/commit', [DirectorProfileController::class, 'commit'])->name('director.commit');
@@ -119,6 +120,10 @@ Route::middleware('auth')->group(function () {
     Route::put('/user-kpis/{id}', [UserKPIController::class, 'update'])->name('user-kpis.update');
     Route::delete('/user-kpis/{id}', [UserKPIController::class, 'destroy'])->name('user-kpis.destroy');
     Route::get('/kpis/category/{categoryId}', [UserKPIController::class, 'getKPIsByCategory'])->name('kpis.by-category');
+
+
+    Route::get('/user-kpi/{kpiId}/check-completion', [EmployeeKpiController::class, 'checkCompletion']);
+    Route::post('/user-kpi/complete', [EmployeeKpiController::class, 'completeKpi']);
 
     Route::group(['prefix' => 'employee'], function () {
         // Users listing
