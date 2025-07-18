@@ -270,7 +270,6 @@
                                         <td class="px-4 py-3">
                                             <div class="action-buttons">
                                                 <a href="{!! url('director-profile/check-user' , ["type"=>1,"employee"=>$employee]) !!}"
-{{--                                                <a href="{{ route('director.check_user', $employee) }}"--}}
                                                    class="btn btn-primary btn-sm me-1 action-btn"
                                                    data-bs-toggle="tooltip"
                                                    title="Xodimni tekshirish">

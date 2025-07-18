@@ -81,7 +81,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/tasks/{task}/comment', [CommissionController::class, 'addComment'])->name('commission.task.comment');
         Route::post('/kpi/{child}/score', [CommissionController::class, 'scoreKPI'])->name('commission.kpi.score');
 
-        Route::get('/employee-list', [\App\Http\Controllers\CommissionController::class, 'employeeList'])->name('commission.employee.list');
+        Route::get('/check-user/{type}/{user}', [CommissionController::class, 'check_user'])->name('commission.check_user');
+        Route::post('/check-user/{type}/{user}', [CommissionController::class, 'check_user_store'])->name('commission.check_user_store');
+
+        Route::get('/employee-list', [CommissionController::class, 'employeeList'])->name('commission.employee.list');
     });
     Route::group(['prefix' => 'employee-profile'], function () {
         Route::get('/list', [EmployeeProfileController::class, 'index'])->name('profile.list');

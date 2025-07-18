@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kpi;
-use App\Models\KpiScore;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -25,7 +24,7 @@ class EmployeeDaysController extends Controller
         $month_id = session('month') ?? (int) date('m');
         $year = session('year') ?? (int) date('Y');
 
-        $users = User::with(['working_days', 'work_zone'])->whereIn('role_id',[User::ROLE_DIRECTOR,User::ROLE_USER])->get();
+        $users = User::with(['working_days', 'work_zone'])->whereNotIn('role_id',[User::ROLE_MANAGER,User::ROLE_ADMIN])->get();
 
         $groupedUsers = $users->groupBy(fn($user) => $user->work_zone?->name ?? 'Boshqalar');
 
@@ -47,37 +46,22 @@ class EmployeeDaysController extends Controller
     {
 
         $validated = $request->validate([
-            'month' => 'required',
-            'year' => 'required|integer|min:2000|max:2100',
             'days' => 'required|integer|min:0',
         ]);
 
-        $days = Month::where('year','=',$validated['year'])->first()?->days;
+        $month = session('month') ?? (int) date('m');
+        $year = session('year') ?? (int) date('Y');
+
+        $working_days = Month::where('month_id','=',$month)->firstOrfail();
 
         $record = EmployeeDays::updateOrCreate([
             'user_id'=>$user->id,
-            'month_id' => $validated['month'],
-            'year' => $validated['year'],
+            'month_id' => $month,
+            'year' => $year,
         ],
             [
-            'days' => $validated['days'],
+            'days' => $working_days->days,
         ]);
-
-        KpiScore::updateOrCreate(
-            [
-                'kpi_id' => 8,
-                'user_id' => $user->id,
-                'type'    => 2,
-                'month'     => session('month') ?? (int)date('m'),
-                'year'      => session('year') ?? (int)date('Y'),
-            ],
-            [
-                'score'     => round(($validated['days'] / $days) * 7,2),
-                'is_active' => true,
-                'scored_by' => auth()->id(),
-                'scored_at' => now(),
-            ]
-        );
 
         return response()->json(['success' => true, 'data' => $record]);
     }
@@ -150,7 +134,7 @@ class EmployeeDaysController extends Controller
         $month_id = session('month') ?? (int) date('m');
         $year = session('year') ?? (int) date('Y');
 
-        $users = User::with(['scores', 'work_zone'])->whereIn('role_id',[User::ROLE_DIRECTOR,User::ROLE_USER])->get();
+        $users = User::with(['work_zone'])->whereIn('role_id',[User::ROLE_DIRECTOR,User::ROLE_USER])->get();
 
         $groupedUsers = $users->groupBy(fn($user) => $user->work_zone?->name ?? 'Boshqalar');
 

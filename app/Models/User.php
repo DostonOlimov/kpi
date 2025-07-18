@@ -70,10 +70,6 @@ class User extends Authenticatable
         return $this->hasOne(EmployeeDays::class,'user_id','id');
     }
 
-    public function tasks(): HasMany
-    {
-        return $this->hasMany(Task::class);
-    }
     public function kpis(): HasMany
     {
         return $this->hasMany(UserKpi::class);
@@ -92,4 +88,10 @@ class User extends Authenticatable
         return $this->first_name. ' '. $this->last_name;
     }
 
+    protected static function booted()
+    {
+        static::created(function ($user) {
+            \Artisan::call('kpis:assign', ['userId' => $user->id]);
+        });
+    }
 }

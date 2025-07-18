@@ -29,6 +29,9 @@ class DirectorProfileController extends Controller
     public function check_user(int $type, User $employee, Request $request)
     {
         $userKpis = UserKpi::where('user_id', $employee->id)
+            ->whereHas('kpi', function ($query) use ($type) {
+                $query->where('type', Kpi::SELF_BY_PERSON);
+            })
             ->with(['kpi.parent', 'kpi.children', 'tasks']) // eager load tasks too
             ->get();
 

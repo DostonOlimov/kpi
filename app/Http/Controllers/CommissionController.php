@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\KpiCriteriaScore;
+use App\Models\Month;
+use App\Models\Score;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\KPI;
@@ -106,10 +109,82 @@ class CommissionController extends Controller
     public function employeeList()
     {
         $user = auth()->user();
-        $users = User::with('tasks' )
-            ->whereNotIn('role_id',[User::ROLE_ADMIN,User::ROLE_MANAGER])
+        $users = User::whereNotIn('role_id',[User::ROLE_ADMIN,User::ROLE_MANAGER])
             ->get();
-        return view('commission.employees', ["users" => $users]);
+        return view('director.employees', ["users" => $users]);
+    }
+
+    public function check_user(int $type, User $user, Request $request)
+    {
+        $userKpis = UserKpi::where('user_id', $user->id)
+            ->whereHas('kpi', function ($query) use ($type) {
+                $query->where('type', $type);
+            })
+            ->with(['kpi.parent', 'kpi.children', 'tasks','kpi.criterias']) // eager load tasks too
+            ->get();
+
+        $reviewedTasks = $this->countReviewedTasks($userKpis);
+
+        $month = session('month') ?? (int)date('m');
+        $month_name = Month::getMonth($month);
+
+        return view('commission.checking', [
+            'user_kpis' => $userKpis,
+            'user' => $user,
+            'type' => $type,
+            'month_name' => $month_name,
+            'reviewed_tasks' => $reviewedTasks,
+        ]);
+    }
+
+    public function check_user_store(int $type, User $user, Request $request)
+    {
+        $userKpis = UserKpi::where('user_id', $user->id)
+            ->whereHas('kpi', function ($query) use ($type) {
+                $query->where('type', $type);
+            })
+            ->with(['kpi.parent', 'kpi.children', 'tasks','kpi.criterias']) // eager load tasks too
+            ->get();
+
+        foreach ($userKpis as $userKpi) {
+            $maxFine = 0;
+            $fine = 0;
+            foreach ($userKpi->kpi->criterias as $criteria) {
+                if(array_key_exists($criteria->id, $request->input('scores'))){
+                    KpiCriteriaScore::updateOrCreate([
+                        'kpi_criteria_id' => $criteria->id,
+                        'user_kpi_id' => $userKpi->id,
+                        ],[
+                        'score' => $request->input('scores')[$criteria->id],
+                    ]);
+                    $maxFine += $criteria->bands->max('fine_ball');
+                    $fine += $request->input('scores')[$criteria->id];
+                }
+            }
+            $ball = $userKpi->target_score * (($maxFine-$fine)/$maxFine);
+
+            $score = Score::create([
+                'user_kpi_id' => $userKpi->id,
+                'score' => $ball,
+                'feedback'=> $request->input('feedback'),
+                'scored_by' => auth()->id(),
+                'type' => 2,
+            ]);
+
+            $userKpi->current_score = $ball;
+            $userKpi->score_id = $score->id;
+            $userKpi->save();
+
+        }
+
+        return redirect()->route('days.list')->with('success','Muvaffaqatli saqlandi.');
+    }
+
+    private function countReviewedTasks($userKpis): int
+    {
+        return $userKpis->sum(fn($userKpi) =>
+        $userKpi->tasks->whereNotNull('score')->count()
+        );
     }
 
 }
