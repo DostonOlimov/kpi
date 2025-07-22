@@ -63,9 +63,9 @@
                         <div id="alert-container"></div>
 
                         <!-- Evaluation Form -->
-                        <form id="kpi-scoring-form"  action="{{ route('commission.check_user_store',['type'=>\App\Models\Kpi::BEHAVIOUR,'user'=>$user]) }}" method="POST" enctype="multipart/form-data">
+                        <form id="kpi-scoring-form"  action="{{ route('commission.check_user_store',['kpi' => $kpi,'user'=>$user]) }}" method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                            @foreach($user_kpis as $user_kpi)
+                            @if($user_kpi)
                                 <div class="kpi-card fade-in active">
                                     <div class="kpi-header" onclick="toggleKpi(this)">
                                         <div class="kpi-title"> <i class="fa fa-tasks me-2"></i>{{ $user_kpi->kpi->name }}</div>
@@ -106,7 +106,7 @@
                                         @endforeach
                                     </div>
                                 </div>
-                            @endforeach
+                            @endif
 
                             <!-- Comments Section -->
                             <div class="comments-section fade-in">

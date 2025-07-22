@@ -52,15 +52,13 @@ class EmployeeDaysController extends Controller
         $month = session('month') ?? (int) date('m');
         $year = session('year') ?? (int) date('Y');
 
-        $working_days = Month::where('month_id','=',$month)->firstOrfail();
-
         $record = EmployeeDays::updateOrCreate([
             'user_id'=>$user->id,
             'month_id' => $month,
             'year' => $year,
         ],
             [
-            'days' => $working_days->days,
+            'days' => $validated['days'],
         ]);
 
         return response()->json(['success' => true, 'data' => $record]);
@@ -76,15 +74,15 @@ class EmployeeDaysController extends Controller
         $month_id = session('month') ?? (int) date('m');
         $year = session('year') ?? (int) date('Y');
 
-        $users = User::with(['scores', 'work_zone'])->whereIn('role_id',[User::ROLE_DIRECTOR,User::ROLE_USER])->get();
+        $users = User::with(['working_days', 'work_zone'])->whereNotIn('role_id',[User::ROLE_MANAGER,User::ROLE_ADMIN])->get();
 
         $groupedUsers = $users->groupBy(fn($user) => $user->work_zone?->name ?? 'Boshqalar');
 
+        $days = Month::where('year','=',$year)->first()?->days;
+
         $month_name = Month::getMonth($month_id);
 
-        $kpi = Kpi::findOrFail(11);
-
-        return view('days.activity', compact('users','groupedUsers','month_name','month_id','year','kpi'));
+        return view('days.activity', compact('users','days','groupedUsers','month_name','month_id','year',));
     }
 
     /**
@@ -134,15 +132,19 @@ class EmployeeDaysController extends Controller
         $month_id = session('month') ?? (int) date('m');
         $year = session('year') ?? (int) date('Y');
 
-        $users = User::with(['work_zone'])->whereIn('role_id',[User::ROLE_DIRECTOR,User::ROLE_USER])->get();
+        $users = User::with(['working_days', 'work_zone'])->whereNotIn('role_id',[User::ROLE_MANAGER,User::ROLE_ADMIN])->get();
 
         $groupedUsers = $users->groupBy(fn($user) => $user->work_zone?->name ?? 'Boshqalar');
 
+        $days = Month::where('year','=',$year)->first()?->days;
+
         $month_name = Month::getMonth($month_id);
 
-        $kpi = Kpi::findOrFail(9);
+        $kpis = Kpi::where('type',Kpi::BEHAVIOUR)->whereNotNull('parent_id')->get();
 
-        return view('days.behavior', compact('users','kpi','groupedUsers','month_name','month_id','year',));
+        $title = 'Mehnat intizomiga rioya qilinganligi';
+
+        return view('commission.users', compact('users','title','days','groupedUsers','month_name','month_id','year','kpis'));
     }
 
     /**

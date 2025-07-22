@@ -81,8 +81,13 @@ Route::middleware('auth')->group(function () {
         Route::post('/tasks/{task}/comment', [CommissionController::class, 'addComment'])->name('commission.task.comment');
         Route::post('/kpi/{child}/score', [CommissionController::class, 'scoreKPI'])->name('commission.kpi.score');
 
-        Route::get('/check-user/{type}/{user}', [CommissionController::class, 'check_user'])->name('commission.check_user');
-        Route::post('/check-user/{type}/{user}', [CommissionController::class, 'check_user_store'])->name('commission.check_user_store');
+        Route::get('/check-user/{kpi}/{user}', [CommissionController::class, 'check_user'])->name('commission.check_user');
+        Route::post('/check-user/{kpi}/{user}', [CommissionController::class, 'check_user_store'])->name('commission.check_user_store');
+        Route::get('/check-user-edit/{kpi}/{user}', [CommissionController::class, 'check_user_edit'])->name('commission.check_user_edit');
+        Route::post('/check-user-edit/{kpi}/{user}', [CommissionController::class, 'check_user_update'])->name('commission.check_user_update');
+
+        Route::post('/update-criteria-score', [CommissionController::class, 'updateCriteriaScore'])->name('commission.update_criteria_score');
+        Route::post('/update-comments', [CommissionController::class, 'updateComments'])->name('commission.update_comments');
 
         Route::get('/employee-list', [CommissionController::class, 'employeeList'])->name('commission.employee.list');
     });
@@ -135,6 +140,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/users/{user}/kpis', [EmployeeKpiController::class, 'showKpis'])->name('employee.kpis');
         Route::post('/user-kpis/toggle', [EmployeeKpiController::class, 'toggle'])->name('user-kpi.toggle');
     });
+
+    Route::get('/api/user-kpi-data/{userId}/{kpiId}',[CommissionController::class, 'getUserKpiData'])->name('user-kpi-data');
 });
 
 

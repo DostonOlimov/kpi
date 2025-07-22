@@ -105,15 +105,7 @@
                                                         title="Tahrirlash (E)">
                                                     <i class="fa fa-edit"></i>Tahrirlash
                                                 </button>
-                                                <div class="action-buttons">
-                                                    <a href="{!! url('commission-profile/check-user' , ["type"=>\App\Models\Kpi::BEHAVIOUR,"user"=>$user]) !!}"
-                                                       class="btn btn-primary btn-sm me-1 action-btn"
-                                                       data-bs-toggle="tooltip"
-                                                       title="Xodimni tekshirish">
-                                                        <i class="fa fa-check me-1 text-white"></i>
-                                                        <span class="d-none d-lg-inline">Tekshirish</span>
-                                                    </a>
-                                                </div>
+
                                             </div>
                                         @endif
                                     </div>

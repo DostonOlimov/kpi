@@ -108,7 +108,7 @@
                                             <div class="working-days-wrapper"
                                                  data-user-id="{{ $user->id }}"
                                                  data-user-name="{{ $user->first_name . ' '.$user->last_name }}">
-                                                <div class="kpi-content" data-user-id="{{ $user->id }}">
+                                                <div class="kpi-content row" data-user-id="{{ $user->id }}">
                                                     <!-- KPI content will be loaded here -->
                                                     <div class="text-muted">Ko'rsatkichni tanlang</div>
                                                 </div>
@@ -192,43 +192,15 @@
             }
 
             async function fetchUserKpiData(userId, kpiId) {
-                try {
+
                     const response = await fetch(`/api/user-kpi-data/${userId}/${kpiId}`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+
                         }
                     });
-
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-
                     return await response.json();
-                } catch (error) {
-                    // Fallback: simulate data based on existing Laravel logic
-                    return simulateKpiData(userId, kpiId);
-                }
-            }
-
-            function simulateKpiData(userId, kpiId) {
-                // This simulates the Laravel logic from your original code
-                // In a real implementation, you'd make an actual API call
-                return new Promise(resolve => {
-                    setTimeout(() => {
-                        // Simulate random data
-                        const hasScore = Math.random() > 0.5;
-                        const currentScore = hasScore ? Math.floor(Math.random() * 100) + 1 : null;
-
-                        resolve({
-                            hasScore: hasScore,
-                            currentScore: currentScore,
-                            userId: userId,
-                            kpiId: kpiId
-                        });
-                    }, 200);
-                });
             }
 
             function updateUserKpiDisplay(container, data, userId, kpiId) {
@@ -236,9 +208,9 @@
 
                 if (data.hasScore && data.currentScore) {
                     html = `
-                <div class="kpi-score">${data.currentScore}</div>
-                <div class="working-days-display">
-                    <div class="action-buttons">
+                <div class="kpi-score col-md-1 text-center"  >${data.currentScore}</div>
+                <div class="working-days-display col-md-11">
+                    <div class="action-buttons p-2">
                         <a href="/commission-profile/check-user-edit/${kpiId}/${userId}"
                            class="btn btn-primary btn-sm me-1 action-btn"
                            data-bs-toggle="tooltip"
