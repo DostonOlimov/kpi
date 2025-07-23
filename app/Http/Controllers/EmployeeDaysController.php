@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kpi;
+use App\Models\Score;
+use App\Models\UserKpi;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -82,7 +84,9 @@ class EmployeeDaysController extends Controller
 
         $month_name = Month::getMonth($month_id);
 
-        return view('days.activity', compact('users','days','groupedUsers','month_name','month_id','year',));
+        $kpi = Kpi::find(11);
+
+        return view('days.activity', compact('users','days','groupedUsers','month_name','month_id','year','kpi'));
     }
 
     /**
@@ -101,24 +105,26 @@ class EmployeeDaysController extends Controller
             'feedback' => 'nullable|string',
         ]);
 
-        $kpi = KpiScore::updateOrCreate(
+        $userKpi = UserKpi::where('user_id',$user->id)->where('kpi_id',11)->firstOrFail();
+
+        $score = Score::updateOrCreate(
             [
-                'kpi_id' => 11,
-                'user_id' => $user->id,
+                'user_kpi_id' => $userKpi->id,
                 'type'    => 3,
-                'month'     => $validated['month'],
-                'year'      => $validated['year'],
             ],
             [
                 'score'     => $validated['result'],
                 'feedback'     => $validated['feedback'],
                 'is_active' => true,
                 'scored_by' => auth()->id(),
-                'scored_at' => now(),
             ]
         );
 
-        return response()->json(['success' => true, 'data' => $kpi]);
+        $userKpi->current_score = $score->score;
+        $userKpi->score_id = $score->id;
+        $userKpi->save();
+
+        return response()->json(['success' => true, 'data' => $userKpi]);
     }
 
 
@@ -145,43 +151,6 @@ class EmployeeDaysController extends Controller
         $title = 'Mehnat intizomiga rioya qilinganligi';
 
         return view('commission.users', compact('users','title','days','groupedUsers','month_name','month_id','year','kpis'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @param Request $request
-     * @param User $user
-     * @return JsonResponse
-     */
-    public function createBehavior(Request $request,User $user): JsonResponse
-    {
-
-        $validated = $request->validate([
-            'month' => 'required',
-            'year' => 'required|integer|min:2000|max:2100',
-            'result' => 'required|min:0',
-            'feedback' => 'nullable|string',
-        ]);
-
-        $kpi = KpiScore::updateOrCreate(
-            [
-                'kpi_id' => 9,
-                'user_id' => $user->id,
-                'type'    => 3,
-                'month'     => $validated['month'],
-                'year'      => $validated['year'],
-            ],
-            [
-                'score'     => $validated['result'],
-                'feedback'     => $validated['feedback'],
-                'is_active' => true,
-                'scored_by' => auth()->id(),
-                'scored_at' => now(),
-            ]
-        );
-
-        return response()->json(['success' => true, 'data' => $kpi]);
     }
 
 }

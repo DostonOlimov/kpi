@@ -148,7 +148,7 @@
                     <svg class="nav-icon">
                         <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-calendar"></use>
                     </svg>
-                    Xodimlar ish kunlari
+                    Xodimlarning ish kunlari
                 </a>
             </li>
 
@@ -157,7 +157,7 @@
                     <svg class="nav-icon">
                         <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-people"></use>
                     </svg>
-                    Odob axloq normalari
+                    Mehnat intizomi normalari
                 </a>
             </li>
             <li class="nav-item">

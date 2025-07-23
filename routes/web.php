@@ -78,13 +78,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/commit', [DirectorProfileController::class, 'commit'])->name('director.commit');
     });
     Route::group(['prefix' => 'commission-profile'], function () {
-        Route::post('/tasks/{task}/comment', [CommissionController::class, 'addComment'])->name('commission.task.comment');
-        Route::post('/kpi/{child}/score', [CommissionController::class, 'scoreKPI'])->name('commission.kpi.score');
-
         Route::get('/check-user/{kpi}/{user}', [CommissionController::class, 'check_user'])->name('commission.check_user');
         Route::post('/check-user/{kpi}/{user}', [CommissionController::class, 'check_user_store'])->name('commission.check_user_store');
         Route::get('/check-user-edit/{kpi}/{user}', [CommissionController::class, 'check_user_edit'])->name('commission.check_user_edit');
-        Route::post('/check-user-edit/{kpi}/{user}', [CommissionController::class, 'check_user_update'])->name('commission.check_user_update');
 
         Route::post('/update-criteria-score', [CommissionController::class, 'updateCriteriaScore'])->name('commission.update_criteria_score');
         Route::post('/update-comments', [CommissionController::class, 'updateComments'])->name('commission.update_comments');
@@ -99,6 +95,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/store', [EmployeeProfileController::class, 'store'])->name('profile.store');
 
         Route::post('/kpi-save', [ EmployeeProfileController::class, 'KpiSave' ])->name('employee.kpi.save');
+
+        Route::get('/kpi/dashboard', [EmployeeProfileController::class, 'index'])->name('kpi.dashboard');
+        Route::get('/kpi/{kpiId}', [EmployeeProfileController::class, 'show'])->name('kpi.detail');
     });
     Route::group(['prefix' => 'bugalter'], function () {
         Route::get('/list', [BugalterController::class, 'index'])->name('bugalter.list');

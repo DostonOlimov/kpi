@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\KpiCriteria;
 use App\Models\KpiCriteriaScore;
 use App\Models\Month;
 use App\Models\Score;
@@ -9,9 +10,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\KPI;
 use App\Models\Task;
-use App\Models\TaskComment;
 use App\Models\UserKpi;
-use Illuminate\Support\Facades\Auth;
 
 class CommissionController extends Controller
 {
@@ -35,76 +34,6 @@ class CommissionController extends Controller
         ));
     }
 
-    public function addComment(Request $request, Task $task)
-    {
-        $request->validate([
-            'comment' => 'required|string|max:1000'
-        ]);
-
-        $comment = TaskComment::create([
-            'task_id' => $task->id,
-            'user_id' => Auth::id(),
-            'comment' => $request->comment
-        ]);
-
-        $task->is_checked = true;
-        $task->save();
-
-        return response()->json([
-            'success' => true,
-            'comment' => $comment->comment,
-            'user_name' => Auth::user()->first_name . ' ' . Auth::user()->last_name,
-            'formatted_date' => $comment->created_at->format('M d, Y H:i')
-        ]);
-    }
-
-    public function scoreKPI(Request $request, $childId)
-    {
-        $kpi = KPI::findOrFail($childId);
-
-        $maxScore = $kpi->max_score ?? 100;
-
-        $request->validate([
-            'score' => "required|numeric|min:0|max:$maxScore",
-            'feedback' => 'nullable|string|max:1000',
-            'user_id' => 'required|exists:users,id',
-            'type' => 'required|integer'
-        ]);
-
-        KpiScore::updateOrCreate(
-            [
-                'kpi_id' => $childId,
-                'user_id' => $request->user_id,
-                'type'    => $request->type, // make sure this exists in the request
-                'month'     => session('month') ?? (int)date('m'),
-                'year'      => session('year') ?? (int)date('Y'),
-            ],
-            [
-                'feedback'  => $request->feedback,
-                'score'     => $request->score,
-                'is_active' => true,
-                'scored_by' => auth()->id(),
-                'scored_at' => now(),
-            ]
-        );
-
-        Task::where('kpi_id', $childId)
-            ->where('user_id', $request->user_id)
-            ->update(['is_checked' => true]);
-
-        UserKpi::where('user_id', $request->user_id)
-            ->where('kpi_id', $childId)
-            ->update(['current_score' => $request->score]);
-
-
-
-        return response()->json([
-            'success' => true,
-            'score' => $request->score,
-            'feedback' => $request->feedback
-        ]);
-    }
-
     public function employeeList()
     {
         $user = auth()->user();
@@ -120,8 +49,6 @@ class CommissionController extends Controller
             ->where('user_id', $user->id)// eager load tasks too
             ->firstOrFail();
 
-        $reviewedTasks = $this->countReviewedTasks($userKpi);
-
         $month = session('month') ?? (int)date('m');
         $month_name = Month::getMonth($month);
 
@@ -129,8 +56,7 @@ class CommissionController extends Controller
             'user_kpi' => $userKpi,
             'user' => $user,
             'kpi' => $kpi,
-            'month_name' => $month_name,
-            'reviewed_tasks' => $reviewedTasks,
+            'month_name' => $month_name
         ]);
     }
 
@@ -170,7 +96,7 @@ class CommissionController extends Controller
             $userKpi->save();
 
 
-        return redirect()->route('behaviour.list')->with('success','Muvaffaqatli saqlandi.');
+        return redirect()->route('days.behavior')->with('success','Muvaffaqatli saqlandi.');
     }
 
     public function check_user_edit(Kpi $kpi, User $user)
@@ -195,50 +121,6 @@ class CommissionController extends Controller
         ]);
     }
 
-    public function check_user_update(Kpi $kpi, User $user, Request $request)
-    {
-        $userKpi = UserKpi::where('user_id', $user->id)
-            ->where('kpi_id',$kpi->id)
-            ->with(['kpi.parent', 'kpi.children', 'tasks','kpi.criterias']) // eager load tasks too
-            ->firstOrFail();
-
-        $maxFine = 0;
-        $fine = 0;
-        foreach ($userKpi->kpi->criterias as $criteria) {
-            if(array_key_exists($criteria->id, $request->input('scores'))){
-                KpiCriteriaScore::updateOrCreate([
-                    'kpi_criteria_id' => $criteria->id,
-                    'user_kpi_id' => $userKpi->id,
-                ],[
-                    'score' => $request->input('scores')[$criteria->id],
-                ]);
-                $maxFine += $criteria->bands->max('fine_ball');
-                $fine += $request->input('scores')[$criteria->id];
-            }
-        }
-        $ball = $userKpi->target_score * (($maxFine-$fine)/$maxFine);
-
-        $score = Score::create([
-            'user_kpi_id' => $userKpi->id,
-            'score' => $ball,
-            'feedback'=> $request->input('feedback'),
-            'scored_by' => auth()->id(),
-            'type' => 2,
-        ]);
-
-        $userKpi->current_score = $ball;
-        $userKpi->score_id = $score->id;
-        $userKpi->save();
-
-
-        return redirect()->route('behaviour.list')->with('success','Muvaffaqatli saqlandi.');
-    }
-
-    private function countReviewedTasks($userKpi): int
-    {
-        return $userKpi->tasks->whereNotNull('score')->count();
-    }
-
     public function getUserKpiData(int $userId,int $kpiId)
     {
         $user = User::find($userId);
@@ -260,49 +142,69 @@ class CommissionController extends Controller
 
     public function updateCriteriaScore(Request $request)
     {
-        try {
-            $request->validate([
-                'criteria_score_id' => 'required|integer',
-                'score' => 'required|numeric'
-            ]);
+        $validated = $request->validate([
+            'user_id'     => 'required|integer|exists:users,id',
+            'kpi_id'      => 'required|integer',
+            'criteria_id' => 'required|integer',
+            'score'       => 'required|numeric'
+        ]);
 
-            $criteriaScore = KpiCriteriaScore::findOrFail($request->input('criteria_score_id'));
-            $criteriaScore->score = $request->input('score');
+        try {
+            // Retrieve UserKpi
+            $userKpi = UserKpi::where('user_id', $validated['user_id'])
+                ->where('kpi_id', $validated['kpi_id'])
+                ->firstOrFail();
+
+            // Retrieve KpiCriteriaScore
+            $criteriaScore = KpiCriteriaScore::where('user_kpi_id', $userKpi->id)
+                ->where('kpi_criteria_id', $validated['criteria_id'])
+                ->firstOrFail();
+
+            $oldScore = $criteriaScore->score;
+            $newScore = $validated['score'];
+
+            // Update criteria score
+            $criteriaScore->score = $newScore;
             $criteriaScore->save();
 
+            if ($oldScore !== $newScore) {
+                // Recalculate max fine
+                $maxFine = $userKpi->kpi->criterias->sum(fn($criteria) => $criteria->bands->max('fine_ball') ?? 0);
 
-            // Update or create the score
-            $userKpiScore = UserKpiScore::updateOrCreate(
-                [
-                    'user_kpi_id' => $userKpi->id,
-                    'criteria_id' => $request->criteria_id
-                ],
-                [
-                    'score' => $request->score
-                ]
-            );
+                // Avoid division by zero
+                if ($maxFine > 0 && $userKpi->target_score > 0) {
+                    $adjustedScore = $userKpi->target_score * (
+                            (($userKpi->current_score / $userKpi->target_score) * $maxFine + $oldScore - $newScore) / $maxFine
+                        );
+                    $userKpi->current_score = $adjustedScore;
+                }
 
-            // Get band name for display
-            $criteria = Criteria::with('bands')->find($request->criteria_id);
-            $band = $criteria->bands->where('fine_ball', $request->score)->first();
-            $bandName = $band ? $band->name : 'Unknown';
+                $userKpi->save();
 
-            // Recalculate total score
-            $totalScore = $this->calculateTotalScore($userKpi);
-            $userKpi->update(['current_score' => $totalScore]);
+                // Update overall score (if exists)
+                if ($userKpi->score) {
+                    $userKpi->score->score = $newScore;
+                    $userKpi->score->save();
+                }
+            }
+
+            // Determine band name
+            $criteria = KpiCriteria::with('bands')->find($validated['criteria_id']);
+            $band = $criteria?->bands->firstWhere('fine_ball', $newScore);
+            $bandName = $band?->name ?? 'Unknown';
 
             return response()->json([
-                'success' => true,
-                'message' => 'Score updated successfully',
-                'band_name' => $bandName,
-                'total_score' => $totalScore
+                'success'     => true,
+                'message'     => 'Score updated successfully',
+                'band_name'   => $bandName,
+                'total_score' => $userKpi->current_score,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error updating score: ' . $e->getMessage()
-            ]);
+                'message' => 'Error updating score: ' . $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -324,10 +226,8 @@ class CommissionController extends Controller
             }
 
             // Update or create the main score record with feedback
-            $score = $userKpi->score ?? new UserKpiScore();
-            $score->user_kpi_id = $userKpi->id;
-            $score->feedback = $request->feedback;
-            $score->save();
+            $userKpi->score->feedback = $request->feedback;
+            $userKpi->score->save();
 
             return response()->json([
                 'success' => true,
@@ -342,11 +242,4 @@ class CommissionController extends Controller
         }
     }
 
-    private function calculateTotalScore($userKpi)
-    {
-        // Implement your total score calculation logic here
-        // This is just an example - adjust based on your business logic
-        $scores = UserKpiScore::where('user_kpi_id', $userKpi->id)->get();
-        return $scores->sum('score');
-    }
 }
