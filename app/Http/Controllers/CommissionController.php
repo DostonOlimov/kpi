@@ -7,6 +7,9 @@ use App\Models\KpiCriteriaScore;
 use App\Models\Month;
 use App\Models\Score;
 use App\Models\User;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use App\Models\KPI;
 use App\Models\Task;
@@ -41,6 +44,26 @@ class CommissionController extends Controller
             ->get();
         return view('director.employees', ["users" => $users]);
     }
+
+    public function getUserKpiData(int $userId,int $kpiId)
+    {
+        $user = User::find($userId);
+        $kpi = Kpi::find($kpiId);
+
+        if (!$user || !$kpi) {
+            return response()->json(['error' => 'User or KPI not found'], 404);
+        }
+
+        $userKpi = $user->user_kpis()->where('kpi_id', $kpiId)->first();
+
+        return response()->json([
+            'hasScore' => $userKpi && $userKpi->current_score,
+            'currentScore' => $userKpi ? $userKpi->current_score : null,
+            'userId' => $userId,
+            'kpiId' => $kpiId
+        ]);
+    }
+
 
     public function check_user(Kpi $kpi, User $user)
     {
@@ -96,7 +119,7 @@ class CommissionController extends Controller
             $userKpi->save();
 
 
-        return redirect()->route('days.behavior')->with('success','Muvaffaqatli saqlandi.');
+        return redirect()->route('commission.band_scores.list',$kpi->type)->with('success','Muvaffaqatli saqlandi.');
     }
 
     public function check_user_edit(Kpi $kpi, User $user)
@@ -118,25 +141,6 @@ class CommissionController extends Controller
             'kpi' => $kpi,
             'month_name' => $month_name,
             'criteria_scores' => $criteriaScores,
-        ]);
-    }
-
-    public function getUserKpiData(int $userId,int $kpiId)
-    {
-        $user = User::find($userId);
-        $kpi = Kpi::find($kpiId);
-
-        if (!$user || !$kpi) {
-            return response()->json(['error' => 'User or KPI not found'], 404);
-        }
-
-        $userKpi = $user->user_kpis()->where('kpi_id', $kpiId)->first();
-
-        return response()->json([
-            'hasScore' => $userKpi && $userKpi->current_score,
-            'currentScore' => $userKpi ? $userKpi->current_score : null,
-            'userId' => $userId,
-            'kpiId' => $kpiId
         ]);
     }
 
@@ -240,6 +244,40 @@ class CommissionController extends Controller
                 'message' => 'Error updating comments: ' . $e->getMessage()
             ]);
         }
+    }
+
+
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return Application|Factory|View
+     */
+    public function scoresList($id)
+    {
+        // Only allow ID 2 or 4
+        if (!in_array((int) $id, [Kpi::BEHAVIOUR, KPI::IJRO])) {
+            abort(404); // or return redirect()->back()->with('error', 'Noto‘g‘ri KPI turi.');
+        }
+
+        $month_id = session('month') ?? (int) date('m');
+        $year = session('year') ?? (int) date('Y');
+
+        $users = User::with(['working_days', 'work_zone'])
+            ->whereNotIn('role_id', [User::ROLE_MANAGER, User::ROLE_ADMIN])
+            ->get();
+
+        $groupedUsers = $users->groupBy(fn($user) => $user->work_zone?->name ?? 'Boshqalar');
+
+        $days = Month::where('year', '=', $year)->first()?->days;
+        $month_name = Month::getMonth($month_id);
+        $kpis = Kpi::where('type', $id)->whereNotNull('parent_id')->get();
+
+        $title = 'Mehnat intizomiga rioya qilinganligi';
+
+        return view('commission.user_band_scores', compact(
+            'users', 'title', 'days', 'groupedUsers', 'month_name', 'month_id', 'year', 'kpis', 'id'
+        ));
     }
 
 }

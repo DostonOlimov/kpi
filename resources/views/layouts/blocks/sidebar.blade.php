@@ -151,11 +151,19 @@
                     Xodimlarning ish kunlari
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('commission.band_scores.list', \App\Models\Kpi::IJRO) }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-balance-scale"></use>
+                    </svg>
+                    Ijro intizomi normalari
+                </a>
+            </li>
 
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('days.behavior') }}">
+                <a class="nav-link" href="{{ route('commission.band_scores.list', \App\Models\Kpi::BEHAVIOUR) }}">
                     <svg class="nav-icon">
-                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-people"></use>
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-task"></use>
                     </svg>
                     Mehnat intizomi normalari
                 </a>

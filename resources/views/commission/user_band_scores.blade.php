@@ -238,12 +238,6 @@
                 }
 
                 container.innerHTML = html;
-
-                // Reinitialize tooltips for new elements
-                const newTooltips = container.querySelectorAll('[data-bs-toggle="tooltip"]');
-                newTooltips.forEach(el => {
-                    new bootstrap.Tooltip(el);
-                });
             }
 
             // Add smooth scrolling for better UX

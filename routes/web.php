@@ -86,6 +86,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/update-comments', [CommissionController::class, 'updateComments'])->name('commission.update_comments');
 
         Route::get('/employee-list', [CommissionController::class, 'employeeList'])->name('commission.employee.list');
+
+        Route::get('/user-band-scores/{id}', [CommissionController::class, 'scoresList'])->name('commission.band_scores.list');
+        Route::post('/create-band-score/{id}/{user}', [CommissionController::class, 'createBandScore'])->name('commission.create.band_score');
     });
     Route::group(['prefix' => 'employee-profile'], function () {
         Route::get('/list', [EmployeeProfileController::class, 'index'])->name('profile.list');
