@@ -15,7 +15,6 @@ class EmployeeProfileController extends Controller
     public function index()
     {
         $userId = Auth::id();
-
         // Get all parent KPIs with their children
         $parentKpis = Kpi::whereNull('parent_id')
             ->with([
@@ -24,21 +23,29 @@ class EmployeeProfileController extends Controller
                 },
                 'children'
             ])
+            ->where('type','!=',Kpi::PERMANENT)
+            ->orderBy('type')
             ->get();
+
 
         // Get user's KPIs (only child KPIs)
         $userKpis = UserKpi::where('user_id', $userId)
             ->with(['kpi', 'score'])
             ->get();
+        $parentKpiIds = $userKpis
+            ->filter(fn($userKpi) => $userKpi->kpi && $userKpi->kpi->parent_id !== null)
+            ->pluck('kpi.parent_id')
+            ->unique()
+            ->values();
+
+        $parentKpis = Kpi::whereIn('id', $parentKpiIds)->get();
 
         // Calculate statistics
         $totalKpis = $userKpis->count();
         $completedKpis = $userKpis->whereNotNull('score_id')->count();
         $totalCurrentScore = $userKpis->sum('current_score');
         $totalTargetScore = $userKpis->sum('target_score');
-        $totalMaxScore = $userKpis->sum(function($userKpi) {
-            return $userKpi->kpi->max_score;
-        });
+        $totalMaxScore = $userKpis->sum(fn($userKpi) => $userKpi->kpi->max_score);
 
         return view('employee_profile.dashboard', compact(
             'parentKpis',
@@ -47,7 +54,8 @@ class EmployeeProfileController extends Controller
             'completedKpis',
             'totalCurrentScore',
             'totalTargetScore',
-            'totalMaxScore'
+            'totalMaxScore',
+            'userId'
         ));
     }
 
@@ -145,10 +153,13 @@ class EmployeeProfileController extends Controller
     {
         $userId = auth()->id();
 
-        // Get KPIs from user_kpis (KpiEmployees) for the current user
         $userKpis = UserKpi::where('user_id', $userId)
-            ->with(['kpi','score','tasks'])
+            ->whereHas('kpi', function ($query) {
+                $query->where('type', Kpi::SELF_BY_PERSON);
+            })
+            ->with(['kpi', 'score', 'tasks'])
             ->get();
+
 
         return view('employee_profile.create', [
             'user_kpis' => $userKpis,

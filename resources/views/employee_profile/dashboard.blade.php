@@ -1,106 +1,135 @@
 @extends('layouts.app')
 
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('css/dashboard2.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+@endsection
+
 @section('content')
-    <div class="fade-in">
-        <!-- Header Section -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <h1 class="display-6 fw-bold text-dark mb-2">Ishlash Ko'rsatkichlari Paneli</h1>
-                <p class="text-muted">KPI jarayonlaringizni kuzatib boring va yutuqlaringizni ko'ring</p>
-            </div>
+    <div class="page-header mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <i class="fa fa-user-circle mr-1"></i>&nbsp; Xodimning shaxsiy ko‘rsatkichlari
+            </li>
+        </ol>
+    </div>
+    <div class="panel panel-primary">
+        <div class="tab_wrapper page-tab">
+            <ul class="tab_list">
+                <li>
+                    <a href="{{ route('employees.list') }}">
+                        <span class="visible-xs"></span>
+                        <i class="fa fa-list fa-lg">&nbsp;</i> {{ trans('app.Ro\'yxat')}}
+                    </a>
+                </li>
+                <li class="active">
+                    <span class="visible-xs"></span>
+                    <i class="fa fa-plus-circle fa-lg">&nbsp;</i>
+                    <b>{{ trans('app.Qo\'shish')}}</b>
+                </li>
+            </ul>
         </div>
+    </div>
+{{--    <div class="header-actions">--}}
+{{--        <button class="btn btn-outline-primary" onclick="refreshDashboard()">--}}
+{{--            <i class="fas fa-sync-alt"></i> Yangilash--}}
+{{--        </button>--}}
+{{--        <button class="btn btn-primary" onclick="exportReport()">--}}
+{{--            <i class="fas fa-download"></i> Hisobot--}}
+{{--        </button>--}}
+{{--    </div>--}}
+    <div class="dashboard-container">
+        <!-- Header Section -->
 
         <!-- Statistics Cards -->
-        <div class="row mb-4">
-            <div class="col-md-3 mb-3">
-                <div class="card stat-card text-center">
-                    <div class="card-body">
-                        <i class="fa fa-tasks fa-2x mb-3"></i>
-                        <h3 class="fw-bold">{{ $totalKpis }}</h3>
-                        <p class="mb-0">Jami KPI</p>
-                    </div>
+        <div class="stats-grid animate__animated animate__fadeInUp">
+            <div class="stat-card total-kpis">
+                <div class="stat-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-count="{{ $totalKpis }}">{{ $totalKpis }}</h3>
+                    <p class="stat-label">Jami KPI</p>
+                </div>
+                <div class="stat-trend">
+                    <i class="fas fa-arrow-up text-success"></i>
+                    <span class="trend-value">+5%</span>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="card stat-card text-center">
-                    <div class="card-body">
-                        <i class="fa fa-check-circle fa-2x mb-3"></i>
-                        <h3 class="fw-bold">{{ $completedKpis }}</h3>
-                        <p class="mb-0">Bajarilgan</p>
-                    </div>
+
+            <div class="stat-card completed-kpis">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-count="{{ $completedKpis }}">{{ $completedKpis }}</h3>
+                    <p class="stat-label">Bajarilgan</p>
+                </div>
+                <div class="stat-trend">
+                    <i class="fas fa-arrow-up text-success"></i>
+                    <span class="trend-value">+12%</span>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="card stat-card text-center">
-                    <div class="card-body">
-                        <i class="fa fa-chart-bar fa-2x mb-3"></i>
-                        <h3 class="fw-bold">{{ $totalCurrentScore }}</h3>
-                        <p class="mb-0">Jami Ball</p>
-                    </div>
+
+            <div class="stat-card current-score">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-count="{{ $totalCurrentScore }}">{{ $totalCurrentScore }}</h3>
+                    <p class="stat-label">Jami Ball</p>
+                </div>
+                <div class="stat-trend">
+                    <i class="fas fa-arrow-up text-success"></i>
+                    <span class="trend-value">+8%</span>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="card stat-card text-center">
-                    <div class="card-body">
-                        <i class="fa fa-target fa-2x mb-3"></i>
-                        <h3 class="fw-bold">{{ $totalTargetScore }}</h3>
-                        <p class="mb-0">Maqsad Ball</p>
-                    </div>
+
+            <div class="stat-card target-score">
+                <div class="stat-icon">
+                    <i class="fa fa-line-chart"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-number" data-count="{{ $totalTargetScore }}">{{ $totalTargetScore }}</h3>
+                    <p class="stat-label">Maqsad Ball</p>
+                </div>
+                <div class="stat-trend">
+                    <i class="fas fa-minus text-warning"></i>
+                    <span class="trend-value">0%</span>
                 </div>
             </div>
         </div>
-
-        <!-- Charts Section -->
-        <div class="row mb-4">
-            <div class="col-md-6 mb-3">
-                <div class="card">
-                    <div class="card-header bg-white">
-                        <h5 class="card-title mb-0">
-                            <i class="fa fa-chart-pie text-primary me-2"></i>KPI Jarayoni Umumiy Ko'rinishi
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="progressChart"></canvas>
-                        </div>
-                    </div>
+        <!-- KPI Hierarchy Section -->
+        <div class="kpi-section animate__animated animate__fadeInUp animate__delay-2s">
+            <div class="section-header">
+                <h3 class="section-title">Sizning KPI laringiz</h3>
+                <div class="section-filters">
+                    <select class="form-select" onchange="filterKPIs(this.value)">
+                        <option value="all">Barcha KPI</option>
+                        <option value="completed">Bajarilgan</option>
+                        <option value="in-progress">Jarayonda</option>
+                        <option value="not-started">Boshlanmagan</option>
+                    </select>
                 </div>
             </div>
-            <div class="col-md-6 mb-3">
-                <div class="card">
-                    <div class="card-header bg-white">
-                        <h5 class="card-title mb-0">
-                            <i class="fa fa-chart-bar text-primary me-2"></i>Ball va Maqsad Taqqoslash
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="comparisonChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- KPI Hierarchy -->
-        <div class="row">
-            <div class="col-12 mb-3">
-                <h3 class="fw-bold text-dark">Sizning KPI laringiz</h3>
-            </div>
-
-            @forelse($parentKpis as $parentKpi)
-                <div class="col-12 mb-4">
-                    <!-- Parent KPI Card -->
-                    <div class="card parent-kpi-card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h4 class="parent-title mb-1">
-                                        <i class="fa fa-folder-open me-2"></i>{{ $parentKpi->name }}
+            <div class="kpi-hierarchy">
+                @forelse($parentKpis as $index => $parentKpi)
+                    <div class="parent-kpi-container" data-aos="fade-up" data-aos-delay="{{ $index * 100 }}">
+                        <!-- Parent KPI Card -->
+                        <div class="parent-kpi-card">
+                            <div class="parent-kpi-header">
+                                <div class="parent-info">
+                                    <h4 class="parent-title">
+                                        <i class="fas fa-folder-open"></i>
+                                        {{ $parentKpi->name }}
                                     </h4>
-                                    <small class="text-muted">Asosiy kategoriya - {{ $parentKpi->children->count() }} ta ichki KPI</small>
+                                    <p class="parent-subtitle">
+                                        Asosiy kategoriya • {{ $parentKpi->children->count() }} ta ichki KPI
+                                    </p>
                                 </div>
-                                <div class="text-end">
+                                <div class="parent-stats">
                                     @php
                                         $parentTotalCurrent = 0;
                                         $parentTotalTarget = 0;
@@ -115,113 +144,175 @@
                                         }
                                         $parentProgress = $parentTotalMax > 0 ? ($parentTotalCurrent / $parentTotalMax) * 100 : 0;
                                     @endphp
-                                    <div class="text-success fw-bold fs-4">{{ $parentTotalCurrent }}</div>
-                                    <small class="text-muted">Jami ball</small>
+                                    <div class="parent-score">
+                                        <span class="score-value">{{ $parentTotalCurrent }}</span>
+                                        <span class="score-label">Jami ball</span>
+                                    </div>
                                 </div>
                             </div>
 
                             @if($parentTotalMax > 0)
-                                <div class="mt-3">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <small class="text-muted">Umumiy jarayon</small>
-                                        <small class="fw-bold">{{ number_format($parentProgress, 1) }}%</small>
+                                <div class="parent-progress">
+                                    <div class="progress-info">
+                                        <span class="progress-label">Umumiy jarayon</span>
+                                        <span class="progress-percentage">{{ number_format($parentProgress, 1) }}%</span>
                                     </div>
-                                    <div class="progress">
-                                        <div class="progress-bar bg-success" style="width: {{ $parentProgress }}%"></div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar" style="--progress: {{ $parentProgress }}%"></div>
                                     </div>
                                 </div>
                             @endif
                         </div>
-                    </div>
 
-                    <!-- Child KPIs -->
-                    @foreach($parentKpi->children as $childKpi)
-                        @php
-                            $userKpi = $childKpi->user_kpis->first();
-                        @endphp
-                        @if($userKpi)
-                            <div class="child-kpi-card">
-                                <div class="card h-100">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-start mb-3">
-                                            <h6 class="card-title fw-bold text-dark mb-1">
-                                                <i class="fa fa-arrow-right text-primary me-2"></i>{{ $childKpi->name }}
+                        <!-- Child KPIs Grid -->
+                        <div class="child-kpis-grid">
+                            @foreach($parentKpi->children as $childIndex => $childKpi)
+                                @php
+                                    $userKpi = $childKpi->user_kpis->first();
+                                @endphp
+                                @if($userKpi)
+                                    <div class="child-kpi-card" data-aos="fade-up" data-aos-delay="{{ ($index * 100) + ($childIndex * 50) }}">
+                                        <div class="kpi-card-header">
+                                            <h6 class="kpi-title">
+                                                <i class="fas fa-arrow-right"></i>
+                                                {{ $childKpi->name }}
                                             </h6>
-                                            <span class="badge bg-secondary">{{ ucfirst($childKpi->type) }}</span>
+                                            <span class="kpi-type-badge {{ strtolower($childKpi->type) }}">
+                                            {{ ucfirst($childKpi->type) }}
+                                        </span>
                                         </div>
 
-                                        <div class="mb-3">
-                                            <div class="d-flex justify-content-between mb-2">
-                                                <span class="text-muted">Jarayon</span>
-                                                <span class="fw-bold">{{ number_format(($userKpi->current_score / $childKpi->max_score) * 100, 1) }}%</span>
+                                        <div class="kpi-progress-section">
+                                            <div class="progress-header">
+                                                <span class="progress-label">Jarayon</span>
+                                                <span class="progress-value">{{ number_format(($userKpi->current_score / $childKpi->max_score) * 100, 1) }}%</span>
                                             </div>
-                                            <div class="progress">
-                                                <div class="progress-bar bg-primary"
-                                                     style="width: {{ ($userKpi->current_score / $childKpi->max_score) * 100 }}%"></div>
+                                            <div class="circular-progress" data-percentage="{{ ($userKpi->current_score / $childKpi->max_score) * 100 }}">
+                                                <svg class="progress-ring" width="80" height="80">
+                                                    <circle class="progress-ring-circle" cx="40" cy="40" r="35"></circle>
+                                                </svg>
+                                                <div class="progress-text">{{ number_format(($userKpi->current_score / $childKpi->max_score) * 100, 0) }}%</div>
                                             </div>
                                         </div>
 
-                                        <div class="row text-center mb-3">
-                                            <div class="col-4">
-                                                <div class="text-muted small">Joriy</div>
-                                                <div class="fw-bold text-primary">{{ $userKpi->current_score }}</div>
+                                        <div class="kpi-scores">
+                                            <div class="score-item current">
+                                                <span class="score-label">Joriy</span>
+                                                <span class="score-value">{{ $userKpi->current_score }}</span>
                                             </div>
-                                            <div class="col-4">
-                                                <div class="text-muted small">Maqsad</div>
-                                                <div class="fw-bold text-warning">{{ $userKpi->target_score }}</div>
+                                            <div class="score-item target">
+                                                <span class="score-label">Maqsad</span>
+                                                <span class="score-value">{{ $userKpi->target_score }}</span>
                                             </div>
-                                            <div class="col-4">
-                                                <div class="text-muted small">Maksimal</div>
-                                                <div class="fw-bold text-success">{{ $childKpi->max_score }}</div>
+                                            <div class="score-item max">
+                                                <span class="score-label">Maksimal</span>
+                                                <span class="score-value">{{ $childKpi->max_score }}</span>
                                             </div>
                                         </div>
 
                                         @if($userKpi->score)
-                                            <div class="mb-3">
-                                <span class="score-badge
-                                    @if($userKpi->score->score >= $userKpi->target_score) bg-success
-                                    @elseif($userKpi->score->score >= $userKpi->target_score * 0.8) bg-warning
-                                    @else bg-danger @endif text-white">
-                                    Yakuniy ball: {{ $userKpi->score->score }}
-                                </span>
+                                            <div class="final-score-badge
+                                            @if($userKpi->score->score >= $userKpi->target_score) success
+                                            @elseif($userKpi->score->score >= $userKpi->target_score * 0.8) warning
+                                            @else danger @endif">
+                                                <i class="fas fa-trophy"></i>
+                                                Yakuniy ball: {{ $userKpi->score->score }}
                                             </div>
                                         @endif
 
                                         @if($userKpi->score && $userKpi->score->feedback)
-                                            <div class="alert alert-info small mb-3">
-                                                <i class="fa fa-comment me-2"></i>{{ Str::limit($userKpi->score->feedback, 100) }}
+                                            <div class="feedback-preview">
+                                                <i class="fas fa-comment"></i>
+                                                <span>{{ Str::limit($userKpi->score->feedback, 60) }}</span>
                                             </div>
                                         @endif
 
-                                        <button class="btn btn-primary btn-sm w-100" onclick="showKpiDetail({{ json_encode($userKpi) }})">
-                                            <i class="fa fa-eye me-2"></i>Batafsil Ko'rish
+                                        <button class="btn-detail" onclick="showKpiDetail({{ json_encode($userKpi) }})">
+                                            <i class="fas fa-eye"></i>
+                                            Batafsil Ko'rish
                                         </button>
                                     </div>
-                                </div>
-                            </div>
-                        @endif
-                    @endforeach
-                </div>
-            @empty
-                <div class="col-12">
-                    <div class="card text-center">
-                        <div class="card-body py-5">
-                            <i class="fa fa-chart-line fa-3x text-muted mb-3"></i>
-                            <h4 class="text-muted">KPI topilmadi</h4>
-                            <p class="text-muted">Sizga hali KPI tayinlanmagan.</p>
+                                @endif
+                            @endforeach
                         </div>
                     </div>
-                </div>
-            @endforelse
+                @empty
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h4 class="empty-title">KPI topilmadi</h4>
+                        <p class="empty-description">Sizga hali KPI tayinlanmagan.</p>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            KPI Qo'shish
+                        </button>
+                    </div>
+                @endforelse
+            </div>
         </div>
-    </div>
+{{--        <!-- Charts Section -->--}}
+{{--        <div class="charts-section animate__animated animate__fadeInUp animate__delay-1s">--}}
+{{--            <div class="chart-card">--}}
+{{--                <div class="chart-header">--}}
+{{--                    <h5 class="chart-title">--}}
+{{--                        <i class="fas fa-chart-pie"></i>--}}
+{{--                        KPI Jarayoni Umumiy Ko'rinishi--}}
+{{--                    </h5>--}}
+{{--                    <div class="chart-actions">--}}
+{{--                        <button class="btn-icon" onclick="toggleChartType('progress')">--}}
+{{--                            <i class="fas fa-expand-arrows-alt"></i>--}}
+{{--                        </button>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--                <div class="chart-body">--}}
+{{--                    <div class="chart-container">--}}
+{{--                        <canvas id="progressChart"></canvas>--}}
+{{--                    </div>--}}
+{{--                    <div class="chart-legend">--}}
+{{--                        <div class="legend-item">--}}
+{{--                            <span class="legend-color bg-success"></span>--}}
+{{--                            <span class="legend-text">Bajarilgan ({{ $completedKpis }})</span>--}}
+{{--                        </div>--}}
+{{--                        <div class="legend-item">--}}
+{{--                            <span class="legend-color bg-warning"></span>--}}
+{{--                            <span class="legend-text">Jarayonda ({{ $totalKpis - $completedKpis }})</span>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--            </div>--}}
 
-    <!-- KPI Detail Modal -->
+{{--            <div class="chart-card">--}}
+{{--                <div class="chart-header">--}}
+{{--                    <h5 class="chart-title">--}}
+{{--                        <i class="fas fa-chart-bar"></i>--}}
+{{--                        Ball va Maqsad Taqqoslash--}}
+{{--                    </h5>--}}
+{{--                    <div class="chart-actions">--}}
+{{--                        <button class="btn-icon" onclick="toggleChartType('comparison')">--}}
+{{--                            <i class="fas fa-expand-arrows-alt"></i>--}}
+{{--                        </button>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--                <div class="chart-body">--}}
+{{--                    <div class="chart-container">--}}
+{{--                        <canvas id="comparisonChart"></canvas>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--            </div>--}}
+{{--        </div>--}}
+
+{{--    </div>--}}
+
+    <!-- Enhanced KPI Detail Modal -->
     <div class="modal fade" id="kpiDetailModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold">KPI Tafsilotlari</h5>
+                    <h5 class="modal-title">
+                        <i class="fas fa-chart-line"></i>
+                        KPI Tafsilotlari
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body" id="kpiDetailContent">
@@ -230,153 +321,18 @@
             </div>
         </div>
     </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Ma'lumotlar yuklanmoqda...</p>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
-    <script>
-        // Chart.js configurations
-        const chartColors = {
-            primary: '#4f46e5',
-            secondary: '#6366f1',
-            success: '#10b981',
-            warning: '#f59e0b',
-            danger: '#ef4444',
-            info: '#3b82f6'
-        };
-
-        // Progress Overview Chart
-        const progressCtx = document.getElementById('progressChart').getContext('2d');
-        const progressChart = new Chart(progressCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Bajarilgan', 'Jarayonda', 'Boshlanmagan'],
-                datasets: [{
-                    data: [{{ $completedKpis }}, {{ $totalKpis - $completedKpis }}, 0],
-                    backgroundColor: [chartColors.success, chartColors.warning, chartColors.danger],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
-
-        // Score vs Target Chart
-        const comparisonCtx = document.getElementById('comparisonChart').getContext('2d');
-        const comparisonChart = new Chart(comparisonCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Joriy Ball', 'Maqsad Ball', 'Maksimal Ball'],
-                datasets: [{
-                    label: 'Ball',
-                    data: [{{ $totalCurrentScore }}, {{ $totalTargetScore }}, {{ $totalMaxScore }}],
-                    backgroundColor: [chartColors.primary, chartColors.warning, chartColors.success],
-                    borderRadius: 8
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                }
-            }
-        });
-
-        // Show KPI Detail Modal
-        function showKpiDetail(userKpi) {
-            const modal = new bootstrap.Modal(document.getElementById('kpiDetailModal'));
-            const content = document.getElementById('kpiDetailContent');
-
-            const progressPercentage = (userKpi.current_score / userKpi.kpi.max_score * 100).toFixed(1);
-            const targetPercentage = (userKpi.target_score / userKpi.kpi.max_score * 100).toFixed(1);
-
-            content.innerHTML = `
-        <div class="row">
-            <div class="col-md-8">
-                <h4 class="fw-bold text-primary">${userKpi.kpi.name}</h4>
-                <p class="text-muted mb-3">Turi: <span class="badge bg-secondary">${userKpi.kpi.type.charAt(0).toUpperCase() + userKpi.kpi.type.slice(1)}</span></p>
-
-                <div class="mb-4">
-                    <h6 class="fw-bold">Jarayon Umumiy Ko'rinishi</h6>
-                    <div class="progress mb-2" style="height: 20px;">
-                        <div class="progress-bar bg-primary" style="width: ${progressPercentage}%"></div>
-                    </div>
-                    <small class="text-muted">Maksimal ballning ${progressPercentage}% i erishildi</small>
-                </div>
-
-                ${userKpi.score && userKpi.score.feedback ? `
-                <div class="mb-4">
-                    <h6 class="fw-bold">Fikr-mulohaza</h6>
-                    <div class="alert alert-info">
-                        <i class="fa fa-comment me-2"></i>${userKpi.score.feedback}
-                    </div>
-                </div>
-                ` : ''}
-            </div>
-            <div class="col-md-4">
-                <div class="card bg-light">
-                    <div class="card-body text-center">
-                        <h6 class="card-title">Ball Taqsimoti</h6>
-                        <div class="mb-3">
-                            <div class="h4 text-primary">${userKpi.current_score}</div>
-                            <small class="text-muted">Joriy Ball</small>
-                        </div>
-                        <div class="mb-3">
-                            <div class="h4 text-warning">${userKpi.target_score}</div>
-                            <small class="text-muted">Maqsad Ball</small>
-                        </div>
-                        <div class="mb-3">
-                            <div class="h4 text-success">${userKpi.kpi.max_score}</div>
-                            <small class="text-muted">Maksimal Ball</small>
-                        </div>
-                        ${userKpi.score ? `
-                        <div class="mb-3">
-                            <div class="h4 text-info">${userKpi.score.score}</div>
-                            <small class="text-muted">Yakuniy Ball</small>
-                        </div>
-                        ` : ''}
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-
-            modal.show();
-        }
-
-        // Add smooth scrolling and animations
-        document.addEventListener('DOMContentLoaded', function() {
-            // Animate cards on scroll
-            const cards = document.querySelectorAll('.card');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                    }
-                });
-            });
-
-            cards.forEach(card => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
-                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                observer.observe(card);
-            });
-        });
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="{{ asset('js/kpi/dashboard.js') }}"></script>
 @endpush
