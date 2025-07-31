@@ -256,7 +256,7 @@ class CommissionController extends Controller
     public function scoresList($id)
     {
         // Only allow ID 2 or 4
-        if (!in_array((int) $id, [Kpi::BEHAVIOUR, KPI::IJRO])) {
+        if (!in_array((int) $id, [Kpi::BEHAVIOUR, Kpi::IJRO])) {
             abort(404); // or return redirect()->back()->with('error', 'Noto‘g‘ri KPI turi.');
         }
 
