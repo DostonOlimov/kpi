@@ -14,8 +14,21 @@
             <div class="col-md-12">
                 <div class="card">
 
-                    <div class="card-header">
-                        <h4 class="mb-0">{{ __("Qo'shimcha ish haqlari uchun summani o'zgartirish") }}</h4>
+                   <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="tab_wrapper page-tab">
+                            <ul class="tab_list mb-0">
+                                <li >
+                                    <a href="{{ route('bugalter.check') }}">
+                                        <i class="fa fa-list fa-lg"></i>&nbsp; {{ __("Ro'yxat") }}
+                                    </a>
+                                </li>
+                                <li class="active">
+                                    <a href="#">
+                                        <i class="fa fa-pencil fa-lg"></i>&nbsp; <strong>{{ __("Tahrirlash") }}</strong>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
 
                     <div class="card-body">
@@ -46,7 +59,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="month"><strong>{{ __('Hisobot oyi') }}:</strong></label>
-                                        <select name="month" id="month" class="form-control font-weight-bold">
+                                        <select name="month" id="month" class="form-control font-weight-bold" disabled>
                                             @foreach($month as $key => $item)
                                                 <option value="{{ $key + 1 }}">{{ $item }}</option>
                                             @endforeach

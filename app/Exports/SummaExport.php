@@ -47,15 +47,15 @@ class SummaExport implements FromCollection,WithHeadings,WithStyles
     public function collection()
     {
 
-        $GLOBALS['month'] = (int)date('m');
+        $GLOBALS['month'] = session('month') ?: (int)date('m');
        $data = DB::table('employees_summa')
            ->join('users', 'users.id', '=', 'employees_summa.user_id')
            ->join('work_zones', 'users.work_zone_id', '=', 'work_zones.id')
            ->leftJoin('employee_days', function ($join) {
                $join->on('employee_days.user_id', '=', 'employees_summa.user_id')
-                ->where('employee_days.month_id', '=', 4);
+                ->where('employee_days.month_id', '=', $GLOBALS['month']);
            })
-            ->where('employees_summa.month', '=', 4)
+            ->where('employees_summa.month', '=', $GLOBALS['month'])
            ->select([
                'users.first_name',
                'users.last_name',
@@ -82,7 +82,7 @@ class SummaExport implements FromCollection,WithHeadings,WithStyles
 
        foreach ( $data as $key => $item)
        {
-           $item->month_id =  'Aprel';
+           $item->month_id =  get_month_name( $GLOBALS['month']);
            $item->created_at = 0.25 * $item->ustama;
            $item->updated_at = 0.25 * $item->new_ustama;
        }

@@ -112,7 +112,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/edit/{id}', [BugalterController::class, 'edit'])->name('bugalter.edit');
         Route::get('/select', [BugalterController::class, 'select'])->name('bugalter.select');
         Route::get('/export',[BugalterController::class, 'get_summa'])->name('bugalter.export');
-        Route::get('/calculate/{id}',[BugalterController::class, 'calculate'])->name('bugalter.calculate');
+        Route::get('/calculate',[BugalterController::class, 'calculate'])->name('bugalter.calculate');
     });
 
     Route::resource('kpis', KpiController::class);

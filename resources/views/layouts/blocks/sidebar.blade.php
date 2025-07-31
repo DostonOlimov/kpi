@@ -210,7 +210,7 @@
         {{--            </li>--}}
         {{--        @endif--}}
         @if(auth()->user()->role_id === \App\Models\User::ROLE_ACCOUNTANT || auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)
-            <li class="nav-title">Xodimlar natijalari</li>
+            <li class="nav-title">Hisob-kitob bo'limi</li>
 
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('bugalter.list') }}">
@@ -222,20 +222,11 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('bugalter.add') }}">
+                <a class="nav-link" href="{{ route('bugalter.check') }}">
                     <svg class="nav-icon">
                         <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-dollar"></use>
                     </svg>
-                    Summani kiritish
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('bugalter.check') }}">
-                    <svg class="nav-icon">
-                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-check-circle"></use>
-                    </svg>
-                    Holatni tekshirish
+                    Taqsimot mablag'lari
                 </a>
             </li>
         @endif

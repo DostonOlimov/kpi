@@ -9,7 +9,22 @@
                 </li>
             </ol>
         </div>
-
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="tab_wrapper page-tab">
+            <ul class="tab_list mb-0">
+                <li >
+                    <a href="{{ route('bugalter.check') }}">
+                        <i class="fa fa-list fa-lg"></i>&nbsp; {{ __("Ro'yxat") }}
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="{{ route('bugalter.add') }}">
+                        <i class="fa fa-plus-circle fa-lg"></i>&nbsp; <strong>{{ __("Qo'shish") }}</strong>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
