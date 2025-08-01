@@ -73,7 +73,7 @@
             <li class="nav-title">Shaxsiy ko'rsatkichlar</li>
 
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('profile.list') }}">
+                <a class="nav-link" href="{{ route('department.user.detail',auth()->user()->id) }}">
                     <svg class="nav-icon">
                         <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-check-circle"></use>
                     </svg>
@@ -113,7 +113,7 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('director.employees') }}">
+                <a class="nav-link" href="{{ route('kpi.department.detail',auth()->user()->work_zone_id) }}">
                     <svg class="nav-icon">
                         <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-chart"></use>
                     </svg>
@@ -139,7 +139,7 @@
                     <svg class="nav-icon">
                         <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-task"></use>
                     </svg>
-                    Xodimlarning topshiriqlari
+                    Topshiriqlarni baholash
                 </a>
             </li>
 
@@ -213,6 +213,15 @@
             <li class="nav-title">Hisob-kitob bo'limi</li>
 
             <li class="nav-item">
+                <a class="nav-link" href="{{ route('kpi.departments') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-chart-line"></use>
+                    </svg>
+                    Yakuniy natijalar
+                </a>
+            </li>
+
+            <li class="nav-item">
                 <a class="nav-link" href="{{ route('bugalter.list') }}">
                     <svg class="nav-icon">
                         <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-spreadsheet"></use>
@@ -229,6 +238,7 @@
                     Taqsimot mablag'lari
                 </a>
             </li>
+            
         @endif
 
         <li class="nav-item"><a class="nav-link"></a></li>

@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BugalterController;
 use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DepartmentKpiController;
 use App\Http\Controllers\DirectorProfileController;
 use App\Http\Controllers\EmployeeDaysController;
 use App\Http\Controllers\EmployeeKpiController;
@@ -144,6 +145,10 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::get('/api/user-kpi-data/{userId}/{kpiId}',[CommissionController::class, 'getUserKpiData'])->name('user-kpi-data');
+
+    Route::get('/departments', [DepartmentKpiController::class, 'index'])->name('kpi.departments');
+    Route::get('/departments/{id}', [DepartmentKpiController::class, 'departmentDetail'])->name('kpi.department.detail');
+    Route::get('/departments/users/{user}', [DepartmentKpiController::class, 'usersShow'])->name('department.user.detail');
 });
 
 

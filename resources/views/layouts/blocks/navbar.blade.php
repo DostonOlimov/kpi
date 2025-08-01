@@ -46,7 +46,7 @@
                                 10 => 'Oktyabr', 11 => 'Noyabr', 12 => 'Dekabr'
                             ];
                             $currentMonth = session('month') ?? (int)date('m');
-                            echo $months[$currentMonth];
+                            echo get_month_name($currentMonth);
                         @endphp
                     </div>
                     <div class="my-dropdown-year">

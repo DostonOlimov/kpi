@@ -9,7 +9,7 @@ use App\Models\TaskComment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class UserResultsController extends Controller
+class asdf extends Controller
 {
     public function index()
     {
