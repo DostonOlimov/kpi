@@ -1,0 +1,138 @@
+.page-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px 0;
+    margin-bottom: 30px;
+    border-radius: 10px;
+}
+
+
+.department-header {
+    background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+    padding: 15px 20px;
+    border-left: 4px solid #007bff;
+    margin: 30px 0 20px 0;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.department-header h4 {
+    margin: 0;
+    color: #495057;
+    font-weight: 600;
+}
+
+.table-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    background: linear-gradient(45deg, #343a40, #495057);
+    color: white;
+    border: none;
+    padding: 15px 12px;
+    font-weight: 600;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.table tbody td {
+    padding: 12px;
+    vertical-align: middle;
+    border-color: #e9ecef;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+    transform: translateY(-1px);
+    transition: all 0.2s ease;
+}
+
+.btn-edit {
+    background: linear-gradient(45deg, #28a745, #20c997);
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.btn-edit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+    color: white;
+}
+
+.working-days-badge {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-weight: 500;
+}
+
+.total-days-badge {
+    background: linear-gradient(45deg, #6c757d, #495057);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-weight: 500;
+}
+
+.modal-header {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    color: white;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.alert {
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.stats-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.stats-number {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.loading-spinner {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .table-responsive {
+        border-radius: 10px;
+    }
+
+    .department-header {
+        margin: 20px 0 15px 0;
+        padding: 10px 15px;
+    }
+
+    .page-header {
+        padding: 15px 0;
+    }
+}

@@ -1,0 +1,176 @@
+.rightSection {
+    margin: 140px 0 100px 0;
+    display: grid;
+    place-content: center;
+    padding: 30px 45px;
+}
+
+.rightSection__title {
+    font-weight: 700;
+    font-size: 48px;
+    color: #204e51;
+    margin-bottom: 50px;
+    line-height: 48px;
+}
+.rightSection__title__small {
+    color: #204e51;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    margin-bottom: 16px;
+}
+.typeSwitchButton-box {
+    display: flex;
+    column-gap: 18px;
+    margin-bottom: 36px;
+}
+
+.typeSwitchButton {
+    color: black;
+    user-select: none;
+    padding: 15px 24px;
+    background-color: #f4f4f4;
+    box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 1px, rgba(0, 0, 0, 0.07) 0px 2px 2px,
+        rgba(0, 0, 0, 0.07) 0px 4px 4px, rgba(0, 0, 0, 0.07) 0px 8px 8px,
+        rgba(0, 0, 0, 0.07) 0px 16px 16px;
+    cursor: pointer;
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    column-gap: 9px;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 20px;
+    fill: #168e36;
+    transition: background-color 0.3s ease;
+}
+
+.typeSwitchButton__active {
+    color: white;
+    background-color: #039e2c;
+    fill: white;
+}
+
+.typeSwitchButton svg {
+    width: 18px;
+}
+
+.eri-key-login-container {
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 22px 18px;
+    border-radius: 6px;
+}
+
+.eri-key-login__profile p {
+    margin-bottom: 22px;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.eri-key-login__profile div {
+    margin-bottom: 10px;
+    display: flex;
+    column-gap: 25px;
+    align-items: center;
+}
+
+.eri-key-login__profile label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.eri-key-login__profile #message {
+    color: #f00;
+}
+
+.eri-key-login__profile #progress {
+    color: #008000;
+}
+
+.eri-key-login__profile #plugged {
+    color: #f00;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+.eri-key-login__profile select {
+    width: 76%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #f8f8f8;
+    font-size: 16px;
+    color: #282828;
+    cursor: pointer;
+    font-weight: 600;
+    appearance: none; /* Remove default arrow */
+}
+.eri-key-login__profile select:hover {
+    border-color: #aaa;
+}
+.eri-key-login__profile select:focus {
+    border-radius: 6px 6px 0 0;
+    outline: none;
+    border-color: #66afe9;
+    box-shadow: 0 0 5px rgba(102, 175, 233, 0.5);
+}
+.eri-key-login__profile button {
+    width: 100%;
+    padding: 10px;
+    background-color: #008cba; /* Blue */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+}
+
+.eri-key-login__profile button:hover {
+    background-color: #039e2c; /* Green */
+    color: white;
+}
+.eri-key-login__profile .hidden-radio {
+    display: none;
+}
+
+.eri-key-login__profile .button-label {
+    padding: 10px;
+    background-color: #06a4d9; /* Blue */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.3s;
+    width: 100px; /* Adjust the width as needed */
+    box-sizing: border-box; /* Ensure padding is included in width */
+}
+.eri-key-login__profile .button-label__active {
+    background-color: #039e2c; /* Green */
+    color: white;
+}
+.eri-key-login__profile .button-label:hover {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+}
+.eri-key-login__profile #signButton {
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: 500;
+}
+@media only screen and (max-width: 600px) {
+    .rightSection {
+        transform: scale(0.6);
+        margin: 0;
+    }
+}

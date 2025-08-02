@@ -1,0 +1,4 @@
+<div>
+    {{ $title }}
+    {{ $sub }}
+</div>
