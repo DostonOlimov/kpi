@@ -15,7 +15,8 @@
     <title>KPI tizimi</title>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('/assets/images/logdo.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('/assets/images/logo.png') }}">
+
 
     <!-- Sidebar Styles -->
     <link rel="stylesheet" href="{{ asset('assets/vendors/simplebar/css/simplebar.css') }}">
@@ -87,6 +88,9 @@ $userid = Auth::user()->id;
         </div>
         <!-- Content Area Ends -->
     </div>
+    
+    @include('layouts.blocks.footer')
+
     <!-- Main Wrapper Ends -->
 {{--@else--}}
 {{--    <!-- Unauthorized Access Message -->--}}

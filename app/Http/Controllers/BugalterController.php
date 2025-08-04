@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\EmployeeDays;
 use App\Models\EmployeeSumma;
 use App\Models\Month;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use PhpParser\Node\Stmt\Global_;
@@ -45,31 +46,94 @@ class BugalterController extends Controller
         $month = [
             'Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun', 'Iyul', 'Avgust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'
         ];
-        return view('bugalter.add_summa', [
+        return view('bugalter.add', [
             'month' => $month
         ]);
     }
-    public function calculate($id)
+
+    public function store(Request $request)
     {
-        $summa = DB::table('employees_summa')->find($id);
-        $work_day = DB::table('months')
-            ->where('month_id', '=', $summa->month)
-            ->value('days');
-        $days1 = DB::table('employee_days')
-        ->where('user_id', '=', $summa->user_id)
-        ->where('month_id','=',$summa->month)
-        ->value('days');
-        $salary = DB::table('users')
-        ->where('id', '=', $summa->user_id)
-        ->value('salary');
-        DB::table('employees_summa')
-        ->where('user_id', '=', $summa->user_id)
-        ->where('month','=',$summa->month)
-        ->update([
-                'ustama' => ($summa->current_ball * $summa->rating * $salary * $days1) / (100 * $work_day),
-                'total_summa' => (($summa->current_ball * $summa->rating * $salary * $days1) / (100 * $work_day)) * 1.25,
-                'active_summa' => 0,
+        $request->validate([
+            'summa' => 'required|numeric|min:0',
+            'month' => 'required|integer|between:1,12',
         ]);
+
+        $user = auth()->user();
+
+        $exists = DB::table('bugalter_summa')
+            ->where('month', $request->month)
+            ->exists();
+
+        if ($exists) {
+            return redirect(route('bugalter.check'))
+                ->with(['error' => "Berilgan oy uchun ma'lumot allaqachon kiritilgan. Oyni o'zgartiring yoki mavjud yozuvni tahrirlang."]);
+        }
+
+
+        DB::table('bugalter_summa')->insert([
+            'summa' => (double) $request->summa,
+            'month' => $request->month,
+            'user_id' => $user->id,
+            'status' => 'inactive',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect(route('bugalter.check'))->with('success', 'Maʼlumot muvaffaqiyatli saqlandi.');
+    }
+
+    public function check()
+    {
+        $user = auth()->user();
+        $data = DB::table('bugalter_summa')
+            ->where('user_id', '=', $user->id)
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return view('bugalter.check', [
+            'data' => $data
+        ]);
+    }
+    public function calculate()
+    {
+        $month_id = session('month') ?? (int)date('m');
+        $year = session('year') ?? (int)date('Y');
+
+        $work_days = Month::where('month_id', $month_id)
+                ->value('days');
+
+        if (!$work_days) {
+            $work_days = 21; // Default to 21 if not found
+        }
+
+        $users = User::with('working_days')
+                ->whereNotIn('role_id', [User::ROLE_ADMIN,User::ROLE_MANAGER])
+                ->whereNotNull('salary')
+                ->where('status', 'active')
+                ->get();
+        foreach ($users as $user) {
+            $days = EmployeeDays::where('user_id', $user->id)
+                ->where('month_id', $month_id)
+                ->value('days');
+            if ($days) {
+            }
+            $current_score = $user->user_kpis->sum('current_score') ?? 0;
+            EmployeeSumma::updateOrCreate(
+                [
+                    'user_id' => $user->id, 
+                    'month' => $month_id,
+                    'year' => $year
+                ],
+                [
+                    'current_ball' => $current_score,
+                    'rating' => 1,
+                    'summa' => $user->salary,
+                    'days' => $days,
+                    'ustama' => ($user->salary * $current_score * $days) / (100 * $work_days),
+                    'total_summa' => $user->salary + ($user->salary * $current_score * $days) / (100 * $work_days),
+                ]
+            );  
+        }
         return back()
         ->with('success','Malumotlar muvaffaqiyatli yuklandi.');
     }
@@ -87,35 +151,6 @@ class BugalterController extends Controller
         ]);
     }
 
-    public function check()
-    {
-        $user = auth()->user();
-        $data = DB::table('bugalter_summa')
-            ->where('user_id', '=', $user->id)
-            ->get();
-        $month = [
-            'Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun', 'Iyul', 'Avgust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'
-        ];
-        return view('bugalter.check', [
-            'data' => $data,
-            'month' => $month
-        ]);
-    }
-
-    public function store(Request $request)
-    {
-        $user = auth()->user();
-        DB::table('bugalter_summa')
-            ->insert([
-                'summa' => (double)$request->input('summa'),
-                'month' => $request->input('month'),
-                'user_id' => $user->id,
-                'status' => 'inactive'
-            ]);
-
-        return redirect(route('bugalter.check'));
-    }
-
     public function update(Request $request, $id)
     {
         $user = auth()->user();
@@ -123,9 +158,6 @@ class BugalterController extends Controller
             ->where('id', '=', $id)
             ->update([
                 'summa' => (double)$request->input('summa'),
-                'month' => $request->input('month'),
-                'user_id' => $user->id,
-                'status' => 'inactive'
             ]);
 
         return redirect(route('bugalter.check'));
@@ -133,7 +165,6 @@ class BugalterController extends Controller
 
     public function distribution(Request $request, $id)
     {
-
         $active_summa = DB::table('bugalter_summa')
             ->where('id', '=', $id)
             ->first();
@@ -153,6 +184,7 @@ class BugalterController extends Controller
             $work_days = Month::where('month_id','=',$active_summa->month)
                 ->value('days');
             $foiz = round($nisbat * round($arr->current_ball * $arr->rating)) ;
+        
 
             DB::table('employees_summa')
                     ->where('id', '=', $arr->id)

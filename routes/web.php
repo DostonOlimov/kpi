@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\Admin\RelevantUserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Boss\EmployeeController;
 use App\Http\Controllers\BugalterController;
 use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DepartmentKpiController;
 use App\Http\Controllers\DirectorProfileController;
 use App\Http\Controllers\EmployeeDaysController;
 use App\Http\Controllers\EmployeeKpiController;
@@ -18,8 +21,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\WorkController;
 use App\Http\Controllers\MonthController;
-use App\Http\Controllers\Admin\RelevantUserController;
-use App\Http\Controllers\Boss\EmployeeController;
+use App\Models\RelevantUser;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -114,7 +117,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/edit/{id}', [BugalterController::class, 'edit'])->name('bugalter.edit');
         Route::get('/select', [BugalterController::class, 'select'])->name('bugalter.select');
         Route::get('/export',[BugalterController::class, 'get_summa'])->name('bugalter.export');
-        Route::get('/calculate/{id}',[BugalterController::class, 'calculate'])->name('bugalter.calculate');
+        Route::get('/calculate',[BugalterController::class, 'calculate'])->name('bugalter.calculate');
     });
 
     Route::resource('kpis', KpiController::class);
@@ -163,8 +166,11 @@ Route::put('/admin/relevant-users/{id}', [RelevantUserController::class, 'update
 Route::middleware(['auth'])->group(function () {
     Route::get('/boss/employees', [EmployeeController::class, 'index'])->name('boss.employees');
     Route::get('/boss/employees/{user}', [EmployeeController::class, 'show'])->name('boss.employee.show');
-});
 
+    Route::get('/departments', [DepartmentKpiController::class, 'index'])->name('kpi.departments');
+    Route::get('/departments/{id}', [DepartmentKpiController::class, 'departmentDetail'])->name('kpi.department.detail');
+    Route::get('/departments/users/{user}', [DepartmentKpiController::class, 'usersShow'])->name('department.user.detail');
+});
 
 
 

@@ -11,7 +11,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
-use App\Models\KPI;
+use App\Models\Kpi;
 use App\Models\Task;
 use App\Models\UserKpi;
 
@@ -256,7 +256,7 @@ class CommissionController extends Controller
     public function scoresList($id)
     {
         // Only allow ID 2 or 4
-        if (!in_array((int) $id, [Kpi::BEHAVIOUR, KPI::IJRO])) {
+        if (!in_array((int) $id, [Kpi::BEHAVIOUR, Kpi::IJRO])) {
             abort(404); // or return redirect()->back()->with('error', 'Noto‘g‘ri KPI turi.');
         }
 

@@ -32,7 +32,7 @@
             </div>
             <div class="title title-dashboard" style="width: 100%; text-align: center;">
                 <h1 style="text-transform: uppercase; font-size: 1.3rem; margin: 7px 15px">
-{{--                    DAVLAT EKOLOGIK EKSPERTIZASI MARKAZINING AVTOMATLASHGAN KPI TIZIMI--}}
+                   DAVLAT EKOLOGIK EKSPERTIZASI MARKAZINING AVTOMATLASHGAN KPI TIZIMI
                 </h1>
             </div>
             <div>
@@ -46,7 +46,7 @@
                                 10 => 'Oktyabr', 11 => 'Noyabr', 12 => 'Dekabr'
                             ];
                             $currentMonth = session('month') ?? (int)date('m');
-                            echo $months[$currentMonth];
+                            echo get_month_name($currentMonth);
                         @endphp
                     </div>
                     <div class="my-dropdown-year">
@@ -102,5 +102,4 @@
             </li>
         </ul>
     </div>
-
 </header>

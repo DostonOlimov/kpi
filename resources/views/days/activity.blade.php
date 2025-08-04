@@ -6,8 +6,7 @@
         <div class="page-header mb-4">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">
-                    <i class="fa fa-calendar mr-1"></i>&nbsp;Takliflar ishlab chiqqanligi, amaliyatga joriy etganligi va oʼz
-                    tashabbusi bilan qoʼshimcha vazifalarni bajarganligi
+                    <i class="fa fa-calendar mr-1"></i>&nbsp;Takliflar ishlab chiqqanligi, amaliyatga joriy etganligi va oʼz tashabbusi bilan qoʼshimcha vazifalarni bajarganligi
                 </li>
             </ol>
         </div>
@@ -30,7 +29,7 @@
         <div class="row mb-4">
             <div class="col-md-4">
                 <div class="stats-card">
-                    <div class="stats-number">{{ $users->count() }}</div>
+                    <div class="stats-number">{{$users->count()}}</div>
                     <div>Jami xodimlar</div>
                 </div>
             </div>
@@ -48,7 +47,7 @@
             </div>
         </div>
 
-        @foreach ($groupedUsers as $departmentName => $users)
+        @foreach($groupedUsers as $departmentName => $users)
             <div class="department-header">
                 <h4><i class="fa fa-users me-2"></i>{{ $departmentName }}</h4>
             </div>
@@ -56,67 +55,69 @@
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
-                            <tr>
-                                <th><i class="fa fa-hashtag me-1"></i></th>
-                                <th><i class="fa fa-user me-1"></i>Ism Sharifi</th>
-                                <th><i class="fa fa-briefcase me-1"></i>Lavozimi</th>
-                                <th><i class="fa fa-calendar me-1"></i>Oy</th>
-                                <th style="width: 50%"><i class="fa fa-calendar-check me-1"></i>Xodimning tashabbuskorligi
-                                </th>
-                            </tr>
+                        <tr>
+                            <th><i class="fa fa-hashtag me-1"></i></th>
+                            <th><i class="fa fa-user me-1"></i>Ism Sharifi</th>
+                            <th><i class="fa fa-briefcase me-1"></i>Lavozimi</th>
+                            <th><i class="fa fa-calendar me-1"></i>Oy</th>
+                            <th style="width: 50%"><i class="fa fa-calendar-check me-1"></i>Xodimning tashabbuskorligi</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            @foreach ($users as $user)
-                                <tr data-user-id="{{ $user->id }}" class="user-row">
-                                    <td class="text-center">{{ $loop->iteration }}</td>
-                                    <td><strong>{{ $user->first_name . ' ' . $user->last_name }}</strong></td>
-                                    <td>{{ $user->lavozimi }}</td>
-                                    <td><span class="badge bg-info">{{ $month_name }}</span></td>
-                                    <td>
-                                        <div class="working-days-wrapper" data-user-id="{{ $user->id }}"
-                                            data-user-name="{{ $user->first_name . ' ' . $user->last_name }}">
-                                            @php $user_kpi = $user->user_kpis->where('kpi_id',11)->first() @endphp
-                                            @if ($user_kpi)
-                                                @if (!$user_kpi->current_score)
-                                                    <div class="input-group input-group-sm flex-nowrap">
-                                                        <input type="number" class="form-control result-input me-1"
-                                                            placeholder="Ball" min="0" max="{{ $kpi->max_score }}"
-                                                            data-original-value="0" />
+                        @foreach ($users as $user)
+                            <tr data-user-id="{{ $user->id }}" class="user-row">
+                                <td class="text-center">{{ $loop->iteration }}</td>
+                                <td><strong>{{ $user->first_name . ' '.$user->last_name }}</strong></td>
+                                <td>{{ $user->lavozimi }}</td>
+                                <td><span class="badge bg-info">{{ $month_name }}</span></td>
+                                <td>
+                                    <div class="working-days-wrapper" data-user-id="{{ $user->id }}" data-user-name="{{ $user->first_name . ' '.$user->last_name }}">
+                                        @php $user_kpi = $user->user_kpis->where('kpi_id',11)->first() @endphp
+                                        @if (!$user_kpi->current_score)
+                                            <div class="input-group input-group-sm flex-nowrap">
+                                                <input type="number" class="form-control result-input me-1"
+                                                       placeholder="Ball"
+                                                       min="0" max="{{ $kpi->max_score }}"
+                                                       data-original-value="0" />
 
-                                                        <textarea class="form-control feedback-input" placeholder="Izoh kiriting" rows="2" data-original-value2="0"
-                                                            style="resize: vertical;"></textarea>
+                                                <textarea class="form-control feedback-input"
+                                                          placeholder="Izoh kiriting"
+                                                          rows="2"
+                                                          data-original-value2="0"
+                                                          style="resize: vertical;"></textarea>
 
-                                                        <button class="btn btn-success save-working-days-btn"
-                                                            data-month="{{ $month_id }}"
-                                                            data-year="{{ $year }}" title="Saqlash (Ctrl+S)">
-                                                            <span class="btn-text"><i class="fa fa-save"></i> Saqlash</span>
-                                                            <span class="btn-loading d-none"><i
-                                                                    class="fa fa-spinner fa-spin"></i> Saqlanmoqda...</span>
-                                                        </button>
-                                                    </div>
-                                                @else
-                                                    <div class="working-days-display">
-                                                        <span class="result-text badge bg-primary me-2">
-                                                            <i
-                                                                class="fa fa-star me-1"></i>{{ round($user_kpi->current_score) }}
-                                                        </span>
-                                                        <textarea class="form-control feedback-text" placeholder="Izoh kiriting" rows="2" data-original-value2="0"
-                                                            style="resize: vertical;" readonly>{{ $user_kpi->score?->feedback }}</textarea>
-                                                        <button class="btn btn-sm btn-primary edit-working-days-btn"
-                                                            data-month="{{ $month_id }}"
-                                                            data-year="{{ $year }}"
-                                                            data-current-result="{{ $user_kpi->current_score }}"
-                                                            data-current-feedback="{{ $user_kpi->score?->feedback }}"
-                                                            title="Tahrirlash (E)">
-                                                            <i class="fa fa-pencil me-1"></i> Tahrirlash
-                                                        </button>
-                                                    </div>
-                                                @endif
-                                            @endif
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
+                                                <button class="btn btn-success save-working-days-btn"
+                                                        data-month="{{ $month_id }}" data-year="{{ $year }}"
+                                                        title="Saqlash (Ctrl+S)">
+                                                    <span class="btn-text"><i class="fa fa-save"></i> Saqlash</span>
+                                                    <span class="btn-loading d-none"><i class="fa fa-spinner fa-spin"></i> Saqlanmoqda...</span>
+                                                </button>
+                                            </div>
+                                        @else
+                                            <div class="working-days-display">
+                                                    <span class="result-text badge bg-primary me-2">
+                                                        <i class="fa fa-star me-1"></i>{{ round($user_kpi->current_score) }}
+                                                    </span>
+                                                <textarea class="form-control feedback-text"
+                                                          placeholder="Izoh kiriting"
+                                                          rows="2"
+                                                          data-original-value2="0"
+                                                          style="resize: vertical;" readonly>{{ $user_kpi->score?->feedback }}</textarea>
+                                                <button
+                                                    class="btn btn-sm btn-primary edit-working-days-btn"
+                                                    data-month="{{ $month_id }}"
+                                                    data-year="{{ $year }}"
+                                                    data-current-result="{{ $user_kpi->current_score }}"
+                                                    data-current-feedback="{{ $user_kpi->score?->feedback }}"
+                                                    title="Tahrirlash (E)">
+                                                    <i class="fa fa-pencil me-1"></i> Tahrirlash
+                                                </button>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -125,8 +126,7 @@
     </div>
 
     <!-- Confirmation Modal -->
-    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
                 <div class="modal-header bg-warning text-dark">
@@ -199,8 +199,7 @@
                 if (e.target.classList.contains('result-input')) {
                     if (e.key === 'Enter') {
                         e.preventDefault();
-                        const saveBtn = e.target.closest('.working-days-wrapper').querySelector(
-                            '.save-working-days-btn');
+                        const saveBtn = e.target.closest('.working-days-wrapper').querySelector('.save-working-days-btn');
                         if (saveBtn) this.handleSave(saveBtn);
                     } else if (e.key === 'Escape') {
                         const cancelBtn = e.target.closest('.working-days-wrapper').querySelector('.cancel-edit-btn');
@@ -333,12 +332,7 @@
                         'X-CSRF-TOKEN': this.csrfToken,
                         'Accept': 'application/json'
                     },
-                    body: JSON.stringify({
-                        result,
-                        feedback,
-                        month,
-                        year
-                    })
+                    body: JSON.stringify({ result, feedback, month, year })
                 });
 
                 if (!response.ok) {
@@ -429,10 +423,7 @@
                 alert.classList.remove('d-none');
 
                 setTimeout(() => alert.classList.add('d-none'), 5000);
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
             showToast(message, type = 'info') {
