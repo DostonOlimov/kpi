@@ -21,13 +21,11 @@ class RelevantUserController extends Controller
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'boss_id' => 'required|exists:users,id',
-            'step' => 'required|integer',
         ]);
 
         RelevantUser::create([
             'user_id' => $request->user_id,
             'boss_id' => $request->boss_id,
-            'step' => $request->step,
         ]);
 
         return redirect()->route('admin.relevant-users.index')->with('success', 'Biriktirish muvaffaqiyatli!');
@@ -50,10 +48,9 @@ class RelevantUserController extends Controller
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'boss_id' => 'required|exists:users,id',
-            'step' => 'required|integer',
         ]);
         $relevantUser = \App\Models\RelevantUser::findOrFail($id);
-        $relevantUser->update($request->only('user_id', 'boss_id', 'step'));
+        $relevantUser->update($request->only('user_id', 'boss_id'));
         return redirect()->route('admin.relevant-users.index')->with('success', 'Biriktirish yangilandi!');
     }
 }

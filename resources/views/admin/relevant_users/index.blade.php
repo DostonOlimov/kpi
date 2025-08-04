@@ -26,10 +26,6 @@
                     </select>
                 </div>
                 <div class="col">
-                    <label>Daraja:</label>
-                    <input type="number" name="step" class="form-control" value="1" min="1" required>
-                </div>
-                <div class="col">
                     <button type="submit" class="btn btn-primary mt-4">Biriktirish</button>
                 </div>
             </div>
@@ -42,7 +38,6 @@
                         <th>T/r</th>
                         <th>XODIM</th>
                         <th>RAHBAR</th>
-                        <th>STEP</th>
                         <th>AMALLAR</th>
                     </tr>
                 </thead>
@@ -52,7 +47,6 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $item->user->first_name ?? '' }} {{ $item->user->last_name ?? '' }}</td>
                             <td>{{ $item->boss->first_name ?? '' }} {{ $item->boss->last_name ?? '' }}</td>
-                            <td>{{ $item->step }}</td>
                             <td>
                                 <a href="{{ route('admin.relevant-users.edit', $item->id) }}"
                                     class="btn btn-sm btn-warning">Tahrirlash</a>

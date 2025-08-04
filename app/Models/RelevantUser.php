@@ -8,7 +8,7 @@ class RelevantUser extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'boss_id', 'step'];
+    protected $fillable = ['user_id', 'boss_id'];
 
     public function user()
     {

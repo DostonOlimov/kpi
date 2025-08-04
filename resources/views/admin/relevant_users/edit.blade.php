@@ -29,10 +29,6 @@
                 </select>
             </div>
             <div class="col">
-                <label>Step:</label>
-                <input type="number" name="step" class="form-control" value="{{ $relevantUser->step }}" min="1" required>
-            </div>
-            <div class="col">
                 <button type="submit" class="btn btn-success mt-4">Saqlash</button>
             </div>
         </div>

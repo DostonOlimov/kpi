@@ -11,7 +11,6 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('boss_id');
-            $table->tinyInteger('step');
             $table->timestamps();
 
             // Agar users jadvali bilan bog‘lamoqchi bo‘lsangiz:
