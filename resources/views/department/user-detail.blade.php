@@ -156,7 +156,7 @@
                             Jami KPI
                         </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">
-                            {{ $userStats['total_kpis'] }}
+                            {{ $userStats['total_kpis'] }} ta
                         </div>
                     </div>
                 </div>
@@ -165,10 +165,10 @@
                 <div class="card border-left-success shadow h-100 py-2">
                     <div class="card-body">
                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                            O'rtacha Ball
+                            Umumiy Ball
                         </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">
-                            {{ $userStats['avg_score'] }}%
+                            {{ $userStats['sum_score'] }} ball
                         </div>
                     </div>
                 </div>
@@ -180,7 +180,7 @@
                             Bajarilgan
                         </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">
-                            {{ $userStats['completed_kpis'] }}
+                            {{ $userStats['completed_kpis'] }} ta
                         </div>
                     </div>
                 </div>
@@ -189,10 +189,10 @@
                 <div class="card border-left-warning shadow h-100 py-2">
                     <div class="card-body">
                         <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                            Jami Komissiya
+                            Maksimal Ball
                         </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">
-                            {{ number_format($userStats['total_commission'], 0) }} so'm
+                            100 ball
                         </div>
                     </div>
                 </div>

@@ -74,7 +74,9 @@
                                 O'rtacha samaradorlik ko'rsatkichi
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                {{ $overallStats['overall_avg_score'] }}%
+                                @if($overallStats['total_employees'] > 0)
+                                    {{ round($overallStats['sum_score'] / $overallStats['total_employees'], 2) }}%
+                                @endif
                             </div>
                         </div>
                         <div class="col-auto">
@@ -130,6 +132,7 @@
                             </thead>
                             <tbody>
                                 @forelse($departmentStats as $dept)
+                                @php $avg_score = ($dept->total_employees != 0) ? $dept->sum_score / $dept->total_employees : 0; @endphp
                                 <tr>
                                     <td>
                                         <strong>{{ $dept->department_name }}</strong>
@@ -140,22 +143,22 @@
                                     <td>{{ $dept->total_kpis }}</td>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <span class="mr-2">{{ $dept->avg_score }}%</span>
+                                            <span class="mr-2">{{ $avg_score }}%</span>
                                             <div class="progress flex-grow-1" style="height: 8px;">
                                                 <div class="progress-bar 
-                                                    @if($dept->avg_score >= 80) bg-success
-                                                    @elseif($dept->avg_score >= 60) bg-warning
+                                                    @if($avg_score >= 80) bg-success
+                                                    @elseif($avg_score >= 60) bg-warning
                                                     @else bg-danger
                                                     @endif" 
-                                                    style="width: {{ $dept->avg_score }}%">
+                                                    style="width: {{ $avg_score }}%">
                                                 </div>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
-                                        @if($dept->avg_score >= 80)
+                                        @if($avg_score >= 80)
                                             <span class="badge badge-success">Ajoyib</span>
-                                        @elseif($dept->avg_score >= 60)
+                                        @elseif($avg_score >= 60)
                                             <span class="badge badge-warning">Yaxshi</span>
                                         @else
                                             <span class="badge badge-danger">Past</span>

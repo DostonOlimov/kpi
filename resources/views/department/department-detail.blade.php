@@ -59,9 +59,13 @@
                         O'rtacha ko'rsatkich
                     </div>
                     <div class="h5 mb-0 font-weight-bold text-gray-800">
-                        {{ round($employees->avg(function($employee) { 
-                            return $employee->user_kpis->avg('avg_score'); 
-                        }), 2) }}%
+                        @if($employees->count() > 0)
+                            {{ round($employees->sum(function($employee) { 
+                                return $employee->user_kpis->sum('sum_score'); 
+                            }) / $employees->count() , 2)  }}%
+                        @else
+                            0%  
+                        @endif
                     </div>
                 </div>
             </div>
@@ -70,12 +74,12 @@
             <div class="card border-left-info shadow h-100 py-2">
                 <div class="card-body">
                     <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                        Yuqori ko'rsatkichlar
+                        Eng yuqori ko'rsatkich
                     </div>
                     <div class="h5 mb-0 font-weight-bold text-gray-800">
-                        {{ $employees->filter(function($employee) { 
-                            return $employee->user_kpis->avg('avg_score') >= 80; 
-                        })->count() }}
+                        {{ $employees->max(function($employee) { 
+                            return $employee->user_kpis->sum('sum_score'); 
+                        }) }}
                     </div>
                 </div>
             </div>
@@ -84,12 +88,12 @@
             <div class="card border-left-warning shadow h-100 py-2">
                 <div class="card-body">
                     <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                       Past ko'rsatkichlar
+                       Eng past ko'rsatkich
                     </div>
                     <div class="h5 mb-0 font-weight-bold text-gray-800">
-                        {{ $employees->filter(function($employee) { 
-                            return $employee->user_kpis->avg('avg_score') < 60; 
-                        })->count() }}
+                         {{ $employees->min(function($employee) { 
+                            return $employee->user_kpis->sum('sum_score'); 
+                        }) }}
                     </div>
                 </div>
             </div>
@@ -119,7 +123,7 @@
                             <tbody>
                                 @forelse($employees as $employee)
                                 @php
-                                    $avgScore = $employee->user_kpis->avg('avg_score') ?? 0;
+                                    $avgScore = $employee->user_kpis->sum('sum_score') ?? 0;
                                 @endphp
                                 <tr style="height: 60px;">
                                     <td  style="vertical-align: middle;">

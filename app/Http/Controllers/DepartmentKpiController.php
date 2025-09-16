@@ -35,14 +35,26 @@ class DepartmentKpiController extends Controller
 
     private function getDepartmentStatistics()
     {
-        return WorkZone::leftJoin('users', 'work_zones.id', '=', 'users.work_zone_id')
-            ->leftJoin('user_kpis', 'users.id', '=', 'user_kpis.user_id')
+        return WorkZone::leftJoin('users', function ($join) {
+                    $join->on('work_zones.id', '=', 'users.work_zone_id')
+                        ->where('users.role_id', '!=', User::ROLE_ADMIN)   // exclude admins
+                        ->where('users.role_id', '!=', User::ROLE_MANAGER); // exclude managers
+                })
+                ->leftJoin('user_kpis', function ($join) {
+
+                    $year = session('year') ?: (int)date('Y');
+                    $month = session('month') ?: (int)date('m');
+                    $join->on('users.id', '=', 'user_kpis.user_id')
+                        ->where('year',$year)
+                        ->where('month',$month);
+                })
             ->select(
                 'work_zones.id',
                 'work_zones.name as department_name',
                 DB::raw('COUNT(DISTINCT users.id) as total_employees'),
                 DB::raw('COUNT(user_kpis.id) as total_kpis'),
                 DB::raw('ROUND(AVG(user_kpis.current_score), 2) as avg_score'),
+                DB::raw('ROUND(SUM(user_kpis.current_score), 2) as sum_score'),
                 DB::raw('MAX(user_kpis.current_score) as max_score'),
                 DB::raw('MIN(user_kpis.current_score) as min_score'),
                 DB::raw('COUNT(CASE WHEN user_kpis.current_score >= 80 THEN 1 END) as high_performers'),
@@ -56,7 +68,14 @@ class DepartmentKpiController extends Controller
     private function getTopPerformersByDepartment()
     {
         return User::join('work_zones', 'users.work_zone_id', '=', 'work_zones.id')
-            ->join('user_kpis', 'users.id', '=', 'user_kpis.user_id')
+            ->leftJoin('user_kpis', function ($join) {
+
+                    $year = session('year') ?: (int)date('Y');
+                    $month = session('month') ?: (int)date('m');
+                    $join->on('users.id', '=', 'user_kpis.user_id')
+                        ->where('year',$year)
+                        ->where('month',$month);
+                })
             ->select(
                 'work_zones.name as department_name',
                 'users.first_name as user_name',
@@ -91,8 +110,11 @@ class DepartmentKpiController extends Controller
     {
         return [
             'total_departments' => WorkZone::count(),
-            'total_employees' => User::count(),
-            'total_kpis' => UserKpi::count(),
+            'total_employees' => 
+                    User::where('users.role_id', '!=', User::ROLE_ADMIN) 
+                        ->where('users.role_id', '!=', User::ROLE_MANAGER)
+                        ->count(),
+            'sum_score' => UserKpi::sum('current_score'),
             'overall_avg_score' => round(UserKpi::avg('current_score'), 2),
             'high_performers_count' => UserKpi::where('current_score', '>=', 80)->count(),
             'low_performers_count' => UserKpi::where('current_score', '<', 60)->count(),
@@ -107,6 +129,7 @@ class DepartmentKpiController extends Controller
             ->whereNotIn('role_id', [User::ROLE_ADMIN, User::ROLE_MANAGER])
             ->with(['user_kpis' => function($query) {
                 $query->select('user_id', DB::raw('ROUND(AVG(current_score), 2) as avg_score'))
+                      ->select('user_id', DB::raw('SUM(current_score) as sum_score'))
                       ->groupBy('user_id');
             }])
             ->get();
@@ -147,6 +170,7 @@ class DepartmentKpiController extends Controller
         
         $totalKpis = $userKpis->count();
         $avgScore = $userKpis->avg('current_score') ?? 0;
+        $sumScore = $userKpis->sum('current_score');
         $completedKpis = $userKpis->whereNotNull('current_score')->count();
         $inProgressKpis = $userKpis->whereNull('current_score')->count();
         $pendingKpis = $userKpis->whereNull('current_score')->count();
@@ -164,6 +188,7 @@ class DepartmentKpiController extends Controller
         return [
             'total_kpis' => $totalKpis,
             'avg_score' => round($avgScore, 2),
+            'sum_score' => round($sumScore,2),
             'completed_kpis' => $completedKpis,
             'in_progress_kpis' => $inProgressKpis,
             'pending_kpis' => $pendingKpis,
