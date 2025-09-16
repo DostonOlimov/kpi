@@ -47,7 +47,7 @@
                         Barcha xodimlar
                     </div>
                     <div class="h5 mb-0 font-weight-bold text-gray-800">
-                        {{ $employees->count() }}
+                        {{ $employees->count() }} ta
                     </div>
                 </div>
             </div>
@@ -62,9 +62,9 @@
                         @if($employees->count() > 0)
                             {{ round($employees->sum(function($employee) { 
                                 return $employee->user_kpis->sum('sum_score'); 
-                            }) / $employees->count() , 2)  }}%
+                            }) / $employees->count() , 2)  }} ball
                         @else
-                            0%  
+                            0 ball
                         @endif
                     </div>
                 </div>
@@ -79,7 +79,7 @@
                     <div class="h5 mb-0 font-weight-bold text-gray-800">
                         {{ $employees->max(function($employee) { 
                             return $employee->user_kpis->sum('sum_score'); 
-                        }) }}
+                        }) }} ball
                     </div>
                 </div>
             </div>
@@ -93,7 +93,7 @@
                     <div class="h5 mb-0 font-weight-bold text-gray-800">
                          {{ $employees->min(function($employee) { 
                             return $employee->user_kpis->sum('sum_score'); 
-                        }) }}
+                        }) }} ball
                     </div>
                 </div>
             </div>
@@ -140,7 +140,7 @@
                                     </td>
                                     <td  style="vertical-align: middle;">{{ $employee->lavozimi }}</td>
                                     <td  style="vertical-align: middle;">
-                                        <span class="font-weight-bold">{{ round($avgScore, 2) }}%</span>
+                                        <span class="font-weight-bold">{{ round($avgScore, 2) }}</span>
                                     </td>
                                     <td  style="vertical-align: middle;">
                                         @if($avgScore >= 80)

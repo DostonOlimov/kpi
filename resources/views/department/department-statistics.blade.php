@@ -34,7 +34,7 @@
                                 Barcha bo'limlar
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                {{ $overallStats['total_departments'] }}
+                                {{ $overallStats['total_departments'] }} ta
                             </div>
                         </div>
                         <div class="col-auto">
@@ -51,10 +51,10 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Xodimlar soni
+                                Umumiy xodimlar soni
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                {{ $overallStats['total_employees'] }}
+                                {{ $overallStats['total_employees'] }} ta
                             </div>
                         </div>
                         <div class="col-auto">
@@ -75,7 +75,7 @@
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
                                 @if($overallStats['total_employees'] > 0)
-                                    {{ round($overallStats['sum_score'] / $overallStats['total_employees'], 2) }}%
+                                    {{ round($overallStats['sum_score'] / $overallStats['total_employees'], 2) }} %
                                 @endif
                             </div>
                         </div>
