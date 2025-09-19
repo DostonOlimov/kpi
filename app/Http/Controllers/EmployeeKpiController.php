@@ -71,7 +71,10 @@ class EmployeeKpiController extends Controller
         // If not exists, create it as active
         if (!$userKpi) {
             // Calculate new total if this KPI is added
-            $currentTotal = $user->user_kpis()->sum('target_score');
+            $currentTotal = $user->user_kpis()
+                            ->whereHas('kpi', function($q) {
+                                    $q->where('type', \App\Models\Kpi::SELF_BY_PERSON);
+                                })->sum('target_score');
             $newTotal = $currentTotal + $kpi->max_score;
 
             if ($newTotal > 60) {
@@ -98,7 +101,9 @@ class EmployeeKpiController extends Controller
                 $userKpi->delete();
             }
 
-            $newTotal = $user->user_kpis()->sum('target_score');
+            $newTotal = $user->user_kpis()->whereHas('kpi', function($q) {
+                                    $q->where('type', \App\Models\Kpi::SELF_BY_PERSON);
+                                })->sum('target_score');
 
             return response()->json([
                 'is_active' => false,

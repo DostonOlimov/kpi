@@ -18,7 +18,7 @@ class BugalterController extends Controller
         $month_id = session('month') ?? (int)date('m');
         $data = EmployeeSumma::with('users')
             ->get();
-            $work_day = Month::where('month_id','=',$month_id)->first()->days ?? 21;
+            $work_day = Month::where('month_id','=',value: $month_id)->first()->days ?? 21;
             $salary = [];
             $ustama = [];
             $soliq = [];
@@ -174,7 +174,7 @@ class BugalterController extends Controller
         $sum_arr = DB::table('employees_summa')
             ->where('month', '=', $active_summa->month)
             ->get();
-        $nisbat = $active_summa->summa / $total_summa;
+        $nisbat = ($total_summa != 0) ? $active_summa->summa / $total_summa : 0;
 
         foreach ( $sum_arr as $arr )
         {

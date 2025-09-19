@@ -75,7 +75,11 @@
                             </div>
                         </form>
                         @php
-                            $total = $user->user_kpis->sum('target_score') ?? 0;
+                            $total = $user->user_kpis()
+                                ->whereHas('kpi', function($q) {
+                                    $q->where('type', \App\Models\Kpi::SELF_BY_PERSON);
+                                })
+                                ->sum('target_score') ?? 0;
                             $foiz = round(100 * $total / 60);
                         @endphp
 
