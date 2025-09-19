@@ -128,7 +128,7 @@ class BugalterController extends Controller
                     'current_ball' => $current_score,
                     'rating' => 1,
                     'summa' => $user->salary,
-                    'days' => $days,
+                    'days' => $days ?? $work_days,
                     'ustama' => ($user->salary * $current_score * $days) / (100 * $work_days),
                     'total_summa' => $user->salary + ($user->salary * $current_score * $days) / (100 * $work_days),
                 ]
