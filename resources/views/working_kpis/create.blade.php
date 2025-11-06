@@ -19,6 +19,15 @@
                     </div>
 
                     <div class="card-body">
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul class="mb-0">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                         <form action="{{ route('working-kpis.store') }}" method="POST">
                             @csrf
 
@@ -29,18 +38,21 @@
                                 <textarea name="name" class="form-control" required>{{ old('name') }}</textarea>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group"></div>
                                 <label>{{ __('Maksimal ball') }}</label>
                                 <input type="number" name="max_score" class="form-control" value="{{ old('max_score') }}" required>
                             </div>
-                            <a class="btn btn-primary" href="{{ URL::previous() }}">
+                             <div class="form-group">
+                                 <a class="btn btn-primary" href="{{ URL::previous() }}">
                                 <i class="fa fa-warning" ></i>{{ trans('app.Cancel') }}
                             </a>
-                            <button type="submit" class="btn btn-success">
+                            <button type="submit" class="btn btn-success form">
                                 <i class="fa fa-save"></i> {{ __('Saqlash') }}
                             </button>
+                             </div>
+                           
                         </form>
-                    </div>
+                    </div></button></a>
 
                 </div>
             </div>

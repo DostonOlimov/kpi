@@ -35,7 +35,7 @@ class WorkingKpiController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string',
+            'name' => 'required|string|max:2048',
             'max_score' => 'required|integer|min:0',
         ]);
 
