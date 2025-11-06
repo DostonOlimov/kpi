@@ -34,7 +34,7 @@
                             <input type="hidden" value="{{ $user->id }}" name="user_id">
                             <div class="form-group">
                                 <label>{{ __('Nomi') }}</label>
-                                <input type="text" name="name" class="form-control" value="{{ old('name', $kpi->name) }}" required>
+                                <textarea name="name" class="form-control" required>{{ old('name', $kpi->name) }}</textarea>
                             </div>
                             <div class="form-group">
                                 <label>{{ __('Maksimal ball') }}</label>
