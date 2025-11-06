@@ -252,14 +252,14 @@
                    Taqsimot mablag'lari
                 </a>
             </li>
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a class="nav-link" href="{{ route('admin.relevant-users.index') }}">
                     <svg class="nav-icon">
                         <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-user"></use>
                     </svg>
                     Xodim/Rahbar biriktirish
                 </a>
-            </li>
+            </li> --}}
         @endif
 
         <li class="nav-item"><a class="nav-link"></a></li>

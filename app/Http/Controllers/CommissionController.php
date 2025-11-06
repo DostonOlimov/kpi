@@ -41,7 +41,7 @@ class CommissionController extends Controller
     {
         $user = auth()->user();
         $users = User::whereNotIn('role_id',[User::ROLE_ADMIN,User::ROLE_MANAGER])
-            ->get();
+            ->paginate(10);
         return view('director.employees', ["users" => $users]);
     }
 

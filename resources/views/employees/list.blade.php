@@ -38,7 +38,7 @@
                             <th>Familiya</th>
                             <th>Login (username)</th>
                             <th>Oylik maosh</th>
-                            <th>Lavozimi</th>
+                            <th>Bo'lim nomi</th>
                             <th>Roli</th>
 {{--                            <th>Ish joyi</th>--}}
                             <th>Harakatlar</th>
@@ -59,7 +59,7 @@
                                 <td>{{ $user->last_name }}</td>
                                 <td>{{ $user->username }}</td>
                                 <td>{{ number_format($user->salary, 2, '.', ' ') }} so'm</td>
-                                <td>{{ $user->lavozimi }}</td>
+                                <td>{{ $user->work_zone?->name }}</td>
                                 <td>{{ $user->role->name ?? '-' }}</td>
 {{--                                <td>{{ $user->work_zone->name ?? '-' }}</td>--}}
                                 <td>

@@ -21,7 +21,7 @@ class WorkingKpiController extends Controller
                 ->where('role_id', User::ROLE_USER);
         }
 
-        $users = $query->paginate(20);
+        $users = $query->paginate(10);
 
         return view('working_kpis.index', compact('users'));
     }
