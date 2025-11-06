@@ -24,7 +24,7 @@ class EmployeesController extends Controller
 {
     public function index(Request $request)
     {
-        $users = User::with('role')->with('work_zone')->latest('id')->paginate(20);
+        $users = User::with('role')->with('work_zone')->whereNotIn('role_id',[User::ROLE_ADMIN,User::ROLE_MANAGER])->latest('id')->paginate(20);
         return view('employees.list', compact('users'));
     }
     public function create()

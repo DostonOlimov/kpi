@@ -115,8 +115,7 @@ class BugalterController extends Controller
             $days = EmployeeDays::where('user_id', $user->id)
                 ->where('month_id', $month_id)
                 ->value('days');
-            if ($days) {
-            }
+
             $current_score = $user->user_kpis->sum('current_score') ?? 0;
             EmployeeSumma::updateOrCreate(
                 [
