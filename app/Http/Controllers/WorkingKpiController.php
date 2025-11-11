@@ -11,7 +11,7 @@ class WorkingKpiController extends Controller
 {
     public function index()
     {
-        $query = User::with('working_kpis')
+        $query = User::with(['working_kpis', 'work_zone'])
             ->where('role_id','!=',User::ROLE_ADMIN)
             ->where('id', '!=', auth()->id());
 

@@ -47,8 +47,8 @@
                         <div class="user-info">
                             <h5 class="user-name">{{ $user->full_name }}</h5>
                             <p class="user-email">{{ $user->lavozimi }}</p>
-                            @if($user->department)
-                                <span class="department-badge">{{ $user->department }}</span>
+                            @if($user->work_zone)
+                                <span class="department-badge">{{ $user->work_zone->name }}</span>
                             @endif
                         </div>
                         <div class="user-stats">

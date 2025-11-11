@@ -70,50 +70,24 @@
 
         <!-- KPI Cards Row -->
         <div class="row mb-4">
-            <!-- Total Revenue Card -->
+            <!-- Total Employees Card -->
             <div class="col-xl-3 col-md-6 mb-4">
                 <div class="card kpi-card h-100">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    Jami miqdor
+                                    Xodimlar soni
                                 </div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                    ${{ number_format(245680, 2) }}
+                                    {{ number_format($totalEmployees) }}
                                 </div>
                                 <div class="text-success small">
-                                    <i class="fa fa-arrow-up"></i> 12.5% oldingi oydan ko'p
+                                    <i class="fa fa-arrow-up"></i> {{ $totalEmployees > 0 ? round((($totalEmployees - 100) / 100) * 100, 1) : 0 }}% oldingi oydan ko'p
                                 </div>
                             </div>
                             <div class="col-auto">
                                 <div class="kpi-icon gradient-primary">
-                                    <i class="fa fa-dollar"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- New Customers Card -->
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card kpi-card h-100">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                    Xodimlar soni
-                                </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                    {{ number_format(1247) }}
-                                </div>
-                                <div class="text-success small">
-                                    <i class="fa fa-arrow-up"></i> 8.2% yangi xodim
-                                </div>
-                            </div>
-                            <div class="col-auto">
-                                <div class="kpi-icon gradient-success">
                                     <i class="fa fa-users"></i>
                                 </div>
                             </div>
@@ -122,18 +96,45 @@
                 </div>
             </div>
 
-            <!-- Conversion Rate Card -->
+            <!-- Total Tasks Card -->
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card kpi-card h-100">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Jami topshiriqlar
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    {{ number_format($totalTasks) }}
+                                </div>
+                                <div class="text-success small">
+                                    <i class="fa fa-arrow-up"></i> {{ $totalTasks > 0 ? round((($totalTasks - 50) / 50) * 100, 1) : 0 }}% yangi topshiriqlar
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="kpi-icon gradient-success">
+                                    <i class="fa fa-tasks"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI Completion Rate Card -->
             <div class="col-xl-3 col-md-6 mb-4">
                 <div class="card kpi-card h-100">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                    Ish hajmi
+                                    KPI bajarilishi
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">3.48%</div>
-                                <div class="text-danger small">
-                                    <i class="fa fa-arrow-down"></i> 2.1% oldingi oydan kam
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $completionPercentage }}%</div>
+                                <div class="{{ $completionPercentage >= 50 ? 'text-success' : 'text-danger' }} small">
+                                    <i class="fa {{ $completionPercentage >= 50 ? 'fa-arrow-up' : 'fa-arrow-down' }}"></i> 
+                                    {{ abs($completionPercentage - 50) }}% {{ $completionPercentage >= 50 ? 'maqsaddan yuqori' : 'maqsaddan past' }}
                                 </div>
                             </div>
                             <div class="col-auto">
@@ -146,23 +147,23 @@
                 </div>
             </div>
 
-            <!-- Active Projects Card -->
+            <!-- Completed KPIs Card -->
             <div class="col-xl-3 col-md-6 mb-4">
                 <div class="card kpi-card h-100">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                    Jami topshiriqlar
+                                    Bajarilgan KPI-lar
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">24</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $completedKpis }}</div>
                                 <div class="text-success small">
-                                    <i class="fa fa-arrow-up"></i> 5 ta yangi haftada
+                                    <i class="fa fa-arrow-up"></i> {{ $completedKpis > 0 ? round((($completedKpis - 10) / 10) * 100, 1) : 0 }}% bu haftada
                                 </div>
                             </div>
                             <div class="col-auto">
                                 <div class="kpi-icon gradient-warning">
-                                    <i class="fa fa-tasks"></i>
+                                    <i class="fa fa-check-circle"></i>
                                 </div>
                             </div>
                         </div>
@@ -173,155 +174,105 @@
 
         <!-- Charts Row -->
         <div class="row mb-4">
-            <!-- Revenue Chart -->
+            <!-- KPI Progress Chart -->
             <div class="col-lg-8 mb-4">
                 <div class="card chart-container">
                     <div class="card-header bg-transparent border-0">
                         <h5 class="mb-0">
                             <i class="fa fa-chart-line me-2"></i>
-                            O'shish ko'rsatkichlari (oxirgi 6 oyda)
+                            KPI bajarilish ko'rsatkichi (oxirgi 6 oyda)
                         </h5>
                     </div>
                     <div class="card-body">
-                        <canvas id="revenueChart" height="100"></canvas>
+                        <canvas id="kpiProgressChart" height="100"></canvas>
                     </div>
                 </div>
             </div>
 
-            <!-- Traffic Sources Chart -->
+            <!-- KPI Status Distribution Chart -->
             <div class="col-lg-4 mb-4">
                 <div class="card chart-container">
                     <div class="card-header bg-transparent border-0">
                         <h5 class="mb-0">
                             <i class="fa fa-chart-pie me-2"></i>
-                            Bo'limlar ko'rsatkichlari
+                            KPI holati taqsimoti
                         </h5>
                     </div>
                     <div class="card-body">
-                        <canvas id="trafficChart"></canvas>
+                        <canvas id="kpiStatusChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Recent Activity Table -->
-{{--        <div class="row mb-4">--}}
-{{--            <div class="col-12">--}}
-{{--                <div class="card table-container">--}}
-{{--                    <div class="card-header bg-transparent border-0">--}}
-{{--                        <div class="d-flex justify-content-between align-items-center">--}}
-{{--                            <h5 class="mb-0">--}}
-{{--                                <i class="fa fa-history me-2"></i>--}}
-{{--                                Recent Activity--}}
-{{--                            </h5>--}}
-{{--                            <a href="#" class="btn btn-sm btn-outline-primary">View All</a>--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                    <div class="card-body">--}}
-{{--                        <div class="table-responsive">--}}
-{{--                            <table class="table table-hover mb-0">--}}
-{{--                                <thead class="table-light">--}}
-{{--                                <tr>--}}
-{{--                                    <th>Date</th>--}}
-{{--                                    <th>Customer</th>--}}
-{{--                                    <th>Product</th>--}}
-{{--                                    <th>Amount</th>--}}
-{{--                                    <th>Status</th>--}}
-{{--                                    <th>Action</th>--}}
-{{--                                </tr>--}}
-{{--                                </thead>--}}
-{{--                                <tbody>--}}
-{{--                                @php--}}
-{{--                                    $activities = [--}}
-{{--                                        ['date' => '2024-01-15', 'customer' => 'John Smith', 'product' => 'Premium Plan', 'amount' => 299.00, 'status' => 'completed'],--}}
-{{--                                        ['date' => '2024-01-14', 'customer' => 'Sarah Johnson', 'product' => 'Basic Plan', 'amount' => 99.00, 'status' => 'pending'],--}}
-{{--                                        ['date' => '2024-01-13', 'customer' => 'Mike Davis', 'product' => 'Enterprise Plan', 'amount' => 599.00, 'status' => 'completed'],--}}
-{{--                                        ['date' => '2024-01-12', 'customer' => 'Emily Wilson', 'product' => 'Premium Plan', 'amount' => 299.00, 'status' => 'failed'],--}}
-{{--                                        ['date' => '2024-01-11', 'customer' => 'Robert Brown', 'product' => 'Basic Plan', 'amount' => 99.00, 'status' => 'completed'],--}}
-{{--                                    ];--}}
-{{--                                @endphp--}}
-
-{{--                                @foreach($activities as $activity)--}}
-{{--                                    <tr>--}}
-{{--                                        <td>{{ \Carbon\Carbon::parse($activity['date'])->format('M d, Y') }}</td>--}}
-{{--                                        <td>--}}
-{{--                                            <div class="d-flex align-items-center">--}}
-{{--                                                <div class="avatar avatar-sm me-2">--}}
-{{--                                                    <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">--}}
-{{--                                                        <i class="fa fa-user text-white"></i>--}}
-{{--                                                    </div>--}}
-{{--                                                </div>--}}
-{{--                                                {{ $activity['customer'] }}--}}
-{{--                                            </div>--}}
-{{--                                        </td>--}}
-{{--                                        <td>{{ $activity['product'] }}</td>--}}
-{{--                                        <td>${{ number_format($activity['amount'], 2) }}</td>--}}
-{{--                                        <td>--}}
-{{--                                            @switch($activity['status'])--}}
-{{--                                                @case('completed')--}}
-{{--                                                    <span class="badge bg-success">Completed</span>--}}
-{{--                                                    @break--}}
-{{--                                                @case('pending')--}}
-{{--                                                    <span class="badge bg-warning">Pending</span>--}}
-{{--                                                    @break--}}
-{{--                                                @case('failed')--}}
-{{--                                                    <span class="badge bg-danger">Failed</span>--}}
-{{--                                                    @break--}}
-{{--                                                @default--}}
-{{--                                                    <span class="badge bg-secondary">Unknown</span>--}}
-{{--                                            @endswitch--}}
-{{--                                        </td>--}}
-{{--                                        <td>--}}
-{{--                                            <div class="btn-group" role="group">--}}
-{{--                                                <button type="button" class="btn btn-sm btn-outline-primary">--}}
-{{--                                                    <i class="fa fa-eye"></i>--}}
-{{--                                                </button>--}}
-{{--                                                <button type="button" class="btn btn-sm btn-outline-secondary">--}}
-{{--                                                    <i class="fa fa-edit"></i>--}}
-{{--                                                </button>--}}
-{{--                                            </div>--}}
-{{--                                        </td>--}}
-{{--                                    </tr>--}}
-{{--                                @endforeach--}}
-{{--                                </tbody>--}}
-{{--                            </table>--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-{{--            </div>--}}
-{{--        </div>--}}
-
-{{--        <!-- Quick Stats Row -->--}}
-{{--        <div class="row mb-4">--}}
-{{--            <div class="col-md-4 mb-3">--}}
-{{--                <div class="card kpi-card">--}}
-{{--                    <div class="card-body text-center">--}}
-{{--                        <i class="fa fa-clock fa-2x text-primary mb-2"></i>--}}
-{{--                        <h6>Avg. Response Time</h6>--}}
-{{--                        <h4 class="text-primary">2.4 hrs</h4>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-{{--            </div>--}}
-{{--            <div class="col-md-4 mb-3">--}}
-{{--                <div class="card kpi-card">--}}
-{{--                    <div class="card-body text-center">--}}
-{{--                        <i class="fa fa-star fa-2x text-warning mb-2"></i>--}}
-{{--                        <h6>Customer Satisfaction</h6>--}}
-{{--                        <h4 class="text-warning">4.8/5</h4>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-{{--            </div>--}}
-{{--            <div class="col-md-4 mb-3">--}}
-{{--                <div class="card kpi-card">--}}
-{{--                    <div class="card-body text-center">--}}
-{{--                        <i class="fa fa-trophy fa-2x text-success mb-2"></i>--}}
-{{--                        <h6>Goals Achieved</h6>--}}
-{{--                        <h4 class="text-success">87%</h4>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-{{--            </div>--}}
-{{--        </div>--}}
-{{--    </div>--}}
+        <!-- Recent Tasks Table -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card table-container">
+                    <div class="card-header bg-transparent border-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="fa fa-history me-2"></i>
+                                So'ngi topshiriqlar
+                            </h5>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                <tr>
+                                    <th>KPI</th>
+                                    <th>Topshiriq nomi</th>
+                                    <th>Holati</th>
+                                    <th>Sana</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @forelse($recentTasks as $task)
+                                    <tr>
+                                        <td>
+                                            @if($task->user_kpi && $task->user_kpi->kpi)
+                                                {{ $task->user_kpi->kpi->name }}
+                                            @else
+                                                Noma'lum KPI
+                                            @endif
+                                        </td>
+                                        <td>{{ $task->name ?? 'Nomsiz' }}</td>
+                                        <td>
+                                            @if($task->user_kpi)
+                                                @switch($task->user_kpi->status)
+                                                    @case('new')
+                                                        <span class="badge bg-info">Yangi</span>
+                                                        @break
+                                                    @case('in_progress')
+                                                        <span class="badge bg-warning">Jarayonda</span>
+                                                        @break
+                                                    @case('completed')
+                                                        <span class="badge bg-success">Bajarilgan</span>
+                                                        @break
+                                                    @default
+                                                        <span class="badge bg-secondary">Noma'lum</span>
+                                                @endswitch
+                                            @else
+                                                <span class="badge bg-secondary">Ma'lumot yo'q</span>
+                                            @endif
+                                        </td>
+                                        <td>{{ $task->created_at ? $task->created_at->format('d.m.Y H:i') : 'Noma\'lum sana' }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center">Hozircha hech qanday topshiriq mavjud emas</td>
+                                    </tr>
+                                @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 @endsection
 @section('scripts')
@@ -329,17 +280,30 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Revenue Chart
-            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-            const revenueChart = new Chart(revenueCtx, {
+            // KPI Progress Chart
+            const progressCtx = document.getElementById('kpiProgressChart').getContext('2d');
+            
+            // Prepare data for the chart
+            const monthlyLabels = [@foreach($monthlyData as $data) '{{ $data['month'] }}', @endforeach];
+            const completedData = [@foreach($monthlyData as $data) {{ $data['completed'] }}, @endforeach];
+            const totalData = [@foreach($monthlyData as $data) {{ $data['total'] }}, @endforeach];
+            
+            const progressChart = new Chart(progressCtx, {
                 type: 'line',
                 data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    labels: monthlyLabels,
                     datasets: [{
-                        label: 'Revenue ($)',
-                        data: [12000, 19000, 15000, 25000, 22000, 30000],
+                        label: 'Bajarilgan KPI-lar',
+                        data: completedData,
                         borderColor: '#667eea',
                         backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Jami KPI-lar',
+                        data: totalData,
+                        borderColor: '#764ba2',
+                        backgroundColor: 'rgba(118, 75, 162, 0.1)',
                         tension: 0.4,
                         fill: true
                     }]
@@ -349,31 +313,34 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            display: false
+                            display: true
                         }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
                             ticks: {
-                                callback: function(value) {
-                                    return '$' + value.toLocaleString();
-                                }
+                                precision: 0
                             }
                         }
                     }
                 }
             });
 
-            // Traffic Chart
-            const trafficCtx = document.getElementById('trafficChart').getContext('2d');
-            const trafficChart = new Chart(trafficCtx, {
+            // KPI Status Chart
+            const statusCtx = document.getElementById('kpiStatusChart').getContext('2d');
+            
+            const statusChart = new Chart(statusCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Direct', 'Social Media', 'Email', 'Search Engine'],
+                    labels: ['Yangi', 'Jarayonda', 'Bajarilgan'],
                     datasets: [{
-                        data: [35, 25, 20, 20],
-                        backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#f5576c'],
+                        data: [
+                            {{ $kpiStatusData['new'] }}, 
+                            {{ $kpiStatusData['in_progress'] }}, 
+                            {{ $kpiStatusData['completed'] }}
+                        ],
+                        backgroundColor: ['#667eea', '#f093fb', '#11998e'],
                         borderWidth: 0
                     }]
                 },

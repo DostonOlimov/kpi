@@ -73,7 +73,7 @@
                                             </div>
                                             <div>
                                                 <h6 class="mb-0">{{ $user->first_name .' ' .$user->last_name}}</h6>
-                                                <small class="text-muted">{{ $user->role->name }}</small>
+                                                <small class="text-muted">{{ $user->work_zone ? $user->work_zone->name : 'Ish maydoni belgilanmagan' }}</small>
                                             </div>
                                         </div>
                                     </a>
