@@ -1,6 +1,7 @@
 @extends('layouts.app')
 <link rel="stylesheet" href="{{ asset('css/kpi/commission/behavior.css') }}">
 @section('content')
+<meta name="csrf-token" content="{{ csrf_token() }}">
     <div class="container-fluid px-4">
         <!-- Page Header -->
         <div class="page-header mb-4">
@@ -63,7 +64,7 @@
                     <select id="kpiSelect" class="form-select kpi-select">
                         <option value="">Ko'rsatkichni tanlang...</option>
                         @foreach($kpis as $kpi)
-                            <option value="{{ $kpi->id }}" {{ request('kpi_id') == $kpi->id ? 'selected' : '' }}>
+                            <option value="{{ $kpi->id }}" {{ $selectedKpiId == $kpi->id ? 'selected' : '' }}>
                                 {{ $kpi->name }}
                             </option>
                         @endforeach
@@ -137,6 +138,23 @@
 
             kpiSelect.addEventListener('change', function() {
                 const selectedKpiId = this.value;
+
+                // Save selected KPI to session
+                if (selectedKpiId) {
+                    fetch('/commission-profile/save-selected-kpi', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            kpi_id: selectedKpiId,
+                            kpi_type: '{{ $id }}'
+                        })
+                    }).catch(error => {
+                        console.error('Error saving KPI to session:', error);
+                    });
+                }
 
                 if (!selectedKpiId) {
                     // Reset all KPI content
@@ -240,19 +258,9 @@
                 container.innerHTML = html;
             }
 
-            // Add smooth scrolling for better UX
-            function smoothScrollToTop() {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            }
-
-            // Auto-select first KPI if available
-            if (kpiSelect.options.length > 1) {
-                // Uncomment the next line if you want to auto-select the first KPI
-                // kpiSelect.selectedIndex = 1;
-                // kpiSelect.dispatchEvent(new Event('change'));
+            // Auto-select KPI if one was previously selected
+            if (kpiSelect.value) {
+                kpiSelect.dispatchEvent(new Event('change'));
             }
         });
     </script>

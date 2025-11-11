@@ -30,7 +30,9 @@ class EmployeeDaysController extends Controller
 
         $groupedUsers = $users->groupBy(fn($user) => $user->work_zone?->name ?? 'Boshqalar');
 
-        $days = Month::where('year','=',$year)->first()?->days;
+        $days = Month::where('year','=',$year)
+            ->where('month_id','=',$month_id)
+            ->first()?->days;
 
         $month_name = Month::getMonth($month_id);
 

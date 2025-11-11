@@ -182,7 +182,7 @@ class BugalterController extends Controller
                 ->value('days');
             $work_days = Month::where('month_id','=',$active_summa->month)
                 ->value('days');
-            $foiz = round($nisbat * round($arr->current_ball * $arr->rating)) ;
+            $foiz = round( round($arr->current_ball * $arr->rating)) ;
         
 
             DB::table('employees_summa')
@@ -190,26 +190,26 @@ class BugalterController extends Controller
                     ->update([
                         'foiz' => $foiz,
                         'new_ustama' => $arr->summa * $foiz * $days / $work_days / 100,
-                        'new_total' => 1.25 * ($arr->summa * $foiz * $days / $work_days) /100,
+                        'new_total' => $arr->total_summa + $arr->summa * $foiz * $days / $work_days / 100,
                     ]);
         }
-        if ($nisbat < 1) {
-            foreach ($sum_arr as $arr){
-                DB::table('employees_summa')
-                    ->where('id', '=', $arr->id)
-                    ->update([
-                        'active_summa' => (int)($nisbat * $arr->total_summa)
-                    ]);
-            }
-        } else {
-            foreach ($sum_arr as $arr){
-                DB::table('employees_summa')
-                    ->where('id', '=', $arr->id)
-                    ->update([
-                        'active_summa' => $arr->total_summa
-                    ]);
-            }
-        }
+        // if ($nisbat < 1) {
+        //     foreach ($sum_arr as $arr){
+        //         DB::table('employees_summa')
+        //             ->where('id', '=', $arr->id)
+        //             ->update([
+        //                 'active_summa' => (int)($nisbat * $arr->total_summa)
+        //             ]);
+        //     }
+        // } else {
+        //     foreach ($sum_arr as $arr){
+        //         DB::table('employees_summa')
+        //             ->where('id', '=', $arr->id)
+        //             ->update([
+        //                 'active_summa' => $arr->total_summa
+        //             ]);
+        //     }
+        // }
         DB::table('bugalter_summa')
             ->where('id', '=', $id)
             ->update([
@@ -221,7 +221,7 @@ class BugalterController extends Controller
     public function get_summa(Request $request)
     {
 
-        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\SummaExport, 'students.xlsx');
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\SummaExport, 'report.xlsx');
     }
 
 }

@@ -94,6 +94,8 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/user-band-scores/{id}', [CommissionController::class, 'scoresList'])->name('commission.band_scores.list');
         Route::post('/create-band-score/{id}/{user}', [CommissionController::class, 'createBandScore'])->name('commission.create.band_score');
+
+         Route::post('/save-selected-kpi', [CommissionController::class, 'saveSelectedKpi'])->name('commission.session.band.score');
     });
     Route::group(['prefix' => 'employee-profile'], function () {
         Route::get('/list', [EmployeeProfileController::class, 'index'])->name('profile.list');

@@ -246,7 +246,21 @@ class CommissionController extends Controller
         }
     }
 
+    /**
+     * Save selected KPI to session
+     */
+    public function saveSelectedKpi(Request $request)
+    {
+        $request->validate([
+            'kpi_id' => 'required|integer',
+            'kpi_type' => 'required|integer'
+        ]);
 
+        // Save the selected KPI ID to session with a key that includes the KPI type
+        session(['selected_kpi_id_' . $request->kpi_type => $request->kpi_id]);
+
+        return response()->json(['success' => true]);
+    }
 
     /**
      * Display a listing of the resource.
@@ -273,10 +287,13 @@ class CommissionController extends Controller
         $month_name = Month::getMonth($month_id);
         $kpis = Kpi::where('type', $id)->whereNotNull('parent_id')->get();
 
+        // Get the selected KPI from session or request
+        $selectedKpiId = session('selected_kpi_id_' . $id, request('kpi_id'));
+
         $title = 'Mehnat intizomiga rioya qilinganligi';
 
         return view('commission.user_band_scores', compact(
-            'users', 'title', 'days', 'groupedUsers', 'month_name', 'month_id', 'year', 'kpis', 'id'
+            'users', 'title', 'days', 'groupedUsers', 'month_name', 'month_id', 'year', 'kpis', 'id', 'selectedKpiId'
         ));
     }
 

@@ -19,7 +19,7 @@ class SummaExport implements FromCollection,WithHeadings,WithStyles
     */
     public function headings():array{
         return[
-            ['2023 йил Апрель ойида баҳолаш тизими орқали устамаларни белгиланган қиймат асосида тақсимланган жадвали'],
+            ['Xodimlarning baholash tizimi orqali ustamalarni belgilangan qiymat asosida taqsimlangan jadvali'],
             [
             'Ismi',
             'Familyasi',
