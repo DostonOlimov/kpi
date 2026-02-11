@@ -4,7 +4,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\EmployeeDays;
-use App\Models\Month;
 use App\Models\Salaries;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
