@@ -18,7 +18,7 @@ class DepartmentKpiController extends Controller
         
         // Get top performers by department
         $topPerformers = $this->getTopPerformersByDepartment();
-        
+      
         // Get KPI trends (last 6 months)
         $kpiTrends = $this->getKpiTrends();
         

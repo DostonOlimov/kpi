@@ -3,18 +3,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\EmployeeDays;
 use App\Models\Salaries;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 use app\Models\User;
 use App\Models\Role;
 use App\Models\WorkZone;
@@ -180,9 +176,10 @@ class EmployeesController extends Controller
     public function destroy($id)
     {
         $user = User::find($id);
-        $user->delete();
+        $user->status = User::STATUS_INACTIVE;
+        $user->save();
 
         return redirect()->route('employees.list')
-                        ->with('message','Foydalanuvchi muvaffaqiyatli o\'chirildi');
+                        ->with('success','Foydalanuvchi muvaffaqiyatli o\'chirildi');
     }
 }

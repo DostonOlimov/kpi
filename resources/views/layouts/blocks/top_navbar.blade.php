@@ -1,6 +1,6 @@
 <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
     <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-        <h2 style="font-size: 22px; color: white; margin: 0!important;">O'ZAGROINSPEKSIYA</h2>
+        {{-- <h2 style="font-size: 22px; color: white; margin: 0!important;">O'ZAGROINSPEKSIYA</h2> --}}
     </div>
     <div class="navbar-menu-wrapper d-flex align-items-center">
         <ul class="navbar-nav">

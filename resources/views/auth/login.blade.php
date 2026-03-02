@@ -494,8 +494,10 @@
             <div class="divider"></div>
 
             <p class="footer-text">
-                <strong>Copyright © {{ date('Y') }} ECOEKSPERTIZA.UZ</strong><br>
-                Barcha huquqlar himoyalangan.
+                @if (app()->environment('production'))
+                    <strong>Copyright © {{ date('Y') }} ECOEKSPERTIZA.UZ</strong><br>
+                    Barcha huquqlar himoyalangan.
+                @endif
             </p>
         </div>
     </div>

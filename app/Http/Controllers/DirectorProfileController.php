@@ -20,7 +20,7 @@ class DirectorProfileController extends Controller
         $users = User::with('user_kpis' )
             ->where('work_zone_id','=',$user->work_zone_id)
             ->where('role_id','=',User::ROLE_USER)
-            ->get();
+            ->paginate(10);
 
        return view('director.employees', ["users" => $users]);
 

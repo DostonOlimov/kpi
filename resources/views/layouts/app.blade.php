@@ -12,10 +12,12 @@
     <meta name="author" content="Doston Olimov">
 
     <!-- Page Title -->
-    <title>KPI tizimi</title>
+    @if (app()->environment('production'))
+        <title>KPI tizimi</title>
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('/assets/images/logo.png') }}">
+        <!-- Favicon -->
+        <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('/assets/images/logo.png') }}">
+    @endif
 
 
     <!-- Sidebar Styles -->

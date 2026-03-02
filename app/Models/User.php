@@ -2,12 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Role;
 use App\Models\WorkZone;
@@ -21,6 +19,9 @@ class User extends Authenticatable
     const ROLE_USER = 3;
     const ROLE_MANAGER = 4;
     const ROLE_ACCOUNTANT = 6;
+
+    const STATUS_ACTIVE = 'active';
+    const STATUS_INACTIVE = 'inactive';
 
     /**
      * The attributes that are mass assignable.
@@ -92,6 +93,9 @@ class User extends Authenticatable
     {
         static::created(function ($user) {
             \Artisan::call('kpis:assign', ['userId' => $user->id]);
+        });
+        static::addGlobalScope('active', function ($query) {
+            $query->where('users.status', self::STATUS_ACTIVE);
         });
     }
 }

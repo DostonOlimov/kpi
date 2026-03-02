@@ -31,9 +31,11 @@
                 </div>
             </div>
             <div class="title title-dashboard" style="width: 100%; text-align: center;">
-                <h1 style="text-transform: uppercase; font-size: 1.3rem; margin: 7px 15px">
-                   DAVLAT EKOLOGIK EKSPERTIZASI MARKAZINING AVTOMATLASHGAN KPI TIZIMI
-                </h1>
+                @if (app()->environment('production'))
+                    <h1 style="text-transform: uppercase; font-size: 1.3rem; margin: 7px 15px">
+                    DAVLAT EKOLOGIK EKSPERTIZASI MARKAZINING AVTOMATLASHGAN KPI TIZIMI
+                    </h1>
+                @endif
             </div>
             <div>
                 <div class="dropdown" style="padding-right: 5px;">
