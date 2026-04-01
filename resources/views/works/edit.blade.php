@@ -18,7 +18,7 @@
                         <div class="tab_wrapper page-tab">
                             <ul class="tab_list mb-0">
                                 <li>
-                                    <a href="{{ route('works.index') }}">
+                                    <a href="{{ route('works.child-list', ['workZone' => $work->parent_id]) }}">
                                         <i class="fa fa-list fa-lg"></i>&nbsp; {{ __("Ro'yxat") }}
                                     </a>
                                 </li>

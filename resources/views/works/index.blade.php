@@ -1,6 +1,38 @@
 @extends('layouts.app')
 
 @section('content')
+    <style>
+        .custom-table {
+            border-radius: 10px !important;
+            overflow: hidden;
+            background: #ffffff;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .custom-table thead {
+            background: #f0f4ff;
+        }
+
+        .custom-table thead th {
+            font-weight: 700;
+            font-size: 15px;
+            color: #2c3e50;
+            padding: 14px;
+            border-bottom: 2px solid #e2e6f3;
+        }
+
+        .custom-table tbody tr:hover {
+            background: #f7faff !important;
+            transition: 0.2s;
+        }
+
+        .table-action-btn {
+            padding: 6px 12px;
+            font-size: 13px;
+            border-radius: 6px;
+            margin-right: 4px;
+        }
+    </style>
     <div class="section">
         <!-- Page Header -->
         <div class="page-header">
@@ -25,7 +57,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('works.create') }}">
+                                    <a href="{{ route('works.create', ['parent_id' => $id]) }}">
                                         <i class="fa fa-plus-circle fa-lg"></i>&nbsp; <strong>{{ __("Qo'shish") }}</strong>
                                     </a>
                                 </li>
@@ -43,46 +75,52 @@
 
                         <!-- Table -->
                         <div class="table-responsive">
-                            <table class="table table-striped table-bordered nowrap display mt-3">
+                            <table class="table table-striped table-bordered nowrap display mt-3 custom-table">
                                 <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>{{ __('Nomi') }}</th>
-                                    <th>{{ __('Yaratilgan') }}</th>
-                                    <th>{{ __('O\'zgartirilgan') }}</th>
-                                    <th width="220px">{{ __('Harakatlar') }}</th>
-                                </tr>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>{{ __('Nomi') }}</th>
+                                        <th>{{ __('Harakatlar') }}</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                @foreach ($works as $work)
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $work->name }}</td>
-                                        <td>{{ $work->created_at->format('Y-m-d H:i') }}</td>
-                                        <td>{{ $work->updated_at->format('Y-m-d H:i') }}</td>
-                                        <td>
-                                            <a href="{{ route('works.edit', $work->id) }}" class="btn btn-sm btn-primary">
-                                                {{ __('Tahrirlash') }}
-                                            </a>
+                                    @foreach ($works as $work)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $work->name }}</td>
 
-                                            <form action="{{ route('works.destroy', $work->id) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ __('Ish joyini o\'chirishga ishonchingiz komilmi?') }}')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger">
-                                                    {{ __('O\'chirish') }}
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @endforeach
+                                            <td>
+
+                                                <!-- Users Button -->
+                                                <a href="{{ route('employees.list', $work->id) }}"
+                                                    class="btn btn-info btn-sm table-action-btn">
+                                                    <i class="fe fe-users"></i> {{ __('Xodimlar') }}
+                                                </a>
+
+                                                <!-- Edit -->
+                                                <a href="{{ route('works.edit', $work->id) }}"
+                                                    class="btn btn-primary btn-sm table-action-btn">
+                                                    <i class="fe fe-edit"></i> {{ __('Tahrirlash') }}
+                                                </a>
+
+                                                <!-- Delete -->
+                                                <form action="{{ route('works.destroy', $work->id) }}" method="POST"
+                                                    class="d-inline"
+                                                    onsubmit="return confirm('{{ __('Ish joyini o\'chirishga ishonchingiz komilmi?') }}')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-danger btn-sm table-action-btn">
+                                                        <i class="fe fe-trash"></i> {{ __('O\'chirish') }}
+                                                    </button>
+                                                </form>
+
+                                            </td>
+                                        </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
-
-                            <!-- Pagination -->
-                            <div class="mt-3">
-                                {!! $works->links() !!}
-                            </div>
                         </div>
+
                     </div>
 
                 </div>

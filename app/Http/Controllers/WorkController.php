@@ -9,13 +9,22 @@ use Illuminate\View\View;
 
 class WorkController extends Controller
 {
+        /**
+     * Display a listing of the work zones.
+     */
+    public function list(): View
+    {
+        $regions = WorkZone::whereNull('parent_id')->orderBy('sort_order', 'asc')->get();
+        return view('works.list', compact('regions'));
+    }
     /**
      * Display a listing of the work zones.
      */
-    public function index(): View
+    public function child_list(WorkZone $workZone): View
     {
-        $works = WorkZone::orderBy('id', 'asc')->paginate(25);
-        return view('works.index', compact('works'));
+        $id = $workZone->id;
+        $works = WorkZone::where('parent_id',$id)->orderBy('id', 'asc')->get();
+        return view('works.index', compact('works','id'));
     }
 
     /**
@@ -23,7 +32,9 @@ class WorkController extends Controller
      */
     public function create(): View
     {
-        return view('works.create');
+        $id = request()->get('parent_id');
+        $parents = WorkZone::whereNull('parent_id')->orderBy('sort_order', 'asc')->get();
+        return view('works.create', compact('id', 'parents'));
     }
 
     /**
@@ -33,11 +44,12 @@ class WorkController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'parent_id' => 'nullable|exists:work_zones,id',
         ]);
 
-        WorkZone::create($request->only('name'));
+        WorkZone::create($request->only('name', 'parent_id'));
 
-        return redirect()->route('works.index')
+        return redirect()->route('works.child-list', ['workZone' => $request->input('parent_id')])
             ->with('success', 'Ish joyi muvaffaqatli yaratildi.');
     }
 
@@ -68,7 +80,7 @@ class WorkController extends Controller
 
         $work->update($request->only('name'));
 
-        return redirect()->route('works.index')
+        return redirect()->route('works.child-list', ['workZone' => $work->parent_id])
             ->with('success', 'Ma\'lumotlar muvaffaqiyatli o\'zgartirildi.');
     }
 
@@ -79,13 +91,13 @@ class WorkController extends Controller
     {
         // Optional: Check for related models before deleting
          if ($work->users()->exists()) {
-             return redirect()->route('works.index')
+             return redirect()->route('works.child-list', ['workZone' => $work->parent_id])
                  ->with('error', 'Ushbu ish joyi bog\'langan foydalanuvchilar mavjudligi sababli o‘chirib bo‘lmaydi.');
          }
 
         $work->delete();
 
-        return redirect()->route('works.index')
+        return redirect()->route('works.child-list', ['workZone' => $work->parent_id])
             ->with('success', 'Ma\'lumotlar muvaffaqiyatli o\'chirildi.');
     }
 }

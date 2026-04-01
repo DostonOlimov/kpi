@@ -10,7 +10,9 @@ class WorkZone extends Model
     public $section_ball;
     use HasFactory;
     protected $fillable = [
-        'name'
+        'name',
+        'parent_id',
+        'sort_order',
     ];
     public function users()
     {

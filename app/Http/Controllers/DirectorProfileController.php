@@ -15,7 +15,6 @@ class DirectorProfileController extends Controller
 {
     public function index(Request $request)
     {
-
         $user = auth()->user();
         $users = User::with('user_kpis' )
             ->where('work_zone_id','=',$user->work_zone_id)
@@ -23,7 +22,6 @@ class DirectorProfileController extends Controller
             ->paginate(10);
 
        return view('director.employees', ["users" => $users]);
-
     }
 
     public function check_user(int $type, User $employee, Request $request)

@@ -47,7 +47,7 @@ Route::post('/change-month', [SessionController::class, 'changeMonth']);
 Route::middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::group(['prefix' => 'users'], function () {
-        Route::get('/list', [EmployeesController::class, 'index'])->name('employees.list');
+        Route::get('/list/{workZone}', [EmployeesController::class, 'index'])->name('employees.list');
         Route::post('/add', [EmployeesController::class, 'add'])->name('employees.add');
         Route::post('/store', [EmployeesController::class, 'store'])->name('employees.store');
         Route::get('/edit/{id}', [EmployeesController::class, 'edit'])->name('employees.edit');
@@ -62,6 +62,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('roles', RoleController::class);
     Route::resource('works', WorkController::class);
     Route::resource('month', MonthController::class);
+
+    Route::get('/works-list',[WorkController::class,'list'])->name('works.list');
+    Route::get('/works-list/{workZone}',[WorkController::class,'child_list'])->name('works.child-list');
 
     Route::group(['prefix' => 'days'], function () {
         Route::post('/createday/{user}', [EmployeeDaysController::class, 'createday'])->name('days.createday');

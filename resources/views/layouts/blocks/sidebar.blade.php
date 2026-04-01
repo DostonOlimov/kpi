@@ -18,14 +18,14 @@
 
             @php
                 $navItems = [
-                      [
-                        'route' => 'employees.list',
-                        'icon'  => 'cil-people',
-                        'label' => 'Xodimlar',
-                        'active_route' => 'users'
-                    ],
+                    //   [
+                    //     'route' => 'employees.list',
+                    //     'icon'  => 'cil-people',
+                    //     'label' => 'Xodimlar',
+                    //     'active_route' => 'users'
+                    // ],
                     [
-                        'route' => 'works.index',
+                        'route' => 'works.list',
                         'icon'  => 'cil-briefcase',
                         'label' => 'Bo\'limlar',
                         'active_route' => 'works'

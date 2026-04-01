@@ -15,7 +15,7 @@
                             <div class="tab_wrapper page-tab">
                                 <ul class="tab_list">
                                     <li>
-                                        <a href="{{ route('employees.list') }}">
+                                        <a href="{{ route('employees.list', ['workZone' => $id]) }}">
                                             <span class="visible-xs"></span>
                                             <i class="fa fa-list fa-lg">&nbsp;</i> {{ trans('app.Ro\'yxat')}}
                                         </a>
@@ -99,10 +99,10 @@
                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="form-label">Ish joyi:</label>
-                                        <select name="work_zone_id" class="form-control" id="work_zone_id">
+                                        <select name="work_zone_id" class="form-control" id="work_zone_id" disabled>
                                             <option value="">Bo'limni tanlang...</option>
                                             @foreach($works as $work)
-                                                <option @if(old('work_zone_id') == $work->id) selected @endif value="{{$work->id}}">{{$work->name}}</option>
+                                                <option @if($id == $work->id) selected @endif value="{{$work->id}}">{{$work->name}}</option>
                                             @endforeach
                                         </select>
                                         @error('work_zone_id')
@@ -110,6 +110,7 @@
                                         @enderror
                                     </div>
                                 </div>
+                                <input type="hidden" name="work_zone_id" value="{{ $id }}">
                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="form-label">Lavozimi:</label>
@@ -137,6 +138,24 @@
                                         @enderror
                                     </div>
                                 </div>
+                               <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">PINFL:</label>
+                                        <input type="text" name="pinfl" class="form-control pinfl-mask" value="{{ old('pinfl') }}" maxlength="14" placeholder="14 ta raqam kiriting">
+                                        @error('pinfl')
+                                        <div class="alert alert-danger mt-1 mb-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                               <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Tuniket ID:</label>
+                                        <input type="number" name="ch_id" class="form-control" value="{{ old('ch_id') }}">
+                                        @error('ch_id')
+                                        <div class="alert alert-danger mt-1 mb-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
                                 <div class="form-group col-md-12 text-center">
                                     <a class="btn btn-primary" href="{{ URL::previous() }}">
                                         {{ trans('app.Cancel') }}
@@ -154,3 +173,39 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const pinflInput = document.querySelector('.pinfl-mask');
+        
+        pinflInput.addEventListener('input', function(e) {
+            // Remove all non-numeric characters
+            let value = this.value.replace(/[^0-9]/g, '');
+            
+            // Limit to 14 digits
+            if (value.length > 14) {
+                value = value.substring(0, 14);
+            }
+            
+            // Update the input value
+            this.value = value;
+        });
+        
+        // Prevent non-numeric keypresses
+        pinflInput.addEventListener('keypress', function(e) {
+            if (!/[0-9]/.test(e.key)) {
+                e.preventDefault();
+            }
+        });
+        
+        // Prevent paste of non-numeric content
+        pinflInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedData = e.clipboardData.getData('text');
+            const numericValue = pastedData.replace(/[^0-9]/g, '').substring(0, 14);
+            this.value = numericValue;
+        });
+    });
+</script>
+@endpush

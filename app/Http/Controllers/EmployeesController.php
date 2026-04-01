@@ -17,16 +17,23 @@ use App\Models\WorkZone;
 
 class EmployeesController extends Controller
 {
-    public function index(Request $request)
+    public function index(WorkZone $workZone, Request $request)
     {
-        $users = User::with('role')->with('work_zone')->whereNotIn('role_id',[User::ROLE_ADMIN,User::ROLE_MANAGER])->latest('id')->paginate(20);
-        return view('employees.list', compact('users'));
+        $users = User::with('role')
+            ->with('work_zone')
+            ->where('work_zone_id', $workZone->id)
+            ->whereNotIn('role_id',[User::ROLE_ADMIN,User::ROLE_MANAGER])
+            ->latest('id')
+            ->paginate(20);
+        return view('employees.list', compact('users', 'workZone'));
     }
-    public function create()
+    public function create(Request $request)
     {
+        $id = $request->get('id');
         return view('employees.create', [
             'roles' => Role::All(),
-            'works' => WorkZone::All()
+            'works' => WorkZone::where('id', $id)->get(),
+            'id' => $id
         ]);
 
     }
@@ -51,6 +58,8 @@ class EmployeesController extends Controller
             'salary' => ['required', 'numeric', 'min:100000', 'max:99999999.99', 'regex:/^\d+(\.\d{1,2})?$/'],
             'password' => ['required', 'string', 'min:6'],
             'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+            'pinfl' => ['nullable', 'string', 'regex:/^[0-9]{14}$/'],
+            'ch_id' => ['nullable', 'integer'],
         ]);
 
         $user = new User($validated);
@@ -70,7 +79,7 @@ class EmployeesController extends Controller
             'from_date' => now()->format('Y-m-d'),
         ]);
 
-        return redirect()->route('employees.list')->with('message', 'Foydalanuvchi muvaffaqiyatli yaratildi.');
+        return redirect()->route('employees.list', ['workZone' => $request->work_zone_id])->with('message', 'Foydalanuvchi muvaffaqiyatli yaratildi.');
     }
 
     /**
@@ -123,6 +132,8 @@ class EmployeesController extends Controller
             'password' => ['required'], // Optional: use 'nullable'
             'lavozimi' => ['nullable', 'string', 'max:255'],
             'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'], // <= add this
+            'pinfl' => ['nullable', 'string', 'regex:/^[0-9]{14}$/'],
+            'ch_id' => ['nullable', 'integer'],
         ]);
         $user -> update([
             'first_name' => $request->first_name,
@@ -133,6 +144,8 @@ class EmployeesController extends Controller
             'salary' => $request->salary,
             'work_zone_id' => $request->work_zone_id,
             'username' => $request->username,
+            'pinfl' => $request->pinfl,
+            'ch_id' => $request->ch_id,
         ]);
         if($request->password){
             $user->update([
@@ -163,7 +176,7 @@ class EmployeesController extends Controller
         }
 
 
-        return redirect()->route('employees.list')
+        return redirect()->route('employees.list',['workZone' => $user->work_zone_id])
                         ->with('message','User updated successfully.');
     }
 
@@ -179,7 +192,7 @@ class EmployeesController extends Controller
         $user->status = User::STATUS_INACTIVE;
         $user->save();
 
-        return redirect()->route('employees.list')
+        return redirect()->route('employees.list', ['workZone' => $user->work_zone_id])
                         ->with('success','Foydalanuvchi muvaffaqiyatli o\'chirildi');
     }
 }

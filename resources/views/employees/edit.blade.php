@@ -116,6 +116,20 @@
                                     </div>
                                 </div>
 
+                                {{-- PINFL --}}
+                                <div class="form-group col-md-6">
+                                    <label for="pinfl">PINFL (14 ta raqam)</label>
+                                    <input type="text" name="pinfl" class="form-control pinfl-mask" value="{{ old('pinfl', $user->pinfl) }}" maxlength="14" placeholder="14 ta raqam kiriting">
+                                    @error('pinfl') <div class="text-danger mt-1">{{ $message }}</div> @enderror
+                                </div>
+
+                                {{-- CH ID --}}
+                                <div class="form-group col-md-6">
+                                    <label for="ch_id">Tuniket ID</label>
+                                    <input type="number" name="ch_id" class="form-control" value="{{ old('ch_id', $user->ch_id) }}">
+                                    @error('ch_id') <div class="text-danger mt-1">{{ $message }}</div> @enderror
+                                </div>
+
                                 {{-- Action Buttons --}}
                                 <div class="form-group col-md-12 text-center mt-4">
                                     <a class="btn btn-secondary" href="{{ URL::previous() }}">Bekor qilish</a>
@@ -130,4 +144,42 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const pinflInput = document.querySelector('.pinfl-mask');
+        
+        if (pinflInput) {
+            pinflInput.addEventListener('input', function(e) {
+                // Remove all non-numeric characters
+                let value = this.value.replace(/[^0-9]/g, '');
+                
+                // Limit to 14 digits
+                if (value.length > 14) {
+                    value = value.substring(0, 14);
+                }
+                
+                // Update the input value
+                this.value = value;
+            });
+            
+            // Prevent non-numeric keypresses
+            pinflInput.addEventListener('keypress', function(e) {
+                if (!/[0-9]/.test(e.key)) {
+                    e.preventDefault();
+                }
+            });
+            
+            // Prevent paste of non-numeric content
+            pinflInput.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const pastedData = e.clipboardData.getData('text');
+                const numericValue = pastedData.replace(/[^0-9]/g, '').substring(0, 14);
+                this.value = numericValue;
+            });
+        }
+    });
+</script>
+@endpush
 

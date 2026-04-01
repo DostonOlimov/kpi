@@ -18,7 +18,7 @@
                         <div class="tab_wrapper page-tab">
                             <ul class="tab_list mb-0">
                                 <li>
-                                    <a href="{{ route('works.index') }}">
+                                    <a href="{{ route('works.child-list', ['workZone' => $id]) }}">
                                         <i class="fa fa-list fa-lg"></i>&nbsp; {{ __("Ro'yxat") }}
                                     </a>
                                 </li>
@@ -38,9 +38,9 @@
                             @csrf
 
                             <div class="row">
-                                <div class="col-md-12">
+                                <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="name"><strong>{{ __('Ish joyi nomi') }}:</strong></label>
+                                        <label for="name"><strong>{{ __('Bo\'lim nomi') }}:</strong></label>
                                         <input
                                             type="text"
                                             id="name"
@@ -53,10 +53,24 @@
                                         <div class="alert alert-danger mt-2">{{ $message }}</div>
                                         @enderror
                                     </div>
+                                  
+                                    <div class="form-group">
+                                        <label for="parent_id"><strong>{{ __('Asosiy bo\'lim nomi') }}:</strong></label>
+                                        <select name="parent_id" id="parent_id" class="form-control">
+                                            <option value="">{{ __('Tanlanmagan') }}</option>
+                                            @foreach($parents as $parent)
+                                                <option value="{{ $parent->id }}" {{ (old('parent_id') == $parent->id || (isset($id) && $id == $parent->id)) ? 'selected' : '' }}>
+                                                    {{ $parent->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('parent_id')
+                                        <div class="alert alert-danger mt-2">{{ $message }}</div>
+                                        @enderror
                                 </div>
 
                                 <div class="col-md-12 text-center">
-                                    <a href="{{ route('works.index') }}" class="btn btn-primary">
+                                    <a href="{{ route('works.child-list', ['workZone' => $id]) }}" class="btn btn-primary">
                                         {{ __('Ortga') }}
                                     </a>
                                     <button type="submit" class="btn btn-success">
