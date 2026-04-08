@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Role;
 use App\Models\WorkZone;
+use App\Models\Attendance;
 
 class User extends Authenticatable
 {
@@ -84,6 +85,11 @@ class User extends Authenticatable
     public function working_kpis(): HasMany
     {
         return $this->hasMany(Kpi::class);
+    }
+
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(Attendance::class, 'external_id', 'ch_id');
     }
 
     public function getFullNameAttribute()

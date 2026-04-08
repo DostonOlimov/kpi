@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\RelevantUserController;
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Boss\EmployeeController;
 use App\Http\Controllers\BugalterController;
@@ -39,6 +40,11 @@ Route::post('authenticate', [AuthController::class, 'authenticate'])->name('auth
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/home', [DashboardController::class, 'index'])->name('home');
+
+Route::get('/attendances', [AttendanceController::class, 'index'])->name('attendances.index');
+Route::get('/attendances/upload', [AttendanceController::class, 'showUploadForm'])->name('attendances.upload');
+Route::post('/attendances/import', [AttendanceController::class, 'import'])->name('attendances.import');
+Route::put('/attendances/{id}', [AttendanceController::class, 'update'])->name('attendances.update');
 
 Route::post('/change-year', [SessionController::class, 'changeYear']);
 Route::post('/change-month', [SessionController::class, 'changeMonth']);

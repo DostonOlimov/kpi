@@ -25,6 +25,7 @@ class EmployeeDaysController extends Controller
     {
         $month_id = session('month') ?? (int) date('m');
         $year = session('year') ?? (int) date('Y');
+        dd($month_id, $year);
 
         $users = User::with(['working_days', 'work_zone'])->whereNotIn('role_id',[User::ROLE_MANAGER,User::ROLE_ADMIN])->get();
 

@@ -54,9 +54,14 @@
                         'label' => 'Shaxsiy KPI ko‘rsatkichlar',
                         'active_route' => 'employee/users'
                     ],
+                    [
+                        'route' => 'attendances.index',
+                        'icon'  => 'cil-calendar',
+                        'label' => 'Davomat ro\'yxati',
+                        'active_route' => 'attendances'
+                    ]
                 ];
             @endphp
-
             @foreach ($navItems as $item)
                 <li class="nav-item">
                     <a class="nav-link {{ Request::is( $item['active_route']. '/*') ? 'active' : ''}}"
