@@ -88,15 +88,15 @@
     .section {
         padding: 10px;
     }
-    
+
     .card-body {
         padding: 15px;
     }
-    
+
     .table {
         font-size: 12px;
     }
-    
+
     .table thead th,
     .table tbody td {
         padding: 8px 4px;
@@ -156,14 +156,14 @@
                                     <th>{{ __('Yangi ustama') }}</th>
                                     <th>{{ __('Yangi soliq') }}</th>
                                     <th>{{ __('Yangi jami') }}</th>
-                                
+
                                 </tr>
                                 </thead>
                                 <tbody>
                                 @foreach($data as $key => $item)
                                     <tr>
                                         <td>{{ $key + 1 }}</td>
-                                        <td>{{ $item->users->last_name . ' ' . $item->users->first_name }}</td>
+                                        <td>{{ $item->users?->last_name . ' ' . $item->users?->first_name }}</td>
                                         <td>{{ $item->days }}</td>
                                         <td>{{ $item->current_ball }}</td>
                                         <td>{{ $item->rating * $item->current_ball }}</td>
@@ -176,7 +176,7 @@
                                         <td>{{ number_format($item->new_ustama) }}</td>
                                         <td>{{ number_format($item->new_ustama * 0.25) }}</td>
                                         <td>{{ number_format($item->new_total) }}</td>
-                                      
+
                                     </tr>
                                 @endforeach
 

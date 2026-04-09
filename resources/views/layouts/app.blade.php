@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+
 <head>
     <!-- Character Encoding -->
     <meta charset="utf-8">
@@ -28,7 +29,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 
     <!-- SweetAlert2 Stylesheet -->
-{{--    <link rel="stylesheet" href="{{ asset('plugins/sweetalert2/sweetalert2.min.css') }}">--}}
+    {{--    <link rel="stylesheet" href="{{ asset('plugins/sweetalert2/sweetalert2.min.css') }}"> --}}
 
     <!-- DatePicker Stylesheet -->
     <link rel="stylesheet" href="{{ asset('build/css/bootstrap-datetimepicker.min.css') }}">
@@ -48,33 +49,39 @@
     <style>
         @font-face {
             font-family: 'DejaVuSans';
-            src: url('{{ ('fonts/fonts/dejavu-sans.book.ttf') }}') format('truetype');
+            src: url('{{ 'fonts/fonts/dejavu-sans.book.ttf' }}') format('truetype');
             font-weight: normal;
             font-style: normal;
         }
+
+        /* Yashil sidebar */
         .sidebar-nav {
-            background-color: #172d50;
+            background-color: #064e3b;
         }
+
         .page-header {
-            background-color: #1f6feb !important;
+            background-color: #10b981 !important;
         }
+
         .sidebar-toggler,
         .sidebar-brand,
         #myBtn {
-            background-color: #071d40;
+            background-color: #065f46;
         }
+
         .header-sticky {
-            background-color: #08152c;
+            background-color: #047857;
         }
     </style>
     <!-- Additional Styles from Other Pages -->
     @yield('styles')
 </head>
+
 <body class="app">
-<?php
-$userid = Auth::user()->id;
-// $settings = settings(); // Uncomment if settings are required
-?>
+    <?php
+    $userid = Auth::user()->id;
+    // $settings = settings(); // Uncomment if settings are required
+    ?>
 
     <!-- Sidebar -->
     @include('layouts.blocks.sidebar')
@@ -90,28 +97,30 @@ $userid = Auth::user()->id;
         </div>
         <!-- Content Area Ends -->
     </div>
-    
+
     @include('layouts.blocks.footer')
 
     <!-- Main Wrapper Ends -->
-{{--@else--}}
-{{--    <!-- Unauthorized Access Message -->--}}
-{{--    <div class="section" role="main">--}}
-{{--        <div class="card">--}}
-{{--            <div class="card-body text-center">--}}
-{{--                    <span class="titleup text-danger">--}}
-{{--                        <i class="fa fa-exclamation-circle" aria-hidden="true"></i>&nbsp;--}}
-{{--                        {{ trans('app.You Are Not Authorized to Access This Page.') }}--}}
-{{--                    </span>--}}
-{{--            </div>--}}
-{{--        </div>--}}
-{{--    </div>--}}
-{{--@endif--}}
+    {{-- @else --}}
+    {{--    <!-- Unauthorized Access Message --> --}}
+    {{--    <div class="section" role="main"> --}}
+    {{--        <div class="card"> --}}
+    {{--            <div class="card-body text-center"> --}}
+    {{--                    <span class="titleup text-danger"> --}}
+    {{--                        <i class="fa fa-exclamation-circle" aria-hidden="true"></i>&nbsp; --}}
+    {{--                        {{ trans('app.You Are Not Authorized to Access This Page.') }} --}}
+    {{--                    </span> --}}
+    {{--            </div> --}}
+    {{--        </div> --}}
+    {{--    </div> --}}
+    {{-- @endif --}}
 </body>
 
 <!-- JQUERY SCRIPTS JS -->
 <script src="{{ asset('plugins/hyperform/dist/hyperform.js') }}"></script>
-<script>hyperform(window)</script>
+<script>
+    hyperform(window)
+</script>
 <script src="{{ asset('js/vendors/jquery-3.2.1.min.js') }}"></script>
 <script src="{{ asset('plugins/date-picker/jquery-ui.js') }}"></script>
 
@@ -129,7 +138,7 @@ $userid = Auth::user()->id;
 <script src="{{ asset('vendors/bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
 
 <!-- SweetAlert2 and Multi Select -->
-{{--<script src="{{ asset('plugins/sweetalert2/sweetalert2.min.js') }}"></script>--}}
+{{-- <script src="{{ asset('plugins/sweetalert2/sweetalert2.min.js') }}"></script> --}}
 <script src="{{ asset('plugins/multipleselect/multiple-select.js') }}"></script>
 <script src="{{ asset('plugins/multipleselect/multi-select.js') }}"></script>
 
@@ -153,24 +162,31 @@ $userid = Auth::user()->id;
         $.ajax({
             type: 'POST',
             url: '/change-year',
-            data: { year: year, _token: "{{ csrf_token() }}" },
-            success: function () {
+            data: {
+                year: year,
+                _token: "{{ csrf_token() }}"
+            },
+            success: function() {
                 location.reload();
             },
-            error: function (error) {
+            error: function(error) {
                 console.error('Error changing year', error);
             }
         });
     }
+
     function changeMonth(month) {
         $.ajax({
             type: 'POST',
             url: '/change-month',
-            data: { month: month, _token: "{{ csrf_token() }}" },
-            success: function () {
+            data: {
+                month: month,
+                _token: "{{ csrf_token() }}"
+            },
+            success: function() {
                 location.reload();
             },
-            error: function (error) {
+            error: function(error) {
                 console.error('Error changing month', error);
             }
         });
@@ -178,4 +194,3 @@ $userid = Auth::user()->id;
 </script>
 
 </html>
-

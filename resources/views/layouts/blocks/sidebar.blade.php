@@ -110,11 +110,11 @@
             {{--                </a> --}}
             {{--            </li> --}}
 
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a class="nav-link" href="{{ route('boss.employees') }}">
                     <i class="fa fa-users"></i> Mening xodimlarim
                 </a>
-            </li>
+            </li> --}}
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('director.list') }}">
                     <svg class="nav-icon">
@@ -225,7 +225,7 @@
             <li class="nav-title">Hisob-kitob bo'limi</li>
 
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('kpi.departments') }}">
+                <a class="nav-link" href="{{ route('departments.select-section') }}">
                     <svg class="nav-icon">
                         <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-chart-line"></use>
                     </svg>

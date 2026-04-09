@@ -6,9 +6,9 @@
     <ul>
         @foreach($employees as $item)
             <li>
-                <a href="{{ route('boss.employee.show', $item->user->id) }}">
+                {{-- <a href="{{ route('boss.employee.show', $item->user->id) }}">
                     {{ $item->user->first_name }} {{ $item->user->last_name }}
-                </a>
+                </a> --}}
             </li>
         @endforeach
     </ul>

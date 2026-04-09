@@ -69,8 +69,16 @@ Route::middleware('auth')->group(function () {
     Route::resource('works', WorkController::class);
     Route::resource('month', MonthController::class);
 
-    Route::get('/works-list',[WorkController::class,'list'])->name('works.list');
-    Route::get('/works-list/{workZone}',[WorkController::class,'child_list'])->name('works.child-list');
+    Route::get('/works-list', [WorkController::class, 'list'])->name('works.list');
+    // Route::get('/works-list/{workZone}',[WorkController::class,'child_list'])->name('works.child-list');
+
+    Route::get(
+        '/messages/select-section',
+        fn() =>
+        app(WorkController::class)->select('works.child-list')
+    )->name('messages.select-section');
+    Route::get('/works-list/{workZone}', [WorkController::class, 'child_list'])->name('works.child-list');
+
 
     Route::group(['prefix' => 'days'], function () {
         Route::post('/createday/{user}', [EmployeeDaysController::class, 'createday'])->name('days.createday');
@@ -104,7 +112,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/user-band-scores/{id}', [CommissionController::class, 'scoresList'])->name('commission.band_scores.list');
         Route::post('/create-band-score/{id}/{user}', [CommissionController::class, 'createBandScore'])->name('commission.create.band_score');
 
-         Route::post('/save-selected-kpi', [CommissionController::class, 'saveSelectedKpi'])->name('commission.session.band.score');
+        Route::post('/save-selected-kpi', [CommissionController::class, 'saveSelectedKpi'])->name('commission.session.band.score');
     });
     Route::group(['prefix' => 'employee-profile'], function () {
         Route::get('/list', [EmployeeProfileController::class, 'index'])->name('profile.list');
@@ -113,7 +121,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/commit', [EmployeeProfileController::class, 'commit'])->name('profile.commit');
         Route::post('/store', [EmployeeProfileController::class, 'store'])->name('profile.store');
 
-        Route::post('/kpi-save', [ EmployeeProfileController::class, 'KpiSave' ])->name('employee.kpi.save');
+        Route::post('/kpi-save', [EmployeeProfileController::class, 'KpiSave'])->name('employee.kpi.save');
 
         Route::get('/kpi/dashboard', [EmployeeProfileController::class, 'index'])->name('kpi.dashboard');
         Route::get('/kpi/{kpiId}', [EmployeeProfileController::class, 'show'])->name('kpi.detail');
@@ -127,8 +135,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/update/{id}', [BugalterController::class, 'update'])->name('bugalter.update');
         Route::get('/edit/{id}', [BugalterController::class, 'edit'])->name('bugalter.edit');
         Route::get('/select', [BugalterController::class, 'select'])->name('bugalter.select');
-        Route::get('/export',[BugalterController::class, 'get_summa'])->name('bugalter.export');
-        Route::get('/calculate',[BugalterController::class, 'calculate'])->name('bugalter.calculate');
+        Route::get('/export', [BugalterController::class, 'get_summa'])->name('bugalter.export');
+        Route::get('/calculate', [BugalterController::class, 'calculate'])->name('bugalter.calculate');
     });
 
     Route::resource('kpis', KpiController::class);
@@ -159,7 +167,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/user-kpis/toggle', [EmployeeKpiController::class, 'toggle'])->name('user-kpi.toggle');
     });
 
-    Route::get('/api/user-kpi-data/{userId}/{kpiId}',[CommissionController::class, 'getUserKpiData'])->name('user-kpi-data');
+    Route::get('/api/user-kpi-data/{userId}/{kpiId}', [CommissionController::class, 'getUserKpiData'])->name('user-kpi-data');
 });
 
 
@@ -175,11 +183,17 @@ Route::put('/admin/relevant-users/{id}', [RelevantUserController::class, 'update
 
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/boss/employees', [EmployeeController::class, 'index'])->name('boss.employees');
-    Route::get('/boss/employees/{user}', [EmployeeController::class, 'show'])->name('boss.employee.show');
+    // Route::get('/boss/employees', [EmployeeController::class, 'index'])->name('boss.employees');
+    // Route::get('/boss/employees/{user}', [EmployeeController::class, 'show'])->name('boss.employee.show');
 
-    Route::get('/departments', [DepartmentKpiController::class, 'index'])->name('kpi.departments');
-    Route::get('/departments/{id}', [DepartmentKpiController::class, 'departmentDetail'])->name('kpi.department.detail');
+    Route::get(
+        '/departments/select-section',
+        fn() =>
+        app(WorkController::class)->select('kpi.departments')
+    )->name('departments.select-section');
+
+    Route::get('/departments/{workZone}', [DepartmentKpiController::class, 'index'])->name('kpi.departments');
+    Route::get('/departments-details/{id}', [DepartmentKpiController::class, 'departmentDetail'])->name('kpi.department.detail');
     Route::get('/departments/users/{user}', [DepartmentKpiController::class, 'usersShow'])->name('department.user.detail');
 });
 

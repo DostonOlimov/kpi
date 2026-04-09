@@ -9,6 +9,12 @@ use Illuminate\View\View;
 
 class WorkController extends Controller
 {
+    public function select($redirectTo)
+    {
+        $regions = WorkZone::whereNull('parent_id')->orderBy('sort_order')->get();
+
+        return view('components.section-selector', compact('regions', 'redirectTo'));
+    }
         /**
      * Display a listing of the work zones.
      */
@@ -22,6 +28,7 @@ class WorkController extends Controller
      */
     public function child_list(WorkZone $workZone): View
     {
+        // dd($workZone);
         $id = $workZone->id;
         $works = WorkZone::where('parent_id',$id)->orderBy('id', 'asc')->get();
         return view('works.index', compact('works','id'));

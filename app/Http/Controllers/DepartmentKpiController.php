@@ -11,43 +11,43 @@ use App\Models\WorkZone;
 
 class DepartmentKpiController extends Controller
 {
-    public function index()
+    public function index(WorkZone $workZone)
     {
         // Get department statistics
-        $departmentStats = $this->getDepartmentStatistics();
-        
+        $departmentStats = $this->getDepartmentStatistics($workZone);
+
         // Get top performers by department
-        $topPerformers = $this->getTopPerformersByDepartment();
-      
+        $topPerformers = $this->getTopPerformersByDepartment($workZone);
+
         // Get KPI trends (last 6 months)
-        $kpiTrends = $this->getKpiTrends();
-        
+        $kpiTrends = $this->getKpiTrends($workZone);
+
         // Get overall statistics
-        $overallStats = $this->getOverallStatistics();
+        $overallStats = $this->getOverallStatistics($workZone);
 
         return view('department.department-statistics', compact(
             'departmentStats',
-            'topPerformers', 
+            'topPerformers',
             'kpiTrends',
             'overallStats'
         ));
     }
 
-    private function getDepartmentStatistics()
+    private function getDepartmentStatistics(WorkZone $workZone)
     {
         return WorkZone::leftJoin('users', function ($join) {
-                    $join->on('work_zones.id', '=', 'users.work_zone_id')
-                        ->where('users.role_id', '!=', User::ROLE_ADMIN)   // exclude admins
-                        ->where('users.role_id', '!=', User::ROLE_MANAGER); // exclude managers
-                })
-                ->leftJoin('user_kpis', function ($join) {
+            $join->on('work_zones.id', '=', 'users.work_zone_id')
+                ->where('users.role_id', '!=', User::ROLE_ADMIN)   // exclude admins
+                ->where('users.role_id', '!=', User::ROLE_MANAGER); // exclude managers
+        })
+            ->leftJoin('user_kpis', function ($join) {
 
-                    $year = session('year') ?: (int)date('Y');
-                    $month = session('month') ?: (int)date('m');
-                    $join->on('users.id', '=', 'user_kpis.user_id')
-                        ->where('year',$year)
-                        ->where('month',$month);
-                })
+                $year = session('year') ?: (int) date('Y');
+                $month = session('month') ?: (int) date('m');
+                $join->on('users.id', '=', 'user_kpis.user_id')
+                    ->where('year', $year)
+                    ->where('month', $month);
+            })
             ->select(
                 'work_zones.id',
                 'work_zones.name as department_name',
@@ -60,28 +60,31 @@ class DepartmentKpiController extends Controller
                 DB::raw('COUNT(CASE WHEN user_kpis.current_score >= 80 THEN 1 END) as high_performers'),
                 DB::raw('COUNT(CASE WHEN user_kpis.current_score < 60 THEN 1 END) as low_performers')
             )
+            ->where('work_zones.parent_id', $workZone->id)
             ->groupBy('work_zones.id', 'work_zones.name')
             ->orderBy('avg_score', 'desc')
             ->get();
     }
 
-    private function getTopPerformersByDepartment()
+    private function getTopPerformersByDepartment(WorkZone $workZone)
     {
         return User::join('work_zones', 'users.work_zone_id', '=', 'work_zones.id')
             ->leftJoin('user_kpis', function ($join) {
 
-                    $year = session('year') ?: (int)date('Y');
-                    $month = session('month') ?: (int)date('m');
-                    $join->on('users.id', '=', 'user_kpis.user_id')
-                        ->where('year',$year)
-                        ->where('month',$month);
-                })
+                $year = session('year') ?: (int) date('Y');
+                $month = session('month') ?: (int) date('m');
+                $join->on('users.id', '=', 'user_kpis.user_id')
+                    ->where('year', $year)
+                    ->where('month', $month);
+            })
             ->select(
                 'work_zones.name as department_name',
                 'users.first_name as user_name',
                 'users.last_name as email',
                 DB::raw('ROUND(AVG(user_kpis.current_score), 2) as avg_score')
             )
+            ->where('work_zones.parent_id', $workZone->id)
+            ->whereNotIn('users.role_id', [User::ROLE_ADMIN, User::ROLE_MANAGER])
             ->groupBy('work_zones.id', 'work_zones.name', 'users.id', 'user_name', 'email')
             ->havingRaw('AVG(user_kpis.current_score) >= 80')
             ->orderBy('work_zones.name')
@@ -90,7 +93,7 @@ class DepartmentKpiController extends Controller
             ->groupBy('department_name');
     }
 
-    private function getKpiTrends()
+    private function getKpiTrends(WorkZone $workZone)
     {
         return UserKpi::join('users', 'user_kpis.user_id', '=', 'users.id')
             ->join('work_zones', 'users.work_zone_id', '=', 'work_zones.id')
@@ -99,6 +102,8 @@ class DepartmentKpiController extends Controller
                 DB::raw('DATE_FORMAT(user_kpis.created_at, "%Y-%m") as month'),
                 DB::raw('ROUND(AVG(user_kpis.current_score), 2) as avg_score')
             )
+            ->where('work_zones.parent_id', $workZone->id)
+            ->whereNotIn('users.role_id', [User::ROLE_ADMIN, User::ROLE_MANAGER])
             ->where('user_kpis.created_at', '>=', now()->subMonths(6))
             ->groupBy('work_zones.id', 'work_zones.name', DB::raw('DATE_FORMAT(user_kpis.created_at, "%Y-%m")'))
             ->orderBy('month')
@@ -106,14 +111,19 @@ class DepartmentKpiController extends Controller
             ->groupBy('department_name');
     }
 
-    private function getOverallStatistics()
+    private function getOverallStatistics(WorkZone $workZone)
     {
         return [
-            'total_departments' => WorkZone::count(),
-            'total_employees' => 
-                    User::where('users.role_id', '!=', User::ROLE_ADMIN) 
-                        ->where('users.role_id', '!=', User::ROLE_MANAGER)
-                        ->count(),
+            'total_departments' => WorkZone::where('parent_id', $workZone->id)->count(),
+            'total_employees' =>
+                User::where('users.role_id', '!=', User::ROLE_ADMIN)
+                    ->where('users.role_id', '!=', User::ROLE_MANAGER)
+                    ->whereIn('users.work_zone_id', function ($query) use ($workZone) {
+                        $query->select('id')
+                            ->from('work_zones')
+                            ->where('parent_id', $workZone->id);
+                    })
+                    ->count(),
             'sum_score' => UserKpi::sum('current_score'),
             'overall_avg_score' => round(UserKpi::avg('current_score'), 2),
             'high_performers_count' => UserKpi::where('current_score', '>=', 80)->count(),
@@ -124,14 +134,16 @@ class DepartmentKpiController extends Controller
     public function departmentDetail($id)
     {
         $department = WorkZone::findOrFail($id);
-        
+
         $employees = User::where('work_zone_id', $id)
             ->whereNotIn('role_id', [User::ROLE_ADMIN, User::ROLE_MANAGER])
-            ->with(['user_kpis' => function($query) {
-                $query->select('user_id', DB::raw('ROUND(AVG(current_score), 2) as avg_score'))
-                      ->select('user_id', DB::raw('SUM(current_score) as sum_score'))
-                      ->groupBy('user_id');
-            }])
+            ->with([
+                'user_kpis' => function ($query) {
+                    $query->select('user_id', DB::raw('ROUND(AVG(current_score), 2) as avg_score'))
+                        ->select('user_id', DB::raw('SUM(current_score) as sum_score'))
+                        ->groupBy('user_id');
+                }
+            ])
             ->get();
 
         return view('department.department-detail', compact('department', 'employees'));
@@ -140,14 +152,14 @@ class DepartmentKpiController extends Controller
     public function usersShow($userId)
     {
         $user = User::with(['work_zone'])->findOrFail($userId);
-        
+
         // Get parent KPIs with their children and user scores
         $parentKpis = Kpi::whereNull('parent_id')
-            ->where('type','!=', Kpi::PERMANENT) // Exclude commission-based KPIs
+            ->where('type', '!=', Kpi::PERMANENT) // Exclude commission-based KPIs
             ->with([
-                'user_kpis' => function($query) use ($userId) {
+                'user_kpis' => function ($query) use ($userId) {
                     $query->where('user_id', $userId)
-                          ->with(['user_kpis.tasks']);
+                        ->with(['user_kpis.tasks']);
                 },
                 'children'
             ])->orderBy('sort')
@@ -155,40 +167,40 @@ class DepartmentKpiController extends Controller
 
         // User statistics
         $userStats = $this->getUserStatistics($userId);
-        
+
         // Performance trends (last 6 months)
         $performanceTrends = $this->getUserPerformanceTrends($userId);
 
         $userKpis = UserKpi::with(['kpi', 'tasks'])->where('user_id', $userId)->get();
 
-        return view('department.user-detail', compact('user', 'parentKpis', 'userStats', 'performanceTrends','userKpis'));
+        return view('department.user-detail', compact('user', 'parentKpis', 'userStats', 'performanceTrends', 'userKpis'));
     }
 
     private function getUserStatistics($userId)
     {
         $userKpis = UserKpi::where('user_id', $userId);
-        
+
         $totalKpis = $userKpis->count();
         $avgScore = $userKpis->avg('current_score') ?? 0;
         $sumScore = $userKpis->sum('current_score');
         $completedKpis = $userKpis->whereNotNull('current_score')->count();
         $inProgressKpis = $userKpis->whereNull('current_score')->count();
         $pendingKpis = $userKpis->whereNull('current_score')->count();
-        
+
         // Commission-based KPIs
-        $commissionKpis = $userKpis->whereHas('kpi', function($query) {
+        $commissionKpis = $userKpis->whereHas('kpi', function ($query) {
             $query->where('type', 1);
         });
-        
+
         // Task-based KPIs
-        $taskKpis = $userKpis->whereHas('kpi', function($query) {
+        $taskKpis = $userKpis->whereHas('kpi', function ($query) {
             $query->where('type', 2);
         });
 
         return [
             'total_kpis' => $totalKpis,
             'avg_score' => round($avgScore, 2),
-            'sum_score' => round($sumScore,2),
+            'sum_score' => round($sumScore, 2),
             'completed_kpis' => $completedKpis,
             'in_progress_kpis' => $inProgressKpis,
             'pending_kpis' => $pendingKpis,
