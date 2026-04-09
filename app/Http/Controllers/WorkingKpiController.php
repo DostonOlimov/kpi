@@ -5,14 +5,23 @@ namespace App\Http\Controllers;
 use App\Models\Kpi;
 use App\Models\User;
 use App\Models\UserKpi;
+use App\Models\WorkZone;
 use Illuminate\Http\Request;
 
 class WorkingKpiController extends Controller
 {
-    public function index()
+    public function index(WorkZone $workZone, Request $request)
     {
+        // Get all work zones for the filter dropdown
+        $workZones = WorkZone::where('parent_id',$workZone->id)->orderBy('name')->get();
+
         $query = User::with(['working_kpis', 'work_zone'])
-            ->where('role_id','!=',User::ROLE_ADMIN)
+            ->whereNotIn('role_id', [User::ROLE_ADMIN, User::ROLE_MANAGER])
+            ->whereIn('users.work_zone_id', function ($query) use ($workZone) {
+                        $query->select('id')
+                            ->from('work_zones')
+                            ->where('parent_id', $workZone->id);
+                    })
             ->where('id', '!=', auth()->id());
 
         // Filter by department if user is not admin
@@ -21,9 +30,14 @@ class WorkingKpiController extends Controller
                 ->where('role_id', User::ROLE_USER);
         }
 
+        // Apply work zone filter if provided
+        if ($request->has('work_zone_filter') && $request->work_zone_filter) {
+            $query->where('users.work_zone_id', $request->work_zone_filter);
+        }
+
         $users = $query->paginate(10);
 
-        return view('working_kpis.index', compact('users'));
+        return view('working_kpis.index', compact('users', 'workZones', 'workZone'));
     }
 
     public function create(Request $request)

@@ -11,7 +11,7 @@
         </div>
 
         <!-- Filter Form -->
-        <form id="filterForm" method="GET" action="{{ route('employee.kpis.users') }}">
+        <form id="filterForm" method="GET" action="{{ route('employee.kpis.users', $workZone->id) }}">
             <div class="row mb-4">
                 <div class="col-md-6">
                     <div class="search-box">

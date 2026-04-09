@@ -68,7 +68,7 @@
                             <div class="tab_wrapper page-tab">
                                 <ul class="tab_list">
                                     <li class="active">
-                                        <a href="{{ route('working-kpis.index') }}">
+                                        <a href="{{ route('working-kpis.index',32) }}">
                                             <span class="visible-xs"></span>
                                             <i class="fa fa-list fa-lg">&nbsp;</i>
                                             {{ trans('app.Ro\'yxat')}}

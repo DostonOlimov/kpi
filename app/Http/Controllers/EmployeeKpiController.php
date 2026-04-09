@@ -11,11 +11,16 @@ use App\Models\Kpi;
 
 class EmployeeKpiController extends Controller
 {
-    public function index(Request $request)
+    public function index(WorkZone $workZone, Request $request)
     {
         $query = User::withCount(['kpis'])
             ->whereNotIn('role_id',[User::ROLE_ADMIN,User::ROLE_MANAGER])
-            ->with('user_kpis', 'work_zone');
+            ->with('user_kpis', 'work_zone')
+            ->whereIn('work_zone_id', function ($query) use ($workZone) {
+                $query->select('id')
+                    ->from('work_zones')
+                    ->where('parent_id', $workZone->id);
+            });
 
         // Apply search by name
         if ($request->filled('search')) {
@@ -29,15 +34,16 @@ class EmployeeKpiController extends Controller
         }
 
         $users = $query->paginate(12)->withQueryString(); // Keep query in pagination
-        $work_zones = WorkZone::all();
+        $work_zones = WorkZone::where('parent_id', $workZone->id)->orderBy('name')->get();
 
-        return view('employee_kpis.index', compact('users', 'work_zones'));
+        return view('employee_kpis.index', compact('users', 'work_zones','workZone'));
     }
 
     public function showKpis(User $user,Request $request)
     {
 
         $user->load('user_kpis');
+        $work_zone_id = $user->work_zone?->parent_id;
 
         $query = Kpi::with('user_kpis')->where('user_id',$user->id);
 
@@ -57,7 +63,7 @@ class EmployeeKpiController extends Controller
 
         $kpis = $query->get();
 
-        return view('employee_kpis.kpis', compact('user', 'kpis'));
+        return view('employee_kpis.kpis', compact('user', 'kpis', 'work_zone_id'));
     }
 
     public function toggle(Request $request)

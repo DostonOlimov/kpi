@@ -141,6 +141,13 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('kpis', KpiController::class);
     Route::resource('working-kpis', WorkingKpiController::class);
+        Route::get(
+        '/working-kpi-select/select-section',
+        fn() =>
+        app(WorkController::class)->select('working-kpis.index')
+    )->name('working-kpis.select-section');
+
+    Route::get('/working-kpis-select/{workZone}', [WorkingKpiController::class, 'index'])->name('working-kpis.index');
     Route::get('/working-kpis/user/{userId}', [WorkingKpiController::class, 'getUserKPIs'])->name('user-working-kpis.user');
 
     Route::post('/tasks/store', [TaskController::class, 'store']);
@@ -161,10 +168,17 @@ Route::middleware('auth')->group(function () {
 
     Route::group(['prefix' => 'employee'], function () {
         // Users listing
-        Route::get('/users', [EmployeeKpiController::class, 'index'])->name('employee.kpis.users');
+         Route::resource('users', WorkingKpiController::class);
+        Route::get(
+        '/user-select/select-section',
+        fn() =>
+        app(WorkController::class)->select('employee.kpis.users')
+    )->name('employee.kpis.select-section');
+
+        Route::get('/users-select/{workZone}', [EmployeeKpiController::class, 'index'])->name('employee.kpis.users');
         // User KPIs management
         Route::get('/users/{user}/kpis', [EmployeeKpiController::class, 'showKpis'])->name('employee.kpis');
-        Route::post('/user-kpis/toggle', [EmployeeKpiController::class, 'toggle'])->name('user-kpi.toggle');
+        Route::post('/user-kpis-toggle/toggle', [EmployeeKpiController::class, 'toggle'])->name('user-kpi.toggle');
     });
 
     Route::get('/api/user-kpi-data/{userId}/{kpiId}', [CommissionController::class, 'getUserKpiData'])->name('user-kpi-data');

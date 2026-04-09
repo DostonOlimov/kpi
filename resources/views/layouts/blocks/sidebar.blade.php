@@ -43,13 +43,13 @@
                         'active_route' => 'kpis'
                     ],
                     [
-                        'route' => 'working-kpis.index',
+                        'route' => 'working-kpis.select-section',
                         'icon'  => 'cil-description',
                         'label' => 'KPI Ko‘rsatkichlari',
                         'active_route' => 'working-kpis'
                     ],
                     [
-                        'route' => 'employee.kpis.users',
+                        'route' => 'employee.kpis.select-section',
                         'icon'  => 'cil-bar-chart',
                         'label' => 'Shaxsiy KPI ko‘rsatkichlar',
                         'active_route' => 'employee/users'
