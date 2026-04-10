@@ -9,6 +9,7 @@ use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentKpiController;
 use App\Http\Controllers\DirectorProfileController;
+use App\Http\Controllers\EdodocumentController;
 use App\Http\Controllers\EmployeeDaysController;
 use App\Http\Controllers\EmployeeKpiController;
 use App\Http\Controllers\EmployeeProfileController;
@@ -45,6 +46,9 @@ Route::get('/attendances', [AttendanceController::class, 'index'])->name('attend
 Route::get('/attendances/upload', [AttendanceController::class, 'showUploadForm'])->name('attendances.upload');
 Route::post('/attendances/import', [AttendanceController::class, 'import'])->name('attendances.import');
 Route::put('/attendances/{id}', [AttendanceController::class, 'update'])->name('attendances.update');
+
+Route::resource('edodocuments', EdodocumentController::class);
+Route::post('/edodocuments/{id}/complete', [EdodocumentController::class, 'complete'])->name('edodocuments.complete');
 
 Route::post('/change-year', [SessionController::class, 'changeYear']);
 Route::post('/change-month', [SessionController::class, 'changeMonth']);

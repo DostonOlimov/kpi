@@ -25,3 +25,47 @@ if (!function_exists('get_month_name')) {
         return $months[(int)$monthNumber] ?? null;
     }
 }
+
+
+if (!function_exists('getDatepicker')) {
+
+    function getDatepicker()
+    {
+
+        $dateformate = 'd-m-Y';
+
+        if (!empty($dateformate)) {
+
+            if ($dateformate == 'm-d-Y') {
+
+                $dateformats = "mm-dd-yyyy";
+
+                return $dateformats;
+
+            } elseif ($dateformate == 'Y-m-d') {
+
+                $dateformats = "yyyy-mm-dd";
+
+                return $dateformats;
+
+            } elseif ($dateformate == 'd-m-Y') {
+
+                $dateformats = "dd-mm-yyyy";
+
+                return $dateformats;
+
+            } elseif ($dateformate == 'M-d-Y') {
+
+                $dateformats = "MM-dd-yyyy";
+
+                return $dateformats;
+
+            }
+
+
+        }
+
+    }
+
+}
+

@@ -96,6 +96,14 @@
                     Baholarni to'ldirish
                 </a>
             </li>
+             <li class="nav-item">
+                <a class="nav-link" href="{{ route('edodocuments.index') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>
+                    </svg>
+                    EDO Hujjatlari
+                </a>
+            </li>
         @endif
 
         @if (auth()->user()->role_id === \App\Models\User::ROLE_DIRECTOR)

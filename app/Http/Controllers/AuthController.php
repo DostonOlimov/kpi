@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UserLoggedIn;
 use App\Models\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
@@ -9,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Event;
 
 class AuthController extends Controller
 {
@@ -59,6 +61,10 @@ class AuthController extends Controller
 
         // 4. Success
         $request->session()->regenerate();
+        
+        // Dispatch login event
+        event(new UserLoggedIn($user));
+        
         return redirect()->intended('/');
     }
 
