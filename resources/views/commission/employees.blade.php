@@ -30,7 +30,7 @@
                                 </div>
                                 <div class="flex-grow-1">
                                     <h6 class="text-muted mb-1 small">Jami xodimlar</h6>
-                                    <h3 class="mb-0 fw-bold text-dark">{{ count($users) }}</h3>
+                                    <h3 class="mb-0 fw-bold text-dark">{{ $users->total() }}</h3>
                                 </div>
                             </div>
                         </div>
@@ -47,7 +47,7 @@
                                 </div>
                                 <div class="flex-grow-1">
                                     <h6 class="text-muted mb-1 small">Jami topshiriqlar</h6>
-                                    <h3 class="mb-0 fw-bold text-dark">{{ $users->sum(function($user) { return $user->tasks->count(); }) }}</h3>
+                                    <h3 class="mb-0 fw-bold text-dark">{{ $users->sum(fn ($user) => $user->tasks->count()) }}</h3>
                                 </div>
                             </div>
                         </div>
@@ -64,7 +64,7 @@
                                 </div>
                                 <div class="flex-grow-1">
                                     <h6 class="text-muted mb-1 small">Tekshirilgan</h6>
-                                    <h3 class="mb-0 fw-bold text-dark">{{ $users->sum(function($user) { return $user->tasks->where('is_checked', true)->count(); }) }}</h3>
+                                    <h3 class="mb-0 fw-bold text-dark">{{ $users->sum(fn ($user) => $user->tasks->whereNotNull('score')->count()) }}</h3>
                                 </div>
                             </div>
                         </div>
@@ -82,8 +82,8 @@
                                 <div class="flex-grow-1">
                                     <h6 class="text-muted mb-1 small">Kutilmoqda</h6>
                                     @php
-                                        $totalTasks = $users->sum(function($user) { return $user->tasks->count(); });
-                                        $completedTasks = $users->sum(function($user) { return $user->tasks->where('is_checked', true)->count(); });
+                                        $totalTasks = $users->sum(fn ($user) => $user->tasks->count());
+                                        $completedTasks = $users->sum(fn ($user) => $user->tasks->whereNotNull('score')->count());
                                         $pendingTasks = $totalTasks - $completedTasks;
                                     @endphp
                                     <h3 class="mb-0 fw-bold text-dark">{{ $pendingTasks }}</h3>
@@ -100,12 +100,12 @@
             <div class="col-md-12">
                 <div class="card border-0 shadow-sm">
                     <!-- Enhanced Card Header -->
-                    <div class="card-header bg-white border-bottom">
-                        <div class="row align-items-center">
-                            <div class="col">
+                    <div class="card-header commission-card-header bg-white border-bottom">
+                        <div class="row align-items-lg-center g-3 commission-header-top">
+                            <div class="col-12 col-lg">
                                 <div class="d-flex align-items-center">
-                                    <div class="tab-indicator active me-3"></div>
-                                    <div>
+                                    <div class="tab-indicator active me-3 flex-shrink-0"></div>
+                                    <div class="min-w-0">
                                         <h5 class="mb-0 fw-semibold">
                                             <i class="fa fa-list me-2 text-primary"></i>
                                             {{ trans('app.Ro\'yxat')}}
@@ -114,21 +114,47 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-auto">
-                                <div class="d-flex align-items-center gap-2">
-                                    <!-- Search Input -->
-                                    <div class="search-box">
-                                        <div class="input-group">
-                                        <span class="input-group-text bg-light border-end-0">
-                                            <i class="fa fa-search text-muted"></i>
-                                        </span>
-                                            <input type="text" class="form-control border-start-0" placeholder="Xodim qidirish..." id="searchEmployee">
-                                        </div>
-                                    </div>
-                                    <!-- Back Button -->
-                                </div>
-                            </div>
                         </div>
+                        @if(isset($parentWorkZones) && $parentWorkZones->isNotEmpty())
+                            <div class="commission-work-zone-panel">
+                                <form method="get" action="{{ route('commission.employee.list') }}" id="commissionWorkZoneForm" class="commission-work-zone-form d-flex flex-wrap align-items-end gap-2 gap-md-3">
+                                    <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-1 gap-sm-2">
+                                        <label for="parentWorkZone" class="form-label small text-muted mb-0 text-nowrap">Hudud</label>
+                                        <select name="work_zone_parent"
+                                                id="parentWorkZone"
+                                                class="form-select form-select-sm commission-parent-select"
+                                                onchange="var c=document.getElementById('childWorkZone');if(c){c.value='';} this.form.submit();">
+                                            <option value="">Barcha hududlar</option>
+                                            @foreach($parentWorkZones as $zone)
+                                                <option value="{{ $zone->id }}" {{ (string)($selectedParentId ?? '') === (string)$zone->id ? 'selected' : '' }}>
+                                                    {{ $zone->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-1 gap-sm-2">
+                                        <label for="childWorkZone" class="form-label small text-muted mb-0 text-nowrap">Bo'lim</label>
+                                        <select name="work_zone_id"
+                                                id="childWorkZone"
+                                                class="form-select form-select-sm commission-dept-select"
+                                                onchange="this.form.submit()"
+                                                @if(!$selectedParentId || !isset($childWorkZones) || $childWorkZones->isEmpty()) disabled @endif>
+                                            <option value="">{{ $selectedParentId ? 'Barcha bo\'limlar' : 'Avval hududni tanlang' }}</option>
+                                            @if($selectedParentId && isset($childWorkZones))
+                                                @foreach($childWorkZones as $childZone)
+                                                    <option value="{{ $childZone->id }}" {{ (string)($selectedChildId ?? '') === (string)$childZone->id ? 'selected' : '' }}>
+                                                        {{ $childZone->name }}
+                                                    </option>
+                                                @endforeach
+                                            @endif
+                                        </select>
+                                    </div>
+                                    @if($selectedParentId)
+                                        <a href="{{ route('commission.employee.list') }}" class="btn btn-sm btn-outline-danger align-self-center">Tozalash</a>
+                                    @endif
+                                </form>
+                            </div>
+                        @endif
                     </div>
 
                     <div class="card-body p-0">
@@ -172,8 +198,8 @@
                                 <tbody class="table-group-divider">
                                 @foreach ($users as $index => $employee)
                                     @php
-                                        $totalTasks = 7;
-                                        $checkedTasks = $employee->scores->unique('kpi_id')->count();
+                                        $totalTasks = $employee->kpis->count();
+                                        $checkedTasks = $employee->kpis->whereNotNull('current_score')->count();
                                         $pendingTasks = $totalTasks - $checkedTasks;
                                         $completionPercentage = $totalTasks > 0 ? round(($checkedTasks / $totalTasks) * 100) : 0;
 
@@ -289,6 +315,7 @@
             </div>
         </div>
     </div>
+    {{ $users->links('pagination::bootstrap-4') }}
 @endsection
 @section('scripts')
                         <script>
@@ -297,27 +324,6 @@
                                 var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
                                 var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                                     return new bootstrap.Tooltip(tooltipTriggerEl);
-                                });
-
-                                // Search functionality
-                                const searchInput = document.getElementById('searchEmployee');
-                                const employeeRows = document.querySelectorAll('.employee-row');
-
-                                searchInput.addEventListener('input', function() {
-                                    const searchTerm = this.value.toLowerCase();
-
-                                    employeeRows.forEach(row => {
-                                        const employeeName = row.querySelector('.employee-info h6').textContent.toLowerCase();
-                                        const employeePosition = row.querySelector('.badge').textContent.toLowerCase();
-
-                                        if (employeeName.includes(searchTerm) || employeePosition.includes(searchTerm)) {
-                                            row.style.display = '';
-                                        } else {
-                                            row.style.display = 'none';
-                                        }
-                                    });
-
-                                    updateEmptyState();
                                 });
 
                                 // Select all functionality

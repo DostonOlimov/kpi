@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use App\Models\EmployeeDays;
 use App\Models\Month;
 use App\Models\User;
+use App\Models\WorkZone;
 
 class EmployeeDaysController extends Controller
 {
@@ -21,23 +22,58 @@ class EmployeeDaysController extends Controller
      *
      * @return Application|Factory|View
      */
-    public function list()
+    public function list(Request $request)
     {
         $month_id = session('month') ?? (int) date('m');
         $year = session('year') ?? (int) date('Y');
-        // dd($month_id, $year);
 
-        $users = User::with(['working_days', 'work_zone'])->whereNotIn('role_id',[User::ROLE_MANAGER,User::ROLE_ADMIN])->get();
+        $parentWorkZones = WorkZone::whereNull('parent_id')
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
 
-        $groupedUsers = $users->groupBy(fn($user) => $user->work_zone?->name ?? 'Boshqalar');
+        $selectedParentId = $request->query('work_zone_parent');
+        $selectedChildId = $request->query('work_zone_id');
 
-        $days = Month::where('year','=',$year)
-            ->where('month_id','=',$month_id)
+        $childWorkZones = collect();
+        if ($selectedParentId) {
+            $childWorkZones = WorkZone::where('parent_id', $selectedParentId)
+                ->orderBy('name')
+                ->get();
+        }
+
+        $query = User::with(['working_days', 'work_zone'])
+            ->whereNotIn('role_id', [User::ROLE_MANAGER, User::ROLE_ADMIN]);
+
+        if ($selectedChildId) {
+            $query->where('work_zone_id', $selectedChildId);
+        } elseif ($selectedParentId) {
+            $childIds = WorkZone::where('parent_id', $selectedParentId)->pluck('id');
+            $query->whereIn('work_zone_id', $childIds);
+        }
+
+        $users = $query->get();
+
+        $groupedUsers = $users->groupBy(fn ($user) => $user->work_zone?->name ?? 'Boshqalar');
+
+        $days = Month::where('year', '=', $year)
+            ->where('month_id', '=', $month_id)
             ->first()?->days;
 
         $month_name = Month::getMonth($month_id);
 
-        return view('days.list', compact('users','days','groupedUsers','month_name','month_id','year',));
+        return view('days.list', compact(
+            'users',
+            'days',
+            'groupedUsers',
+            'month_name',
+            'month_id',
+            'year',
+            'parentWorkZones',
+            'childWorkZones',
+            'selectedParentId',
+            'selectedChildId'
+        ));
     }
 
     /**

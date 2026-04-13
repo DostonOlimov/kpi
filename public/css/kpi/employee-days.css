@@ -136,3 +136,41 @@
         padding: 15px 0;
     }
 }
+
+/* Days list — work zone filters (same layout as commission employee list) */
+@media (max-width: 991.98px) {
+    .commission-work-zone-form {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+
+    .commission-work-zone-form > .d-flex {
+        width: 100%;
+    }
+
+    .commission-parent-select,
+    .commission-dept-select {
+        flex: 1 1 auto;
+        min-width: 0;
+        max-width: none;
+        width: 100%;
+    }
+}
+
+.commission-work-zone-form {
+    width: 100%;
+}
+
+.commission-parent-select,
+.commission-dept-select {
+    min-width: 11rem;
+    max-width: 18rem;
+}
+
+.commission-work-zone-panel {
+    margin-top: 0;
+    padding: 0.875rem 1rem;
+    border-radius: 0.5rem;
+    background: linear-gradient(180deg, rgba(248, 249, 250, 0.85) 0%, rgba(255, 255, 255, 0.6) 100%);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+}

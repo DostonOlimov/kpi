@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use App\Models\Kpi;
 use App\Models\Task;
 use App\Models\UserKpi;
+use App\Models\WorkZone;
 
 class CommissionController extends Controller
 {
@@ -37,12 +38,42 @@ class CommissionController extends Controller
         ));
     }
 
-    public function employeeList()
+    public function employeeList(Request $request)
     {
-        $user = auth()->user();
-        $users = User::whereNotIn('role_id',[User::ROLE_ADMIN,User::ROLE_MANAGER])
-            ->paginate(10);
-        return view('director.employees', ["users" => $users]);
+        $parentWorkZones = WorkZone::whereNull('parent_id')
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
+
+        $selectedParentId = $request->query('work_zone_parent');
+        $selectedChildId = $request->query('work_zone_id');
+
+        $childWorkZones = collect();
+        if ($selectedParentId) {
+            $childWorkZones = WorkZone::where('parent_id', $selectedParentId)
+                ->orderBy('name')
+                ->get();
+        }
+
+        $query = User::with(['tasks', 'kpis'])
+            ->whereNotIn('role_id', [User::ROLE_ADMIN, User::ROLE_MANAGER]);
+
+        if ($selectedChildId) {
+            $query->where('work_zone_id', $selectedChildId);
+        } elseif ($selectedParentId) {
+            $childIds = WorkZone::where('parent_id', $selectedParentId)->pluck('id');
+            $query->whereIn('work_zone_id', $childIds);
+        }
+
+        $users = $query->paginate(10)->appends($request->query());
+
+        return view('commission.employees', compact(
+            'users',
+            'parentWorkZones',
+            'childWorkZones',
+            'selectedParentId',
+            'selectedChildId'
+        ));
     }
 
     public function getUserKpiData(int $userId,int $kpiId)
