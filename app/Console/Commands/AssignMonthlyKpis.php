@@ -14,7 +14,7 @@ class AssignMonthlyKpis extends Command
      *
      * @var string
      */
-    protected $signature = 'kpis:assign {userId?}';
+    protected $signature = 'kpis:assign {month?} {year?}';
 
     /**
      * The console command description.
@@ -40,21 +40,18 @@ class AssignMonthlyKpis extends Command
      */
     public function handle()
     {
-        $month = now()->month;
-        $year = now()->year;
-
-        $userId = $this->argument('userId');
+        $month = $this->argument('month') ?? now()->month;
+        $year = $this->argument('year') ?? now()->year;
 
         // Determine target users
-        $users = $userId
-            ? User::where('id', $userId)->get()
-            : User::whereNotIn('role_id', [User::ROLE_ADMIN,User::ROLE_MANAGER])->get();
+        $users =  User::whereNotIn('role_id', [User::ROLE_ADMIN,User::ROLE_MANAGER])->get();
 
         $kpis = Kpi::whereNotNull('parent_id')
             ->whereIn('type', [
                 Kpi::ACTIVITY,
                 Kpi::BEHAVIOUR,
-                Kpi::IJRO
+                Kpi::IJRO,
+                Kpi::PERMANENT
             ])->get();
 
         foreach ($users as $user) {

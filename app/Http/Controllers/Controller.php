@@ -10,4 +10,11 @@ use Illuminate\Routing\Controller as BaseController;
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+
+    public $month, $year;
+    public function __construct()
+    {
+        $this->month = session('month') ?? (int)date('m');
+        $this->year = session('year') ?? (int)date('Y');
+    }
 }

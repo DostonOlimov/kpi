@@ -49,7 +49,8 @@
                         'active_route' => 'working-kpis'
                     ],
                     [
-                        'route' => 'employee.kpis.select-section',
+                        'route' => 'employee.kpis.users',
+                        'param' => 32,
                         'icon'  => 'cil-bar-chart',
                         'label' => 'Shaxsiy KPI ko‘rsatkichlar',
                         'active_route' => 'employee/users'
@@ -65,7 +66,7 @@
             @foreach ($navItems as $item)
                 <li class="nav-item">
                     <a class="nav-link {{ Request::is( $item['active_route']. '/*') ? 'active' : ''}}"
-                       href="{{ route($item['route']) }}">
+                       href="{{ route($item['route'],$item['param']??null) }}">
                         <svg class="nav-icon">
                             <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#{{ $item['icon'] }}"></use>
                         </svg>

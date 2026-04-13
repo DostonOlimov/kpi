@@ -143,7 +143,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/calculate', [BugalterController::class, 'calculate'])->name('bugalter.calculate');
     });
 
+    Route::group(['prefix' => 'kpis'], function () {
+        Route::get('/user-kpis', [KpiController::class, 'userKpis'])->name('kpis.user-kpis');
+        Route::get('/user-kpis-dashboard', [KpiController::class, 'usersKpiDashboard'])->name('kpis.user-kpis-dashboard');
+        Route::get('/user-kpis-detail/{userId}', [KpiController::class, 'userKpisDetail'])->name('kpis.user-kpis-detail');
+        Route::post('/user-kpis-refresh/{userId}', [KpiController::class, 'refreshUserKpis'])->name('kpis.user-kpis-refresh');
+    });
     Route::resource('kpis', KpiController::class);
+    
     Route::resource('working-kpis', WorkingKpiController::class);
         Route::get(
         '/working-kpi-select/select-section',

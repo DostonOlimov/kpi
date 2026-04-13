@@ -3,7 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kpi;
+use App\Models\UserKpi;
+use App\Models\User;
+use App\Models\Month;
+use App\Models\WorkZone;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class KpiController extends Controller
 {
@@ -68,5 +74,169 @@ class KpiController extends Controller
 //
 //        $kpi->delete();
 //        return redirect()->route('kpis.index')->with('success', 'KPI muvaffaqiyatli o\'chirildi.');
+    }
+
+    /**
+     * Display user's KPIs filtered by month and year.
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function userKpis(Request $request)
+    {
+        $month = session('month') ?? (int)date('m');
+        $year = session('year') ?? (int)date('Y');
+        
+        $userKpis = UserKpi::with(['kpi', 'score'])
+            ->where('user_id', Auth::id())
+            ->where('month', $month)
+            ->where('year', $year)
+            ->get();
+        
+        $months = Month::getMonth();
+        $years = range(date('Y') - 2, date('Y') + 1);
+        
+        return view('user-kpis.my-kpis', compact('userKpis', 'month', 'year', 'months', 'years'));
+    }
+
+    /**
+     * Display all users with their total KPI scores.
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function usersKpiDashboard(Request $request)
+    {
+        $month = $this->month;
+        $year = $this->year;
+        $workZoneId = $request->input('work_zone_id', 32); // Default to parent_id = 32
+        $childWorkZoneId = $request->input('child_work_zone_id');
+        
+        // Get parent work zones (where parent_id is null)
+        $parentWorkZones = WorkZone::whereNull('parent_id')
+            ->orderBy('sort_order')
+            ->get();
+        
+        // Get child work zones based on selected parent (default 32)
+        $childWorkZones = WorkZone::where('parent_id', $workZoneId)
+            ->orderBy('sort_order')
+            ->get();
+        
+        // Build query
+        $query = User::with(['work_zone', 'role'])
+            ->whereHas('user_kpis', function($query) use ($month, $year) {
+                $query->where('month', $month)
+                      ->where('year', $year);
+            })
+            ->whereHas('user_kpis.kpi', function($query) {
+                $query->where('type', '!=', Kpi::SELF_BY_PERSON);
+            });
+        
+        // Apply work zone filters
+        if ($childWorkZoneId) {
+            $query->where('work_zone_id', $childWorkZoneId);
+        } elseif ($workZoneId) {
+            // Get all child work zones of the selected parent
+            $childIds = WorkZone::where('parent_id', $workZoneId)->pluck('id');
+            $query->whereIn('work_zone_id', $childIds);
+        }
+        
+        $users = $query
+            ->withCount(['user_kpis as total_kpis' => function($query) use ($month, $year) {
+                $query->where('month', $month)
+                      ->where('year', $year)
+                      ->whereHas('kpi', function($q) {
+                          $q->where('type', '!=', Kpi::SELF_BY_PERSON);
+                      });
+            }])
+            ->withSum(['user_kpis as total_target_score' => function($query) use ($month, $year) {
+                $query->where('month', $month)
+                      ->where('year', $year)
+                      ->whereHas('kpi', function($q) {
+                          $q->where('type', '!=', Kpi::SELF_BY_PERSON);
+                      });
+            }], 'target_score')
+            ->withSum(['user_kpis as total_current_score' => function($query) use ($month, $year) {
+                $query->where('month', $month)
+                      ->where('year', $year)
+                      ->whereHas('kpi', function($q) {
+                          $q->where('type', '!=', Kpi::SELF_BY_PERSON);
+                      });
+            }], 'current_score')
+            ->get();
+        
+        return view('user-kpis.dashboard', compact('users', 'parentWorkZones', 'childWorkZones', 'workZoneId', 'childWorkZoneId'));
+    }
+
+    /**
+     * Display specific user's KPIs by month and year.
+     *
+     * @param int $userId
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function userKpisDetail($userId, Request $request)
+    {
+        $user = User::findOrFail($userId);
+        
+        // Get parent KPIs (categories)
+        $parentKpis = Kpi::whereNull('parent_id')
+            ->where('type', '!=', Kpi::SELF_BY_PERSON)
+            ->orderBy('sort')
+            ->get();
+        
+        // Get user KPIs with their parent KPIs
+        $userKpis = UserKpi::with(['kpi.parent', 'score'])
+            ->whereHas('kpi', function($query) {
+                $query->where('type', '!=', Kpi::SELF_BY_PERSON);
+            })
+            ->where('user_id', $userId)
+            ->where('month', $this->month)
+            ->where('year', $this->year)
+            ->get();
+        
+        // Group user KPIs by parent KPI
+        $groupedKpis = $userKpis->groupBy(function($userKpi) {
+            return $userKpi->kpi->parent_id ?? $userKpi->kpi->id;
+        });
+        
+        return view('user-kpis.user-detail', compact('user', 'parentKpis', 'groupedKpis', 'userKpis'));
+    }
+
+    /**
+     * Refresh/initialize KPIs for a user.
+     *
+     * @param int $userId
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function refreshUserKpis($userId, Request $request)
+    {
+        $user = User::findOrFail($userId);
+        $month = $this->month;
+        $year = $this->year;
+        
+        // Get KPIs that need to be created
+        $kpis = Kpi::whereNotNull('parent_id')
+            ->whereIn('type', [
+                Kpi::ACTIVITY,
+                Kpi::BEHAVIOUR,
+                Kpi::IJRO,
+                Kpi::PERMANENT
+            ])->get();
+        
+        // Create UserKpi records if they don't exist
+        foreach ($kpis as $kpi) {
+            UserKpi::firstOrCreate([
+                'user_id' => $user->id,
+                'kpi_id' => $kpi->id,
+                'month' => $month,
+                'year' => $year,
+            ], [
+                'target_score' => $kpi->max_score,
+            ]);
+        }
+        
+        return redirect()->back()->with('message', 'KPI lar muvaffaqiyatli yangilandi!');
     }
 }
