@@ -13,79 +13,78 @@
 
         <div class="card">
             <div class="card-header">
-                <div class="panel panel-primary">
-                    <div class="tab_wrapper page-tab">
-                        <ul class="tab_list">
-                            <li class="active">
-                                <a href="#">
-                                    <span class="visible-xs"></span>
-                                    <i class="fa fa-list fa-lg">&nbsp;</i>
-                                    Foydalanuvchilar Ro'yxati
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
 
-                <!-- Work Zone Filter -->
-                <div class="filters-wrapper bg-light p-4 rounded">
-                    <form action="{{ route('kpis.user-kpis-dashboard') }}" method="GET" id="workZoneFilterForm">
-                        <!-- Parent Work Zones - Modern Card Design -->
-                        <div class="mb-4">
-                            <label class="form-label mb-3">
-                                <i class="fa fa-map-marker text-primary"></i> 
-                                <strong>Ish Hududlari (Asosiy):</strong>
-                            </label>
-                            <div class="work-zones-scrollable">
-                                <div class="d-flex flex-nowrap" id="workZonesContainer">
-                                    @foreach($parentWorkZones as $index => $parentZone)
-                                        <div class="work-zone-card-wrapper flex-shrink-0 me-2" style="width: 220px;">
-                                            <div class="card work-zone-card 
-                                                {{ $workZoneId == $parentZone->id ? 'border-primary bg-primary bg-opacity-10' : 'border-secondary' }}" 
-                                                onclick="selectWorkZone({{ $parentZone->id }})" 
-                                                style="cursor: pointer; transition: all 0.3s;">
-                                                <div class="card-body p-3">
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="flex-shrink-0">
-                                                            <div class="work-zone-icon">
-                                                                <i class="fa fa-building-o fa-2x {{ $workZoneId == $parentZone->id ? 'text-primary' : 'text-muted' }}"></i>
-                                                            </div>
-                                                        </div>
-                                                        <div class="flex-grow-1 ms-3">
-                                                            <h6 class="mb-1 {{ $workZoneId == $parentZone->id ? 'text-primary' : '' }}">
-                                                                <strong>{{ Str::limit($parentZone->name, 25) }}</strong>
-                                                            </h6>
-                                                            <small class="text-muted">{{ $parentZone->users()->where('role_id', 3)->count() }} xodim</small>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                            <input type="hidden" name="work_zone_id" id="workZoneId" value="{{ $workZoneId }}">
+                <!-- Filters: period + work zones (GET links avoid broken JSON fetch; child form preserves parent) -->
+                <div class="user-kpi-dashboard-filters border-bottom bg-white px-3 py-3">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <span class="text-muted small text-uppercase mb-0">Hisobot davri</span>
+                            <span class="badge badge-info font-weight-normal">{{ $monthLabel }} {{ $year }}</span>
+                            <span class="text-muted small">·</span>
+                            <span class="text-muted small">{{ $users->count() }} ta xodim</span>
                         </div>
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <label for="userKpiParentZone" class="sr-only">Asosiy hudud (ro'yxat)</label>
+                            <select id="userKpiParentZone"
+                                    class="form-control form-control-sm d-md-none w-100"
+                                    style="max-width: 100%;"
+                                    aria-label="Asosiy hududni ro'yxatdan tanlash"
+                                    onchange="window.location.href = {{ json_encode(route('kpis.user-kpis-dashboard')) }} + '?work_zone_id=' + encodeURIComponent(this.value);">
+                                @foreach($parentWorkZones as $parentZone)
+                                    <option value="{{ $parentZone->id }}" {{ (int) $workZoneId === (int) $parentZone->id ? 'selected' : '' }}>
+                                        {{ $parentZone->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @if((int) $workZoneId !== (int) $defaultParentWorkZoneId || filled($childWorkZoneId))
+                                <a href="{{ route('kpis.user-kpis-dashboard', ['work_zone_id' => $defaultParentWorkZoneId]) }}"
+                                   class="btn btn-sm btn-outline-secondary">
+                                    <i class="fa fa-times"></i> Filtrlarni tozalash
+                                </a>
+                            @endif
+                        </div>
+                    </div>
 
-                        <!-- Child Work Zones Dropdown -->
-                        @if($childWorkZones->count() > 0)
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <label class="form-label">
-                                        <i class="fa fa-sitemap text-info"></i> 
-                                        <strong>Qo'shimcha ish hududi:</strong>
-                                    </label>
-                                    <select name="child_work_zone_id" class="form-control form-control-lg" id="childWorkZone">
-                                        <option value="">Barchasi</option>
-                                        @foreach($childWorkZones as $childZone)
-                                            <option value="{{ $childZone->id }}" {{ $childWorkZoneId == $childZone->id ? 'selected' : '' }}>
-                                                {{ $childZone->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        @endif
+                    <div class="mb-2 d-none d-md-block">
+                        <span class="d-block small text-muted mb-1">
+                            <i class="fa fa-map-marker text-primary"></i> Asosiy hudud
+                        </span>
+                        <div class="user-kpi-zone-pills">
+                            @foreach($parentWorkZones as $parentZone)
+                                @php $isActive = (int) $workZoneId === (int) $parentZone->id; @endphp
+                                <a href="{{ route('kpis.user-kpis-dashboard', ['work_zone_id' => $parentZone->id]) }}"
+                                   class="btn btn-sm {{ $isActive ? 'btn-primary' : 'btn-outline-primary' }} mb-1"
+                                   title="{{ $parentZone->name }}"
+                                   @if($isActive) aria-current="true" @endif>
+                                    <span class="text-truncate d-inline-block" style="max-width: 14rem;">{{ $parentZone->name }}</span>
+                                    <span class="badge badge-light text-dark ml-1">{{ $parentZone->employees_count ?? 0 }}</span>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <form action="{{ route('kpis.user-kpis-dashboard') }}" method="GET" id="userKpiChildFilterForm" class="mb-0">
+                        <input type="hidden" name="work_zone_id" value="{{ $workZoneId }}">
+                        <div class="form-group mb-0">
+                            <label for="childWorkZone" class="small text-muted mb-1 d-block">
+                                <i class="fa fa-sitemap text-info"></i> Bo'lim (ixtiyoriy)
+                            </label>
+                            <select name="child_work_zone_id"
+                                    id="childWorkZone"
+                                    class="form-control form-control-sm"
+                                    style="max-width: 28rem;"
+                                    @if($childWorkZones->isEmpty()) disabled @endif
+                                    onchange="this.form.submit()">
+                                <option value="">
+                                    {{ $childWorkZones->isEmpty() ? 'Bu hududda bo\'lim yo\'q' : 'Barcha bo\'limlar' }}
+                                </option>
+                                @foreach($childWorkZones as $childZone)
+                                    <option value="{{ $childZone->id }}" {{ (int) $childWorkZoneId === (int) $childZone->id ? 'selected' : '' }}>
+                                        {{ $childZone->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -200,121 +199,16 @@
     </div>
 @endsection
 
-@push('styles')
+@section('styles')
 <style>
-    .work-zones-scrollable {
-        overflow-x: auto;
-        overflow-y: hidden;
-        padding-bottom: 10px;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: thin;
-        scroll-behavior: smooth;
+    .user-kpi-dashboard-filters .user-kpi-zone-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        align-items: center;
     }
-    
-    .work-zones-scrollable::-webkit-scrollbar {
-        height: 8px;
-    }
-    
-    .work-zones-scrollable::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 10px;
-    }
-    
-    .work-zones-scrollable::-webkit-scrollbar-thumb {
-        background: #888;
-        border-radius: 10px;
-    }
-    
-    .work-zones-scrollable::-webkit-scrollbar-thumb:hover {
-        background: #555;
-        cursor: pointer;
-    }
-    
-    .work-zone-card {
-        user-select: none;
+    .user-kpi-dashboard-filters .user-kpi-zone-pills .btn {
+        text-align: left;
     }
 </style>
-@endpush
-
-@section('scripts')
-<script>
-    function selectWorkZone(zoneId) {
-        // Update hidden input
-        document.getElementById('workZoneId').value = zoneId;
-        
-        // Remove active state from all cards
-        document.querySelectorAll('.work-zone-card').forEach(card => {
-            card.classList.remove('border-primary', 'bg-primary', 'bg-opacity-10');
-            card.classList.add('border-secondary');
-            const icon = card.querySelector('i');
-            if (icon) {
-                icon.classList.remove('text-primary');
-                icon.classList.add('text-muted');
-            }
-            const h6 = card.querySelector('h6');
-            if (h6) {
-                h6.classList.remove('text-primary');
-            }
-        });
-        
-        // Add active state to selected card
-        const selectedCard = event.currentTarget;
-        selectedCard.classList.remove('border-secondary');
-        selectedCard.classList.add('border-primary', 'bg-primary', 'bg-opacity-10');
-        const selectedIcon = selectedCard.querySelector('i');
-        if (selectedIcon) {
-            selectedIcon.classList.remove('text-muted');
-            selectedIcon.classList.add('text-primary');
-        }
-        const selectedH6 = selectedCard.querySelector('h6');
-        if (selectedH6) {
-            selectedH6.classList.add('text-primary');
-        }
-        
-        // Fetch and update child work zones
-        fetch(`/works-list/${zoneId}`)
-            .then(response => response.json())
-            .then(data => {
-                const childWorkZone = document.getElementById('childWorkZone');
-                if (childWorkZone) {
-                    childWorkZone.innerHTML = '<option value="">Barchasi</option>';
-                    data.forEach(zone => {
-                        const option = document.createElement('option');
-                        option.value = zone.id;
-                        option.textContent = zone.name;
-                        childWorkZone.appendChild(option);
-                    });
-                    
-                    // Auto-submit form after updating child zones
-                    setTimeout(() => {
-                        document.getElementById('workZoneFilterForm').submit();
-                    }, 300);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                // Submit form anyway
-                document.getElementById('workZoneFilterForm').submit();
-            });
-    }
-    
-    // Add hover effect to work zone cards
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.work-zone-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                if (!this.classList.contains('border-primary')) {
-                    this.style.transform = 'translateY(-2px)';
-                    this.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
-                }
-            });
-            
-            card.addEventListener('mouseleave', function() {
-                if (!this.classList.contains('border-primary')) {
-                    this.style.transform = 'translateY(0)';
-                    this.style.boxShadow = '';
-                }
-            });
-        });
-    });
-</script>
 @endsection

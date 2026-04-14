@@ -109,12 +109,17 @@ class KpiController extends Controller
     {
         $month = $this->month;
         $year = $this->year;
-        $workZoneId = $request->input('work_zone_id', 32); // Default to parent_id = 32
+        $defaultParentWorkZoneId = 32;
+        $workZoneId = (int) $request->input('work_zone_id', $defaultParentWorkZoneId);
         $childWorkZoneId = $request->input('child_work_zone_id');
-        
+        $monthLabel = Month::getMonth()[(int) $month] ?? (string) $month;
+
         // Get parent work zones (where parent_id is null)
         $parentWorkZones = WorkZone::whereNull('parent_id')
             ->orderBy('sort_order')
+            ->withCount(['users as employees_count' => function ($query) {
+                $query->where('role_id', 3);
+            }])
             ->get();
         
         // Get child work zones based on selected parent (default 32)
@@ -165,7 +170,17 @@ class KpiController extends Controller
             }], 'current_score')
             ->get();
         
-        return view('user-kpis.dashboard', compact('users', 'parentWorkZones', 'childWorkZones', 'workZoneId', 'childWorkZoneId'));
+        return view('user-kpis.dashboard', compact(
+            'users',
+            'parentWorkZones',
+            'childWorkZones',
+            'workZoneId',
+            'childWorkZoneId',
+            'month',
+            'year',
+            'monthLabel',
+            'defaultParentWorkZoneId'
+        ));
     }
 
     /**
