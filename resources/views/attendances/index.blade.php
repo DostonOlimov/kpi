@@ -10,7 +10,12 @@
                 </li>
             </ol>
         </div>
-
+  <!-- Work Zone Filter Component -->
+                <x-work-zone-filter 
+                    :actionUrl="route('attendances.index')" 
+                    :showLabel="false" 
+                    :autoSubmit="true" 
+                />
         <div class="card">
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -31,6 +36,7 @@
                     </a>
                 </div>
 
+                
                 <!-- Filters Section -->
                 <div class="filters-wrapper bg-light p-3 rounded">
                     <div class="row align-items-center">
@@ -77,6 +83,8 @@
                         </div>
                     </div>
                 </div>
+
+              
             </div>
 
             <div class="card-body">

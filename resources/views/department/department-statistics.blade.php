@@ -23,6 +23,13 @@
         </div>
     </div>
 
+    <!-- Work Zone Filter Component -->
+    <x-work-zone-filter 
+        :actionUrl="route('kpi.departments', 32)" 
+        :showLabel="true" 
+        :autoSubmit="true" 
+    />
+
     <!-- Overall Statistics Cards -->
     <div class="row mb-4">
         <div class="col-xl-3 col-md-6 mb-4">

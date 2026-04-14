@@ -54,7 +54,7 @@ class EmployeeDaysController extends Controller
 
         $users = $query->get();
 
-        $groupedUsers = $users->groupBy(fn ($user) => $user->work_zone?->name ?? 'Boshqalar');
+        $groupedUsers = $users->groupBy(fn($user) => $user->work_zone?->name ?? 'Boshqalar');
 
         $days = Month::where('year', '=', $year)
             ->where('month_id', '=', $month_id)
@@ -83,7 +83,7 @@ class EmployeeDaysController extends Controller
      * @param User $user
      * @return JsonResponse
      */
-    public function createday(Request $request,User $user): JsonResponse
+    public function createday(Request $request, User $user): JsonResponse
     {
 
         $validated = $request->validate([
@@ -93,14 +93,16 @@ class EmployeeDaysController extends Controller
         $month = session('month') ?? (int) date('m');
         $year = session('year') ?? (int) date('Y');
 
-        $record = EmployeeDays::updateOrCreate([
-            'user_id'=>$user->id,
-            'month_id' => $month,
-            'year' => $year,
-        ],
+        $record = EmployeeDays::updateOrCreate(
             [
-            'days' => $validated['days'],
-        ]);
+                'user_id' => $user->id,
+                'month_id' => $month,
+                'year' => $year,
+            ],
+            [
+                'days' => $validated['days'],
+            ]
+        );
 
         return response()->json(['success' => true, 'data' => $record]);
     }
@@ -110,22 +112,37 @@ class EmployeeDaysController extends Controller
      *
      * @return Application|Factory|View
      */
-    public function activity()
+    public function activity(Request $request)
     {
-        $month_id = session('month') ?? (int) date('m');
-        $year = session('year') ?? (int) date('Y');
+        $month_id = $this->month;
+        $year = $this->year;
 
-        $users = User::with(['working_days', 'work_zone'])->whereNotIn('role_id',[User::ROLE_MANAGER,User::ROLE_ADMIN])->get();
+        $work_zone_id = $request->query('work_zone_id');
+        $child_work_zone_id = $request->query('child_work_zone_id');
+
+        $users = User::with(['working_days', 'work_zone'])
+            ->when($work_zone_id, function ($query) use ($work_zone_id) {
+                $query->whereHas('work_zone.parent', function ($q) use ($work_zone_id) {
+                    $q->where('id', $work_zone_id);
+                });
+            })
+            ->when($child_work_zone_id, function ($query) use ($child_work_zone_id) {
+                $query->whereHas('work_zone', function ($q) use ($child_work_zone_id) {
+                    $q->where('id', $child_work_zone_id);
+                });
+            })
+            ->whereNotIn('role_id', [User::ROLE_MANAGER, User::ROLE_ADMIN])
+            ->get();
 
         $groupedUsers = $users->groupBy(fn($user) => $user->work_zone?->name ?? 'Boshqalar');
 
-        $days = Month::where('year','=',$year)->first()?->days;
+        $days = Month::where('year', '=', $year)->first()?->days;
 
         $month_name = Month::getMonth($month_id);
 
         $kpi = Kpi::find(11);
 
-        return view('days.activity', compact('users','days','groupedUsers','month_name','month_id','year','kpi'));
+        return view('days.activity', compact('users', 'days', 'groupedUsers', 'month_name', 'month_id', 'year', 'kpi'));
     }
 
     /**
@@ -135,7 +152,7 @@ class EmployeeDaysController extends Controller
      * @param User $user
      * @return JsonResponse
      */
-    public function createActivity(Request $request,User $user): JsonResponse
+    public function createActivity(Request $request, User $user): JsonResponse
     {
         $validated = $request->validate([
             'month' => 'required',
@@ -144,7 +161,7 @@ class EmployeeDaysController extends Controller
             'feedback' => 'nullable|string',
         ]);
 
-        $userKpi = UserKpi::where('user_id',$user->id)->where('kpi_id',11)->firstOrFail();
+        $userKpi = UserKpi::where('user_id', $user->id)->where('kpi_id', 11)->firstOrFail();
 
         $score = Score::updateOrCreate(
             [
@@ -177,19 +194,18 @@ class EmployeeDaysController extends Controller
         $month_id = session('month') ?? (int) date('m');
         $year = session('year') ?? (int) date('Y');
 
-        $users = User::with(['working_days', 'work_zone'])->whereNotIn('role_id',[User::ROLE_MANAGER,User::ROLE_ADMIN])->get();
+        $users = User::with(['working_days', 'work_zone'])->whereNotIn('role_id', [User::ROLE_MANAGER, User::ROLE_ADMIN])->get();
 
         $groupedUsers = $users->groupBy(fn($user) => $user->work_zone?->name ?? 'Boshqalar');
 
-        $days = Month::where('year','=',$year)->first()?->days;
+        $days = Month::where('year', '=', $year)->first()?->days;
 
         $month_name = Month::getMonth($month_id);
 
-        $kpis = Kpi::where('type',Kpi::BEHAVIOUR)->whereNotNull('parent_id')->get();
+        $kpis = Kpi::where('type', Kpi::BEHAVIOUR)->whereNotNull('parent_id')->get();
 
         $title = 'Mehnat intizomiga rioya qilinganligi';
 
-        return view('commission.users', compact('users','title','days','groupedUsers','month_name','month_id','year','kpis'));
+        return view('commission.users', compact('users', 'title', 'days', 'groupedUsers', 'month_name', 'month_id', 'year', 'kpis'));
     }
-
 }

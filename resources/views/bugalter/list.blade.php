@@ -147,10 +147,10 @@
                                     <th>{{ __('Ish kunlari') }}</th>
                                     <th>{{ __('Ball') }}</th>
                                     <th>{{ __('Ustama %') }}</th>
-                                    <th>{{ __('Maosh') }}</th>
+                                    {{-- <th>{{ __('Maosh') }}</th> --}}
                                     <th>{{ __('Ustama') }}</th>
                                     <th>{{ __('Soliq (25%)') }}</th>
-                                    <th>{{ __('Jami') }}</th>
+                                    {{-- <th>{{ __('Jami') }}</th> --}}
                                     <th>{{ __('Qoldiq') }}</th>
                                     <th>%</th>
                                     <th>{{ __('Yangi ustama') }}</th>
@@ -167,10 +167,10 @@
                                         <td>{{ $item->days }}</td>
                                         <td>{{ $item->current_ball }}</td>
                                         <td>{{ $item->rating * $item->current_ball }}</td>
-                                        <td>{{ number_format($item->summa) }}</td>
+                                        {{-- <td>{{ number_format($item->summa) }}</td> --}}
                                         <td>{{ number_format($item->ustama) }}</td>
                                         <td>{{ number_format($item->ustama * 0.25) }}</td>
-                                        <td>{{ number_format($item->total_summa) }}</td>
+                                        {{-- <td>{{ number_format($item->total_summa) }}</td> --}}
                                         <td>{{ number_format($item->active_summa) }}</td>
                                         <td>{{ $item->foiz }}</td>
                                         <td>{{ number_format($item->new_ustama) }}</td>

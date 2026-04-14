@@ -13,6 +13,8 @@ class EmployeeKpiController extends Controller
 {
     public function index(WorkZone $workZone, Request $request)
     {
+        $workZoneId = $request->input('work_zone_id', $workZone->id);
+        $workZone = WorkZone::findOrFail($workZoneId);
         $query = User::withCount(['kpis'])
             ->whereNotIn('role_id',[User::ROLE_ADMIN,User::ROLE_MANAGER])
             ->with('user_kpis', 'work_zone')
@@ -34,9 +36,8 @@ class EmployeeKpiController extends Controller
         }
 
         $users = $query->paginate(12)->withQueryString(); // Keep query in pagination
-        $work_zones = WorkZone::where('parent_id', $workZone->id)->orderBy('name')->get();
 
-        return view('employee_kpis.index', compact('users', 'work_zones','workZone'));
+        return view('employee_kpis.index', compact('users','workZone'));
     }
 
     public function showKpis(User $user,Request $request)

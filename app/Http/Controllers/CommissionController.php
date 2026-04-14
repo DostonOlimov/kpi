@@ -45,8 +45,8 @@ class CommissionController extends Controller
             ->orderBy('name')
             ->get();
 
-        $selectedParentId = $request->query('work_zone_parent');
-        $selectedChildId = $request->query('work_zone_id');
+        $selectedParentId = $request->query('work_zone_id');
+        $selectedChildId = $request->query('child_work_zone_id');
 
         $childWorkZones = collect();
         if ($selectedParentId) {
@@ -298,17 +298,29 @@ class CommissionController extends Controller
      *
      * @return Application|Factory|View
      */
-    public function scoresList($id)
+    public function scoresList($id,Request $request)
     {
+        $work_zone_id = $request->query('work_zone_id');
+        $child_work_zone_id = $request->query('child_work_zone_id');
         // Only allow ID 2 or 4
         if (!in_array((int) $id, [Kpi::BEHAVIOUR, Kpi::IJRO])) {
             abort(404); // or return redirect()->back()->with('error', 'Noto‘g‘ri KPI turi.');
         }
 
-        $month_id = session('month') ?? (int) date('m');
-        $year = session('year') ?? (int) date('Y');
+        $month_id = $this->month;
+        $year = $this->year;
 
         $users = User::with(['working_days', 'work_zone'])
+            ->whereHas('work_zone.parent', function ($query) use ($work_zone_id) {
+                if ($work_zone_id) {
+                    $query->where('id', $work_zone_id);
+                }
+            })
+            ->whereHas('work_zone', function ($query) use ( $child_work_zone_id) {
+                if ($child_work_zone_id) {
+                    $query->where('id', $child_work_zone_id);
+                }
+            })
             ->whereNotIn('role_id', [User::ROLE_MANAGER, User::ROLE_ADMIN])
             ->get();
 

@@ -54,6 +54,13 @@
             </div>
         </div>
 
+        <!-- Work Zone Filter Component -->
+        <x-work-zone-filter 
+            :actionUrl="route('commission.band_scores.list', $id)" 
+            :showLabel="true" 
+            :autoSubmit="true" 
+        />
+
         <!-- KPI Selection -->
         <div class="row mb-4">
             <div class="col-md-12">

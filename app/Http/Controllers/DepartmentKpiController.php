@@ -11,8 +11,10 @@ use App\Models\WorkZone;
 
 class DepartmentKpiController extends Controller
 {
-    public function index(WorkZone $workZone)
+    public function index(WorkZone $workZone, Request $request)
     {
+        $work_zone_id = $request->input('work_zone_id',$workZone->id);
+        $workZone = WorkZone::findOrFail($work_zone_id);
         // Get department statistics
         $departmentStats = $this->getDepartmentStatistics($workZone);
 

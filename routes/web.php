@@ -3,7 +3,6 @@
 use App\Http\Controllers\Admin\RelevantUserController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Boss\EmployeeController;
 use App\Http\Controllers\BugalterController;
 use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\DashboardController;
@@ -23,7 +22,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\WorkController;
 use App\Http\Controllers\MonthController;
-use App\Models\RelevantUser;
 
 /*
 |--------------------------------------------------------------------------
@@ -152,11 +150,6 @@ Route::middleware('auth')->group(function () {
     Route::resource('kpis', KpiController::class);
     
     Route::resource('working-kpis', WorkingKpiController::class);
-        Route::get(
-        '/working-kpi-select/select-section',
-        fn() =>
-        app(WorkController::class)->select('working-kpis.index')
-    )->name('working-kpis.select-section');
 
     Route::get('/working-kpis-select/{workZone}', [WorkingKpiController::class, 'index'])->name('working-kpis.index');
     Route::get('/working-kpis/user/{userId}', [WorkingKpiController::class, 'getUserKPIs'])->name('user-working-kpis.user');
@@ -179,12 +172,7 @@ Route::middleware('auth')->group(function () {
 
     Route::group(['prefix' => 'employee'], function () {
         // Users listing
-         Route::resource('users', WorkingKpiController::class);
-        Route::get(
-        '/user-select/select-section',
-        fn() =>
-        app(WorkController::class)->select('employee.kpis.users')
-    )->name('employee.kpis.select-section');
+        Route::resource('users', WorkingKpiController::class);
 
         Route::get('/users-select/{workZone}', [EmployeeKpiController::class, 'index'])->name('employee.kpis.users');
         // User KPIs management
@@ -211,11 +199,11 @@ Route::middleware(['auth'])->group(function () {
     // Route::get('/boss/employees', [EmployeeController::class, 'index'])->name('boss.employees');
     // Route::get('/boss/employees/{user}', [EmployeeController::class, 'show'])->name('boss.employee.show');
 
-    Route::get(
-        '/departments/select-section',
-        fn() =>
-        app(WorkController::class)->select('kpi.departments')
-    )->name('departments.select-section');
+    // Route::get(
+    //     '/departments/select-section',
+    //     fn() =>
+    //     app(WorkController::class)->select('kpi.departments')
+    // )->name('departments.select-section');
 
     Route::get('/departments/{workZone}', [DepartmentKpiController::class, 'index'])->name('kpi.departments');
     Route::get('/departments-details/{id}', [DepartmentKpiController::class, 'departmentDetail'])->name('kpi.department.detail');

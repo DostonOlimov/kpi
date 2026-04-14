@@ -18,6 +18,14 @@ class WorkZone extends Model
     {
         return $this->hasMany(User::class,);
     }
+    public function childs()
+    {
+        return $this->hasMany(WorkZone::class, 'parent_id');
+    }
+    public function parent()
+    {
+        return $this->belongsTo(WorkZone::class, 'parent_id');
+    }
 
     public function tasks()
     {

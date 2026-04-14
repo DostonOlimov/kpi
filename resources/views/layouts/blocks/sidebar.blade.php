@@ -37,13 +37,14 @@
                         'active_route' => 'month'
                     ],
                     [
-                        'route' => 'kpis.index',
+                        'route' => 'kpis.user-kpis-dashboard',
                         'icon'  => 'cil-chart-pie',
                         'label' => 'Baholash mezoni',
                         'active_route' => 'kpis'
                     ],
                     [
-                        'route' => 'working-kpis.select-section',
+                        'route' => 'working-kpis.index',
+                        'param' => 32,
                         'icon'  => 'cil-description',
                         'label' => 'KPI Ko‘rsatkichlari',
                         'active_route' => 'working-kpis'
@@ -234,7 +235,7 @@
             <li class="nav-title">Hisob-kitob bo'limi</li>
 
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('departments.select-section') }}">
+                <a class="nav-link" href="{{ route('kpi.departments',32) }}">
                     <svg class="nav-icon">
                         <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-chart-line"></use>
                     </svg>

@@ -54,44 +54,11 @@
         </div>
 
         @if(isset($parentWorkZones) && $parentWorkZones->isNotEmpty())
-            <div class="commission-work-zone-panel mb-4">
-                <form method="get" action="{{ route('days.list') }}" id="daysWorkZoneForm" class="commission-work-zone-form d-flex flex-wrap align-items-end gap-2 gap-md-3">
-                    <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-1 gap-sm-2">
-                        <label for="parentWorkZone" class="form-label small text-muted mb-0 text-nowrap">Hudud</label>
-                        <select name="work_zone_parent"
-                                id="parentWorkZone"
-                                class="form-select form-select-sm commission-parent-select"
-                                onchange="var c=document.getElementById('childWorkZone');if(c){c.value='';} this.form.submit();">
-                            <option value="">Barcha hududlar</option>
-                            @foreach($parentWorkZones as $zone)
-                                <option value="{{ $zone->id }}" {{ (string)($selectedParentId ?? '') === (string)$zone->id ? 'selected' : '' }}>
-                                    {{ $zone->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-1 gap-sm-2">
-                        <label for="childWorkZone" class="form-label small text-muted mb-0 text-nowrap">Bo'lim</label>
-                        <select name="work_zone_id"
-                                id="childWorkZone"
-                                class="form-select form-select-sm commission-dept-select"
-                                onchange="this.form.submit()"
-                                @if(!$selectedParentId || !isset($childWorkZones) || $childWorkZones->isEmpty()) disabled @endif>
-                            <option value="">{{ $selectedParentId ? 'Barcha bo\'limlar' : 'Avval hududni tanlang' }}</option>
-                            @if($selectedParentId && isset($childWorkZones))
-                                @foreach($childWorkZones as $childZone)
-                                    <option value="{{ $childZone->id }}" {{ (string)($selectedChildId ?? '') === (string)$childZone->id ? 'selected' : '' }}>
-                                        {{ $childZone->name }}
-                                    </option>
-                                @endforeach
-                            @endif
-                        </select>
-                    </div>
-                    @if($selectedParentId)
-                        <a href="{{ route('days.list') }}" class="btn btn-sm btn-outline-danger align-self-center">Tozalash</a>
-                    @endif
-                </form>
-            </div>
+            <x-work-zone-filter 
+                :actionUrl="route('days.list')" 
+                :showLabel="false" 
+                :autoSubmit="true" 
+            />
         @endif
 
         @foreach($groupedUsers as $departmentName => $users)

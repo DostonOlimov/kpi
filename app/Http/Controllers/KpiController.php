@@ -84,8 +84,8 @@ class KpiController extends Controller
      */
     public function userKpis(Request $request)
     {
-        $month = session('month') ?? (int)date('m');
-        $year = session('year') ?? (int)date('Y');
+        $month = $this->month;
+        $year = $this->year;
         
         $userKpis = UserKpi::with(['kpi', 'score'])
             ->where('user_id', Auth::id())

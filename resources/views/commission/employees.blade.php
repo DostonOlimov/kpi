@@ -101,59 +101,13 @@
                 <div class="card border-0 shadow-sm">
                     <!-- Enhanced Card Header -->
                     <div class="card-header commission-card-header bg-white border-bottom">
-                        <div class="row align-items-lg-center g-3 commission-header-top">
-                            <div class="col-12 col-lg">
-                                <div class="d-flex align-items-center">
-                                    <div class="tab-indicator active me-3 flex-shrink-0"></div>
-                                    <div class="min-w-0">
-                                        <h5 class="mb-0 fw-semibold">
-                                            <i class="fa fa-list me-2 text-primary"></i>
-                                            {{ trans('app.Ro\'yxat')}}
-                                        </h5>
-                                        <small class="text-muted">Xodimlar va ularning topshiriqlarini boshqaring</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
                         @if(isset($parentWorkZones) && $parentWorkZones->isNotEmpty())
-                            <div class="commission-work-zone-panel">
-                                <form method="get" action="{{ route('commission.employee.list') }}" id="commissionWorkZoneForm" class="commission-work-zone-form d-flex flex-wrap align-items-end gap-2 gap-md-3">
-                                    <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-1 gap-sm-2">
-                                        <label for="parentWorkZone" class="form-label small text-muted mb-0 text-nowrap">Hudud</label>
-                                        <select name="work_zone_parent"
-                                                id="parentWorkZone"
-                                                class="form-select form-select-sm commission-parent-select"
-                                                onchange="var c=document.getElementById('childWorkZone');if(c){c.value='';} this.form.submit();">
-                                            <option value="">Barcha hududlar</option>
-                                            @foreach($parentWorkZones as $zone)
-                                                <option value="{{ $zone->id }}" {{ (string)($selectedParentId ?? '') === (string)$zone->id ? 'selected' : '' }}>
-                                                    {{ $zone->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-1 gap-sm-2">
-                                        <label for="childWorkZone" class="form-label small text-muted mb-0 text-nowrap">Bo'lim</label>
-                                        <select name="work_zone_id"
-                                                id="childWorkZone"
-                                                class="form-select form-select-sm commission-dept-select"
-                                                onchange="this.form.submit()"
-                                                @if(!$selectedParentId || !isset($childWorkZones) || $childWorkZones->isEmpty()) disabled @endif>
-                                            <option value="">{{ $selectedParentId ? 'Barcha bo\'limlar' : 'Avval hududni tanlang' }}</option>
-                                            @if($selectedParentId && isset($childWorkZones))
-                                                @foreach($childWorkZones as $childZone)
-                                                    <option value="{{ $childZone->id }}" {{ (string)($selectedChildId ?? '') === (string)$childZone->id ? 'selected' : '' }}>
-                                                        {{ $childZone->name }}
-                                                    </option>
-                                                @endforeach
-                                            @endif
-                                        </select>
-                                    </div>
-                                    @if($selectedParentId)
-                                        <a href="{{ route('commission.employee.list') }}" class="btn btn-sm btn-outline-danger align-self-center">Tozalash</a>
-                                    @endif
-                                </form>
-                            </div>
+                            <x-work-zone-filter 
+                                :actionUrl="route('commission.employee.list')" 
+                                :showLabel="false" 
+                                :autoSubmit="true" 
+                            />
                         @endif
                     </div>
 

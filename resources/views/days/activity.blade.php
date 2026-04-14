@@ -47,6 +47,13 @@
             </div>
         </div>
 
+        <!-- Work Zone Filter Component -->
+        <x-work-zone-filter 
+            :actionUrl="route('days.activity')" 
+            :showLabel="true" 
+            :autoSubmit="true" 
+        />
+
         @foreach($groupedUsers as $departmentName => $users)
             <div class="department-header">
                 <h4><i class="fa fa-users me-2"></i>{{ $departmentName }}</h4>

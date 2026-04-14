@@ -12,21 +12,18 @@
 
         <!-- Filter Form -->
         <form id="filterForm" method="GET" action="{{ route('employee.kpis.users', $workZone->id) }}">
+            <!-- Work Zone Filter Component -->
+            <x-work-zone-filter 
+                :actionUrl="route('employee.kpis.users', $workZone->id)" 
+                :showLabel="true" 
+                :autoSubmit="false" 
+            />
+            
             <div class="row mb-4">
                 <div class="col-md-6">
                     <div class="search-box">
                         <input type="text" name="search" id="searchUsers" class="form-control" placeholder="Search users..." value="{{ request('search') }}">
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <select name="department_id" id="departmentFilter" class="form-select">
-                        <option value="">Barcha bo'limlar</option>
-                        @foreach($work_zones as $work_zone)
-                            <option value="{{ $work_zone->id }}" {{ request('department_id') == $work_zone->id ? 'selected' : '' }}>
-                                {{ $work_zone->name }}
-                            </option>
-                        @endforeach
-                    </select>
                 </div>
             </div>
         </form>
@@ -86,9 +83,15 @@
         }
 
         $(document).ready(function() {
-            $('#searchUsers, #departmentFilter').on('change input', function () {
+            // Auto-submit form when work zone filter changes
+            $('select[name="work_zone_id"], select[name="child_work_zone_id"]').on('change', function() {
+                $('#filterForm').submit();
+            });
+
+            // Search and filter functionality
+            $('#searchUsers').on('input', function() {
                 clearTimeout(window.filterTimeout);
-                window.filterTimeout = setTimeout(function () {
+                window.filterTimeout = setTimeout(function() {
                     $('#filterForm').submit();
                 }, 500); // Debounce
             });

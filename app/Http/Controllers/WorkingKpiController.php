@@ -12,8 +12,8 @@ class WorkingKpiController extends Controller
 {
     public function index(WorkZone $workZone, Request $request)
     {
-        // Get all work zones for the filter dropdown
-        $workZones = WorkZone::where('parent_id',$workZone->id)->orderBy('name')->get();
+        $workZoneId = $request->input('work_zone_id', $workZone->id);
+        $workZone = WorkZone::findOrFail($workZoneId);
 
         $query = User::with(['working_kpis', 'work_zone'])
             ->whereNotIn('role_id', [User::ROLE_ADMIN, User::ROLE_MANAGER])
@@ -37,7 +37,7 @@ class WorkingKpiController extends Controller
 
         $users = $query->paginate(10);
 
-        return view('working_kpis.index', compact('users', 'workZones', 'workZone'));
+        return view('working_kpis.index', compact('users', 'workZone'));
     }
 
     public function create(Request $request)

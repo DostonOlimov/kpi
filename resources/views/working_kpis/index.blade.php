@@ -52,35 +52,14 @@
             </ol>
         </div>
         <div class="container-fluid py-4">
-            <!-- Work Zone Filter -->
+            <!-- Work Zone Filter Component -->
             <div class="row mb-4">
                 <div class="col-12">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <form method="GET" action="{{ route('working-kpis.index', $workZone) }}" class="row align-items-end">
-                                <div class="col-md-4">
-                                    <label for="work_zone_filter" class="form-label fw-bold">
-                                        <i class="fa fa-map-marker me-1"></i>Ish maydoni bo'yicha filter
-                                    </label>
-                                    <select name="work_zone_filter" id="work_zone_filter" class="form-select" onchange="this.form.submit()">
-                                        <option value="">Barchasi</option>
-                                        @foreach($workZones as $zone)
-                                            <option value="{{ $zone->id }}" {{ request('work_zone_filter') == $zone->id ? 'selected' : '' }}>
-                                                {{ $zone->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-md-8">
-                                    @if(request('work_zone_filter'))
-                                        <a href="{{ route('working-kpis.index', $workZone) }}" class="btn btn-outline-secondary">
-                                            <i class="fa fa-times me-1"></i>Filterni tozalash
-                                        </a>
-                                    @endif
-                                </div>
-                            </form>
-                        </div>
-                    </div>
+                    <x-work-zone-filter 
+                        :actionUrl="route('working-kpis.index', $workZone)" 
+                        :showLabel="true" 
+                        :autoSubmit="true" 
+                    />
                 </div>
             </div>
 
