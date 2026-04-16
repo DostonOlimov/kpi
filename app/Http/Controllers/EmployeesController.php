@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use app\Models\User;
 use App\Models\Role;
 use App\Models\WorkZone;
@@ -59,7 +60,7 @@ class EmployeesController extends Controller
             'password' => ['required', 'string', 'min:6'],
             'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
             'pinfl' => ['nullable', 'string', 'regex:/^[0-9]{14}$/'],
-            'ch_id' => ['nullable', 'integer'],
+            'ch_id' => ['nullable', 'integer', Rule::unique('users', 'ch_id')],
         ]);
 
         $user = new User($validated);
@@ -133,7 +134,7 @@ class EmployeesController extends Controller
             'lavozimi' => ['nullable', 'string', 'max:255'],
             'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'], // <= add this
             'pinfl' => ['nullable', 'string', 'regex:/^[0-9]{14}$/'],
-            'ch_id' => ['nullable', 'integer'],
+            'ch_id' => ['nullable', 'integer', Rule::unique('users', 'ch_id')->ignore($user->id)],
         ]);
         $user -> update([
             'first_name' => $request->first_name,
