@@ -13,76 +13,88 @@
                 </svg>
                 Bosh sahifa</a></li>
 
-        @if(auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)
+        @php
+            $currentUser = auth()->user();
+            $isAdmin = $currentUser->role_id === \App\Models\User::ROLE_ADMIN;
+            $isDirector = $currentUser->role_id === \App\Models\User::ROLE_DIRECTOR;
+        @endphp
+
+        @if ($isAdmin || $isDirector)
             <li class="nav-title">Foydalanuvchilar</li>
 
             @php
                 $navItems = [
-                    //   [
-                    //     'route' => 'employees.list',
-                    //     'icon'  => 'cil-people',
-                    //     'label' => 'Xodimlar',
-                    //     'active_route' => 'users'
-                    // ],
                     [
                         'route' => 'works.list',
-                        'icon'  => 'cil-briefcase',
-                        'label' => 'Bo\'limlar',
-                        'active_route' => 'works'
+                        'icon' => 'cil-briefcase',
+                        'label' => "Bo'limlar",
+                        'active_route' => 'works',
+                        'roles' => ['admin'], // visible to both
                     ],
                     [
                         'route' => 'month.index',
-                        'icon'  => 'cil-calendar',
+                        'icon' => 'cil-calendar',
                         'label' => 'Oy kunlari',
-                        'active_route' => 'month'
+                        'active_route' => 'month',
+                        'roles' => ['admin'], // admin only
                     ],
                     [
                         'route' => 'kpis.user-kpis-dashboard',
-                        'icon'  => 'cil-chart-pie',
+                        'icon' => 'cil-chart-pie',
                         'label' => 'Baholash mezoni',
-                        'active_route' => 'kpis'
+                        'active_route' => 'kpis',
+                        'roles' => ['admin'],
                     ],
                     [
                         'route' => 'working-kpis.index',
                         'param' => 32,
-                        'icon'  => 'cil-description',
-                        'label' => 'KPI Ko‘rsatkichlari',
-                        'active_route' => 'working-kpis'
+                        'icon' => 'cil-description',
+                        'label' => "KPI Ko'rsatkichlari",
+                        'active_route' => 'working-kpis',
+                        'roles' => ['admin', 'director'],
                     ],
                     [
                         'route' => 'employee.kpis.users',
                         'param' => 32,
-                        'icon'  => 'cil-bar-chart',
-                        'label' => 'Shaxsiy KPI ko‘rsatkichlar',
-                        'active_route' => 'employee/users'
+                        'icon' => 'cil-bar-chart',
+                        'label' => "Shaxsiy KPI ko'rsatkichlar",
+                        'active_route' => 'employee/users',
+                        'roles' => ['admin', 'director'],
                     ],
                     [
                         'route' => 'attendances.index',
-                        'icon'  => 'cil-calendar',
-                        'label' => 'Davomat ro\'yxati',
-                        'active_route' => 'attendances'
-                    ]
+                        'icon' => 'cil-calendar',
+                        'label' => "Davomat ro'yxati",
+                        'active_route' => 'attendances',
+                        'roles' => ['admin'],
+                    ],
                 ];
+
+                // Map role_id to role name for easy comparison
+                $userRole = $isAdmin ? 'admin' : ($isDirector ? 'director' : null);
             @endphp
+
             @foreach ($navItems as $item)
-                <li class="nav-item">
-                    <a class="nav-link {{ Request::is( $item['active_route']. '/*') ? 'active' : ''}}"
-                       href="{{ route($item['route'],$item['param']??null) }}">
-                        <svg class="nav-icon">
-                            <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#{{ $item['icon'] }}"></use>
-                        </svg>
-                        {{ $item['label'] }}
-                    </a>
-                </li>
+                @if ($userRole && in_array($userRole, $item['roles']))
+                    <li class="nav-item">
+                        <a class="nav-link {{ Request::is($item['active_route'] . '/*') ? 'active' : '' }}"
+                            href="{{ route($item['route'], $item['param'] ?? null) }}">
+                            <svg class="nav-icon">
+                                <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#{{ $item['icon'] }}"></use>
+                            </svg>
+                            {{ $item['label'] }}
+                        </a>
+                    </li>
+                @endif
             @endforeach
         @endif
 
-        @if(auth()->user()->role_id != \App\Models\User::ROLE_ADMIN and auth()->user()->role_id != \App\Models\User::ROLE_MANAGER)
-
+        @if (auth()->user()->role_id != \App\Models\User::ROLE_ADMIN and
+                auth()->user()->role_id != \App\Models\User::ROLE_MANAGER)
             <li class="nav-title">Shaxsiy ko'rsatkichlar</li>
 
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('department.user.detail',auth()->user()->id) }}">
+                <a class="nav-link" href="{{ route('department.user.detail', auth()->user()->id) }}">
                     <svg class="nav-icon">
                         <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-check-circle"></use>
                     </svg>
@@ -98,7 +110,7 @@
                     Baholarni to'ldirish
                 </a>
             </li>
-             <li class="nav-item">
+            <li class="nav-item">
                 <a class="nav-link" href="{{ route('edodocuments.index') }}">
                     <svg class="nav-icon">
                         <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>
@@ -135,7 +147,7 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('kpi.department.detail',auth()->user()->work_zone_id) }}">
+                <a class="nav-link" href="{{ route('kpi.department.detail', auth()->user()->work_zone_id) }}">
                     <svg class="nav-icon">
                         <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-chart"></use>
                     </svg>
@@ -144,17 +156,18 @@
             </li>
         @endif
 
-        @if(auth()->user()->role_id === \App\Models\User::ROLE_MANAGER || auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)
+        @if (auth()->user()->role_id === \App\Models\User::ROLE_MANAGER ||
+                auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)
             <li class="nav-title">Xodimlarni baholash</li>
 
-            {{--            <li class="nav-item">--}}
-            {{--                <a class="nav-link" href="{{ route('commission.list') }}">--}}
-            {{--                    <svg class="nav-icon">--}}
-            {{--                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-chart-line"></use>--}}
-            {{--                    </svg>--}}
-            {{--                    Xodimlar natijalari--}}
-            {{--                </a>--}}
-            {{--            </li>--}}
+            {{--            <li class="nav-item"> --}}
+            {{--                <a class="nav-link" href="{{ route('commission.list') }}"> --}}
+            {{--                    <svg class="nav-icon"> --}}
+            {{--                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-chart-line"></use> --}}
+            {{--                    </svg> --}}
+            {{--                    Xodimlar natijalari --}}
+            {{--                </a> --}}
+            {{--            </li> --}}
 
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('commission.employee.list') }}">
@@ -198,44 +211,44 @@
                     Tashabbuskorlik ko'rsatkichlari
                 </a>
             </li>
-
         @endif
 
-        {{--        @if(auth()->user()->role_id === 7 || auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)--}}
-        {{--            <li class="nav-title">Shaxsiy profil</li>--}}
+        {{--        @if (auth()->user()->role_id === 7 || auth()->user()->role_id === \App\Models\User::ROLE_ADMIN) --}}
+        {{--            <li class="nav-title">Shaxsiy profil</li> --}}
 
-        {{--            <li class="nav-item">--}}
-        {{--                <a class="nav-link" href="{{ route('commission.section') }}">--}}
-        {{--                    <svg class="nav-icon">--}}
-        {{--                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-building"></use>--}}
-        {{--                    </svg>--}}
-        {{--                    Bo'limlar ro'yxati--}}
-        {{--                </a>--}}
-        {{--            </li>--}}
+        {{--            <li class="nav-item"> --}}
+        {{--                <a class="nav-link" href="{{ route('commission.section') }}"> --}}
+        {{--                    <svg class="nav-icon"> --}}
+        {{--                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-building"></use> --}}
+        {{--                    </svg> --}}
+        {{--                    Bo'limlar ro'yxati --}}
+        {{--                </a> --}}
+        {{--            </li> --}}
 
-        {{--            <li class="nav-item">--}}
-        {{--                <a class="nav-link" href="{{ route('commission.list') }}">--}}
-        {{--                    <svg class="nav-icon">--}}
-        {{--                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-user"></use>--}}
-        {{--                    </svg>--}}
-        {{--                    Xodimlar ro'yxati--}}
-        {{--                </a>--}}
-        {{--            </li>--}}
+        {{--            <li class="nav-item"> --}}
+        {{--                <a class="nav-link" href="{{ route('commission.list') }}"> --}}
+        {{--                    <svg class="nav-icon"> --}}
+        {{--                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-user"></use> --}}
+        {{--                    </svg> --}}
+        {{--                    Xodimlar ro'yxati --}}
+        {{--                </a> --}}
+        {{--            </li> --}}
 
-        {{--            <li class="nav-item">--}}
-        {{--                <a class="nav-link" href="{{ route('bugalter.list') }}">--}}
-        {{--                    <svg class="nav-icon">--}}
-        {{--                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>--}}
-        {{--                    </svg>--}}
-        {{--                    Oylik hisobotlar--}}
-        {{--                </a>--}}
-        {{--            </li>--}}
-        {{--        @endif--}}
-        @if(auth()->user()->role_id === \App\Models\User::ROLE_ACCOUNTANT || auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)
+        {{--            <li class="nav-item"> --}}
+        {{--                <a class="nav-link" href="{{ route('bugalter.list') }}"> --}}
+        {{--                    <svg class="nav-icon"> --}}
+        {{--                        <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use> --}}
+        {{--                    </svg> --}}
+        {{--                    Oylik hisobotlar --}}
+        {{--                </a> --}}
+        {{--            </li> --}}
+        {{--        @endif --}}
+        @if (auth()->user()->role_id === \App\Models\User::ROLE_ACCOUNTANT ||
+                auth()->user()->role_id === \App\Models\User::ROLE_ADMIN)
             <li class="nav-title">Hisob-kitob bo'limi</li>
 
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('kpi.departments',32) }}">
+                <a class="nav-link" href="{{ route('kpi.departments', 32) }}">
                     <svg class="nav-icon">
                         <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-chart-line"></use>
                     </svg>
@@ -266,7 +279,7 @@
                     <svg class="nav-icon">
                         <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-check-circle"></use>
                     </svg>
-                   Taqsimot mablag'lari
+                    Taqsimot mablag'lari
                 </a>
             </li>
             {{-- <li class="nav-item">

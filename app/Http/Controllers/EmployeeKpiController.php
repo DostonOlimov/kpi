@@ -24,6 +24,12 @@ class EmployeeKpiController extends Controller
                     ->where('parent_id', $workZone->id);
             });
 
+    // Filter by department if user is not admin
+        if (auth()->user()->role_id == User::ROLE_DIRECTOR) {
+            $query->where('work_zone_id', auth()->user()->work_zone_id)
+                ->where('role_id', User::ROLE_USER);
+        }
+
         // Apply search by name
         if ($request->filled('search')) {
             $query->orWhere('first_name', 'like', '%' . $request->search . '%')
