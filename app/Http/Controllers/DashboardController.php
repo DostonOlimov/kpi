@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kpi;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\UserKpi;
@@ -22,7 +23,7 @@ class DashboardController extends Controller
             return $this->directorDashboard($user);
         }
 
-        $totalEmployees = User::where('role_id', '!=', User::ROLE_ADMIN)->count();
+        $totalEmployees = User::whereNotIn('role_id', [User::ROLE_ADMIN,User::ROLE_MANAGER])->count();
         $totalTasks = Task::count();
         $completedKpis = UserKpi::where('status', UserKpi::STATUS_COMPLETED)->count();
         $totalKpis = UserKpi::count();
@@ -58,6 +59,7 @@ class DashboardController extends Controller
     {
         $userKpis = UserKpi::with(['kpi', 'tasks'])
             ->where('user_id', $user->id)
+            ->whereHas('kpi',function ($query){$query->where('status','!=', Kpi::PERMANENT);})
             ->get();
 
         $assignedKpis = $userKpis->count();
@@ -149,6 +151,7 @@ class DashboardController extends Controller
 
         $userKpis = UserKpi::with(['kpi', 'tasks', 'user'])
             ->whereIn('user_id', $employeeIds)
+            ->whereHas('kpi',function ($query){$query->where('status','!=', Kpi::PERMANENT);})
             ->get();
 
         $assignedKpis = $userKpis->count();
