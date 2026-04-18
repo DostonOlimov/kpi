@@ -167,6 +167,8 @@ class DirectorProfileController extends Controller
                     $join->on('kpi_scores.kpi_id', '=', 'kpis.id')
                         ->whereNotNull('kpi_scores.score');
                 })
+                ->whereNotIn('users.role_id', [User::ROLE_ADMIN, User::ROLE_MANAGER])
+                ->where('users.status', User::STATUS_ACTIVE)
                 ->groupBy('work_zones.id')
                 ->orderByDesc('avg_score')
                 ->pluck('work_zones.id')
