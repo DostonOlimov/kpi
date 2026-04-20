@@ -13,6 +13,7 @@ class WorkingKpiController extends Controller
     public function index(WorkZone $workZone, Request $request)
     {
         $workZoneId = $request->input('work_zone_id', $workZone->id);
+        $child_work_zone_id = $request->input('child_work_zone_id', null);
         $workZone = WorkZone::findOrFail($workZoneId);
 
         $query = User::with(['working_kpis', 'work_zone'])
@@ -31,8 +32,8 @@ class WorkingKpiController extends Controller
         }
 
         // Apply work zone filter if provided
-        if ($request->has('work_zone_filter') && $request->work_zone_filter) {
-            $query->where('users.work_zone_id', $request->work_zone_filter);
+        if ($child_work_zone_id) {
+            $query->where('users.work_zone_id', $child_work_zone_id);
         }
 
         $users = $query->paginate(10);

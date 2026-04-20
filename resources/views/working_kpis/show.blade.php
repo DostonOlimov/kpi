@@ -92,7 +92,7 @@
                                             <div class="d-flex justify-content-between align-items-center flex-wrap">
                                                 <div style="max-width: 85%">
                                                     <h6 class="card-title kpi-title mb-1">{{ $kpi->name }}</h6>
-                                                    <div class="kpi-score">Maksimal ball: {{ $kpi->max_score }}</div>
+                                                    <div class="kpi-score">Kpi vazni: {{ $kpi->max_score }}</div>
                                                 </div>
                                                 <div class="kpi-actions d-flex mt-2 mt-md-0">
                                                     <a href="{{ route('working-kpis.edit', $kpi->id) }}" class="btn btn-sm btn-info">

@@ -293,7 +293,7 @@
                             Shaxsiy foydalanuvchi paneli
                         </span>
                         <h1 class="mt-3 mb-2" style="font-size: 34px; line-height: 1.15; font-weight: 800;">
-                            {{ $user->full_name }} uchun yangi bosh sahifa
+                            {{ $user->full_name }} tizimga  xush kelibsiz!
                         </h1>
                         <p class="mb-0" style="font-size: 16px; color: rgba(255,255,255,0.82);">
                             KPI holati, topshiriqlar va oyning umumiy natijasini bitta zamonaviy panelda ko'ring.
@@ -346,7 +346,7 @@
                         <h3>{{ rtrim(rtrim(number_format($currentScore, 1, '.', ''), '0'), '.') }}/{{ rtrim(rtrim(number_format($targetScore, 1, '.', ''), '0'), '.') }}</h3>
                     </div>
                     <span class="metric-icon" style="background: linear-gradient(135deg, #0f766e, #2dd4bf);">
-                        <i class="fa fa-chart-line"></i>
+                        <i class="fa fa-line-chart"></i>
                     </span>
                 </div>
                 <p>Maqsad ballga nisbatan {{ $scoreRate }}% bajarilgan.</p>
@@ -362,7 +362,7 @@
                         <h3>{{ $pendingTasks }}</h3>
                     </div>
                     <span class="metric-icon" style="background: linear-gradient(135deg, #7c3aed, #c084fc);">
-                        <i class="fa fa-list-check"></i>
+                        <i class="fa fa-check-circle"></i>
                     </span>
                 </div>
                 <p>{{ $pendingTasks }} ta topshiriq hali yakuniy baholanmagan.</p>

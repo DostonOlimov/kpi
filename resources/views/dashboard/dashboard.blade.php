@@ -240,7 +240,7 @@
                             KPI natijalari va hududiy ko'rinish
                         </h1>
                         <p class="mb-0" style="font-size: 16px; color: rgba(255,255,255,0.82);">
-                            Xodimlar, KPI holatlari, fokus section natijalari va O'zbekiston hududlari bo'yicha interaktiv ko'rinish bitta sahifada.
+                            Xodimlar, KPI holatlari, bo'limlarning natijalari va O'zbekiston hududlari bo'yicha interaktiv ko'rinish bitta sahifada.
                         </p>
                     </div>
                     <span class="hero-chip">
@@ -290,7 +290,7 @@
                         <h3>{{ number_format($totalTasks) }}</h3>
                     </div>
                     <span class="metric-icon" style="background: linear-gradient(135deg, #0f766e, #2dd4bf);">
-                        <i class="fa fa-list-check"></i>
+                        <i class="fa fa-list"></i>
                     </span>
                 </div>
                 <p>So'nggi monitoring bo'yicha tizimdagi barcha topshiriqlar.</p>
@@ -318,7 +318,7 @@
             <div class="metric-card">
                 <div class="metric-head">
                     <div>
-                        <div class="subtle">Fokus hudud natijasi</div>
+                        <div class="subtle">Hudud natijasi</div>
                         <h3>{{ $topRegion ? $topRegion['progress'] : 0 }}%</h3>
                     </div>
                     <span class="metric-icon" style="background: linear-gradient(135deg, #ea580c, #fb923c);">

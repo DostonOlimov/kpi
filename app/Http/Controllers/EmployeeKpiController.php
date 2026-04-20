@@ -14,6 +14,7 @@ class EmployeeKpiController extends Controller
     public function index(WorkZone $workZone, Request $request)
     {
         $workZoneId = $request->input('work_zone_id', $workZone->id);
+        $child_work_zone_id = $request->input('child_work_zone_id', null);
         $workZone = WorkZone::findOrFail($workZoneId);
         $query = User::withCount(['kpis'])
             ->whereNotIn('role_id',[User::ROLE_ADMIN,User::ROLE_MANAGER])
@@ -28,6 +29,10 @@ class EmployeeKpiController extends Controller
         if (auth()->user()->role_id == User::ROLE_DIRECTOR) {
             $query->where('work_zone_id', auth()->user()->work_zone_id)
                 ->where('role_id', User::ROLE_USER);
+        }
+
+        if($child_work_zone_id){
+            $query->where('work_zone_id', $child_work_zone_id);
         }
 
         // Apply search by name

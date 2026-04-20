@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kpi;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\UserKpi;
@@ -22,7 +23,7 @@ class DashboardController extends Controller
             return $this->directorDashboard($user);
         }
 
-        $totalEmployees = User::where('role_id', '!=', User::ROLE_ADMIN)->count();
+        $totalEmployees = User::whereNotIn('role_id', [User::ROLE_ADMIN,User::ROLE_MANAGER])->count();
         $totalTasks = Task::count();
         $completedKpis = UserKpi::where('status', UserKpi::STATUS_COMPLETED)->count();
         $totalKpis = UserKpi::count();
@@ -56,16 +57,18 @@ class DashboardController extends Controller
 
     private function userDashboard(User $user)
     {
-        $userKpis = UserKpi::with(['kpi', 'tasks'])
-            ->where('user_id', $user->id)
-            ->get();
+        $userKpis1 = UserKpi::with(['kpi', 'tasks'])
+            ->where('user_id', $user->id);
+        $userKpis = $userKpis1->get();
 
         $assignedKpis = $userKpis->count();
         $completedKpis = $userKpis->where('status', UserKpi::STATUS_COMPLETED)->count();
         $inProgressKpis = $userKpis->where('status', UserKpi::STATUS_IN_PROGRESS)->count();
         $newKpis = $userKpis->where('status', UserKpi::STATUS_NEW)->count();
 
-        $targetScore = (float) $userKpis->sum('target_score');
+        $targetScore = (float) $userKpis1->whereHas('kpi', function ($query) {
+            $query->where('type', '!=', Kpi::SELF_BY_PERSON);
+        })->sum('target_score');
         $currentScore = (float) $userKpis->sum('current_score');
         $completionRate = $assignedKpis > 0 ? round(($completedKpis / $assignedKpis) * 100) : 0;
         $scoreRate = $targetScore > 0 ? round(($currentScore / $targetScore) * 100) : 0;
@@ -147,16 +150,19 @@ class DashboardController extends Controller
 
         $employeeIds = $employees->pluck('id');
 
-        $userKpis = UserKpi::with(['kpi', 'tasks', 'user'])
+        $userKpis1 = UserKpi::with(['kpi', 'tasks', 'user'])
             ->whereIn('user_id', $employeeIds)
-            ->get();
+            ->whereHas('kpi',function ($query){$query->where('status','!=', Kpi::PERMANENT);});
+        $userKpis = $userKpis1->get();
 
         $assignedKpis = $userKpis->count();
         $completedKpis = $userKpis->where('status', UserKpi::STATUS_COMPLETED)->count();
         $inProgressKpis = $userKpis->where('status', UserKpi::STATUS_IN_PROGRESS)->count();
         $newKpis = $userKpis->where('status', UserKpi::STATUS_NEW)->count();
 
-        $targetScore = (float) $userKpis->sum('target_score');
+        $targetScore = (float) $userKpis1->whereHas('kpi', function ($query) {
+                $query->where('type', '!=', Kpi::SELF_BY_PERSON);
+            })->sum('target_score');
         $currentScore = (float) $userKpis->sum('current_score');
         $completionRate = $assignedKpis > 0 ? round(($completedKpis / $assignedKpis) * 100) : 0;
         $scoreRate = $targetScore > 0 ? round(($currentScore / $targetScore) * 100) : 0;

@@ -327,10 +327,10 @@
                     <div style="max-width: 700px;">
                         <span class="hero-chip">
                             <i class="fa fa-briefcase"></i>
-                            Direktor paneli
+                            Bo'lim boshliqi paneli
                         </span>
                         <h1 class="mt-3 mb-2" style="font-size: 34px; line-height: 1.15; font-weight: 800;">
-                            {{ $director->full_name }} uchun yangi bosh sahifa
+                            {{ $director->full_name }} tizimga xush kelibsiz!
                         </h1>
                         <p class="mb-0" style="font-size: 16px; color: rgba(255,255,255,0.82);">
                             Bo'lim xodimlari, KPI holati va topshiriqlar oqimini bitta zamonaviy boshqaruv panelida ko'ring.
@@ -370,7 +370,7 @@
                         <i class="fa fa-users"></i>
                     </span>
                 </div>
-                <p>Direktor bo'limiga biriktirilgan faol xodimlar soni.</p>
+                <p>Bo'limiga biriktirilgan xodimlar soni.</p>
                 <div class="progress-rail">
                     <div class="progress-fill" style="width: 100%; background: linear-gradient(90deg, #1d4ed8, #38bdf8);"></div>
                 </div>
@@ -399,7 +399,7 @@
                         <h3>{{ rtrim(rtrim(number_format($currentScore, 1, '.', ''), '0'), '.') }}/{{ rtrim(rtrim(number_format($targetScore, 1, '.', ''), '0'), '.') }}</h3>
                     </div>
                     <span class="metric-icon" style="background: linear-gradient(135deg, #7c3aed, #c084fc);">
-                        <i class="fa fa-chart-line"></i>
+                        <i class="fa fa-line-chart"></i>
                     </span>
                 </div>
                 <p>Maqsad ballga nisbatan {{ $scoreRate }}% bajarilgan.</p>
@@ -415,7 +415,7 @@
                         <h3>{{ $pendingTasks }}</h3>
                     </div>
                     <span class="metric-icon" style="background: linear-gradient(135deg, #ea580c, #fb923c);">
-                        <i class="fa fa-list-check"></i>
+                        <i class="fa fa-check-circle"></i>
                     </span>
                 </div>
                 <p>{{ $pendingTasks }} ta topshiriq hali yakuniy baholanmagan.</p>
@@ -429,7 +429,7 @@
             <div class="surface-card">
                 <div>
                     <h4>Bo'lim natijalari</h4>
-                    <div class="subtle">Direktor bo'limidagi sectionlar bo'yicha umumiy ko'rsatkichlar.</div>
+                    <div class="subtle">Bo'limidagi xodimlar bo'yicha umumiy ko'rsatkichlar.</div>
                 </div>
 
                 @if($sectionResults->isEmpty())

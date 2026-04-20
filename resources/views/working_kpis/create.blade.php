@@ -15,7 +15,7 @@
                 <div class="card">
 
                     <div class="card-header">
-                        <h3 class="mb-0">{{ __('Yangi lavozim yo\'riqnomasini qo‘shish') }}</h3>
+                        <h3 class="mb-0">{{ __('Yangi lavozim yo\'riqnomasini va kpi ko\'rsatkichini qo‘shish') }}</h3>
                     </div>
 
                     <div class="card-body">
@@ -39,7 +39,7 @@
                             </div>
 
                             <div class="form-group"></div>
-                                <label>{{ __('Maksimal ball') }}</label>
+                                <label>{{ __('Kpi vazni') }}</label>
                                 <input type="number" name="max_score" class="form-control" value="{{ old('max_score') }}" required>
                             </div>
                              <div class="form-group">
@@ -50,7 +50,7 @@
                                 <i class="fa fa-save"></i> {{ __('Saqlash') }}
                             </button>
                              </div>
-                           
+
                         </form>
                     </div></button></a>
                 </div>

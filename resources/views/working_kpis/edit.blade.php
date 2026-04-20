@@ -37,7 +37,7 @@
                                 <textarea name="name" class="form-control" required>{{ old('name', $kpi->name) }}</textarea>
                             </div>
                             <div class="form-group">
-                                <label>{{ __('Maksimal ball') }}</label>
+                                <label>{{ __('Kpi vazni') }}</label>
                                 <input type="number" name="max_score" class="form-control"
                                        value="{{ old('max_score', $kpi->max_score) }}" required>
                             </div>

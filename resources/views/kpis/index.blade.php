@@ -44,7 +44,7 @@
                                 <tr>
                                     <th colspan="2">#</th>
                                     <th>{{ __('KPI nomi') }}</th>
-                                    <th>{{ __('Maksimal ball') }}</th>
+                                    <th>{{ __('KPI vazni') }}</th>
                                     <th>{{ __('Yaratilgan') }}</th>
                                     <th>{{ __('O\'zgartirilgan') }}</th>
                                     <th width="200">{{ __('Amallar') }}</th>

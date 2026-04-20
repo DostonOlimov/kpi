@@ -39,8 +39,8 @@ class DepartmentKpiController extends Controller
     {
         return WorkZone::leftJoin('users', function ($join) {
             $join->on('work_zones.id', '=', 'users.work_zone_id')
-                ->where('users.role_id', '!=', User::ROLE_ADMIN)   // exclude admins
-                ->where('users.role_id', '!=', User::ROLE_MANAGER); // exclude managers
+                ->whereNotIn('users.role_id', [User::ROLE_ADMIN, User::ROLE_MANAGER, User::ROLE_ACCOUNTANT])
+                ->where('status', User::STATUS_ACTIVE);
         })
             ->leftJoin('user_kpis', function ($join) {
 
@@ -106,6 +106,7 @@ class DepartmentKpiController extends Controller
             )
             ->where('work_zones.parent_id', $workZone->id)
             ->whereNotIn('users.role_id', [User::ROLE_ADMIN, User::ROLE_MANAGER])
+            ->where('users.status', User::STATUS_ACTIVE)
             ->where('user_kpis.created_at', '>=', now()->subMonths(6))
             ->groupBy('work_zones.id', 'work_zones.name', DB::raw('DATE_FORMAT(user_kpis.created_at, "%Y-%m")'))
             ->orderBy('month')
