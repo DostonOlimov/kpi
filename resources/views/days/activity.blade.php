@@ -80,7 +80,7 @@
                                 <td>
                                     <div class="working-days-wrapper" data-user-id="{{ $user->id }}" data-user-name="{{ $user->first_name . ' '.$user->last_name }}">
                                         @php $user_kpi = $user->user_kpis->where('kpi_id',11)->first() @endphp
-                                        @if (!$user_kpi->current_score)
+                                        @if (!$user_kpi?->current_score)
                                             <div class="input-group input-group-sm flex-nowrap">
                                                 <input type="number" class="form-control result-input me-1"
                                                        placeholder="Ball"
@@ -103,19 +103,19 @@
                                         @else
                                             <div class="working-days-display">
                                                     <span class="result-text badge bg-primary me-2">
-                                                        <i class="fa fa-star me-1"></i>{{ round($user_kpi->current_score) }}
+                                                        <i class="fa fa-star me-1"></i>{{ round($user_kpi?->current_score) }}
                                                     </span>
                                                 <textarea class="form-control feedback-text"
                                                           placeholder="Izoh kiriting"
                                                           rows="2"
                                                           data-original-value2="0"
-                                                          style="resize: vertical;" readonly>{{ $user_kpi->score?->feedback }}</textarea>
+                                                          style="resize: vertical;" readonly>{{ $user_kpi?->score?->feedback }}</textarea>
                                                 <button
                                                     class="btn btn-sm btn-primary edit-working-days-btn"
                                                     data-month="{{ $month_id }}"
                                                     data-year="{{ $year }}"
-                                                    data-current-result="{{ $user_kpi->current_score }}"
-                                                    data-current-feedback="{{ $user_kpi->score?->feedback }}"
+                                                    data-current-result="{{ $user_kpi?->current_score }}"
+                                                    data-current-feedback="{{ $user_kpi?->score?->feedback }}"
                                                     title="Tahrirlash (E)">
                                                     <i class="fa fa-pencil me-1"></i> Tahrirlash
                                                 </button>
