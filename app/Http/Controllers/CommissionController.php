@@ -309,6 +309,7 @@ class CommissionController extends Controller
 
         $month_id = $this->month;
         $year = $this->year;
+        // dd($month_id, $year);
 
         $users = User::with(['working_days', 'work_zone'])
             ->whereHas('work_zone.parent', function ($query) use ($work_zone_id) {

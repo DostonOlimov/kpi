@@ -14,7 +14,11 @@ class Controller extends BaseController
     public $month, $year;
     public function __construct()
     {
-        $this->month = session('month') ?? (int)date('m');
-        $this->year = session('year') ?? (int)date('Y');
+        $this->middleware(function ($request, $next) {
+            $this->month = session('month') ?? (int) date('m');
+            $this->year = session('year') ?? (int) date('Y');
+
+            return $next($request);
+        });
     }
 }
