@@ -4,6 +4,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Salaries;
+use App\Models\EmployeeKpiResult;
+use App\Models\UserKpi;
+use App\Models\Kpi;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -130,7 +133,6 @@ class EmployeesController extends Controller
             'work_zone_id' => ['integer'],
             'salary' => ['required', 'numeric', 'min:1', 'max:99999999.999', 'regex:/^\d+(\.\d{1,2})?$/'],
             'username' => ['required', 'string', 'max:255'],
-            'password' => ['required'], // Optional: use 'nullable'
             'lavozimi' => ['nullable', 'string', 'max:255'],
             'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'], // <= add this
             'pinfl' => ['nullable', 'string', 'regex:/^[0-9]{14}$/'],
@@ -148,11 +150,6 @@ class EmployeesController extends Controller
             'pinfl' => $request->pinfl,
             'ch_id' => $request->ch_id,
         ]);
-        if($request->password){
-            $user->update([
-                'password' => Hash::make($request->password),
-            ]);
-        }
         if ($request->hasFile('photo')) {
             // Remove old photo if exists
             if ($user->photo && Storage::disk('public')->exists($user->photo)) {
@@ -195,5 +192,40 @@ class EmployeesController extends Controller
 
         return redirect()->route('employees.list', ['workZone' => $user->work_zone_id])
                         ->with('success','Foydalanuvchi muvaffaqiyatli o\'chirildi');
+    }
+
+    /**
+     * Show the form for editing the user's password.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function editPassword($id)
+    {
+        $user = User::find($id);
+        $works = WorkZone::all();
+        return view('employees.edit-password', compact('user'));
+    }
+
+    /**
+     * Update the user's password.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updatePassword(Request $request, $id)
+    {
+        $request->validate([
+            'password' => ['required', 'confirmed', 'min:6'],
+        ]);
+        
+        $user = User::find($id);
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+        
+        return redirect()->route('employees.list', ['workZone' => $user->work_zone_id])
+                        ->with('message', 'User password updated successfully.');
     }
 }

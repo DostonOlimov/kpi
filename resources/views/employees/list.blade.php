@@ -27,6 +27,10 @@
                 <a href="{{ route('employees.create', ['id' => $workZone->id]) }}" class="btn btn-primary">
                     <i class="fa fa-plus"></i> Yangi foydalanuvchi
                 </a>
+
+                <a href="{{ route('employees.kpi-results', ['workZone' => $workZone->id]) }}" class="btn btn-info">
+                    <i class="fa fa-bar-chart"></i> KPI Natijalar
+                </a>
             </div>
         </div>
 
@@ -47,10 +51,10 @@
                                 <th>Familiya</th>
                                 <th>Login</th>
                                 <th>PINFL</th>
-                                <th>Oylik maosh</th>
+                                {{-- <th>Oylik maosh</th> --}}
                                 <th>Bo'lim</th>
                                 <th>Roli</th>
-                                <th width="120px">Harakatlar</th>
+                                <th>Harakatlar</th>
                             </tr>
                         </thead>
 
@@ -69,7 +73,7 @@
                                     <td>{{ $user->username }}</td>
                                     <td>{{ $user->pinfl ?? '-' }}</td>
 
-                                    <td>{{ number_format($user->salary, 0, '.', ' ') }} so'm</td>
+                                    {{-- <td>{{ number_format($user->salary, 0, '.', ' ') }} so'm</td> --}}
 
                                     <td>{{ $user->work_zone->name ?? '-' }}</td>
                                     <td><span class="badge bg-primary">{{ $user->role->name ?? '-' }}</span></td>
@@ -78,6 +82,11 @@
                                         <a href="{{ route('employees.edit', $user->id) }}"
                                             class="btn btn-sm btn-success me-1">
                                             <i class="fa fa-edit"></i>
+                                        </a>
+
+                                        <a href="{{ route('employees.edit-password', $user->id) }}"
+                                            class="btn btn-sm btn-warning me-1">
+                                            <i class="fa fa-key"></i>
                                         </a>
 
                                         <button class="btn btn-sm btn-danger delete-btn"

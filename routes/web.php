@@ -14,6 +14,7 @@ use App\Http\Controllers\EmployeeKpiController;
 use App\Http\Controllers\EmployeeProfileController;
 use App\Http\Controllers\EmployeesController;
 use App\Http\Controllers\KpiController;
+use App\Http\Controllers\KpiResultsController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserKPIController;
@@ -38,19 +39,20 @@ Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::post('authenticate', [AuthController::class, 'authenticate'])->name('authenticate');
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/home', [DashboardController::class, 'index'])->name('home');
+Route::middleware('auth')->group(function () {
+    Route::get('/home', [DashboardController::class, 'index'])->name('home');
 
-Route::get('/attendances', [AttendanceController::class, 'index'])->name('attendances.index');
-Route::get('/attendances/upload', [AttendanceController::class, 'showUploadForm'])->name('attendances.upload');
-Route::post('/attendances/import', [AttendanceController::class, 'import'])->name('attendances.import');
-Route::put('/attendances/{id}', [AttendanceController::class, 'update'])->name('attendances.update');
+    Route::get('/attendances', [AttendanceController::class, 'index'])->name('attendances.index');
+    Route::get('/attendances/upload', [AttendanceController::class, 'showUploadForm'])->name('attendances.upload');
+    Route::post('/attendances/import', [AttendanceController::class, 'import'])->name('attendances.import');
+    Route::put('/attendances/{id}', [AttendanceController::class, 'update'])->name('attendances.update');
 
-Route::resource('edodocuments', EdodocumentController::class);
-Route::post('/edodocuments/{id}/complete', [EdodocumentController::class, 'complete'])->name('edodocuments.complete');
+    Route::resource('edodocuments', EdodocumentController::class);
+    Route::post('/edodocuments/{id}/complete', [EdodocumentController::class, 'complete'])->name('edodocuments.complete');
 
-Route::post('/change-year', [SessionController::class, 'changeYear']);
-Route::post('/change-month', [SessionController::class, 'changeMonth']);
-
+    Route::post('/change-year', [SessionController::class, 'changeYear']);
+    Route::post('/change-month', [SessionController::class, 'changeMonth']);
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -64,7 +66,14 @@ Route::middleware('auth')->group(function () {
         Route::delete('/destroy/{id}', [EmployeesController::class, 'destroy'])->name('employees.destroy');
         Route::get('/show/{id}', [EmployeesController::class, 'show'])->name('employees.show');
         Route::get('/create', [EmployeesController::class, 'create'])->name('employees.create');
+        Route::get('/{id}/edit-password', [EmployeesController::class, 'editPassword'])->name('employees.edit-password');
+        Route::put('/{id}/update-password', [EmployeesController::class, 'updatePassword'])->name('employees.update-password');
 
+    });
+
+    Route::group(['prefix' => 'kpi-results'], function () {
+        Route::get('/kpi-results', [KpiResultsController::class, 'kpiResults'])->name('employees.kpi-results');
+        Route::post('/kpi-results/calculate/{workZone}', [KpiResultsController::class, 'calculateResults'])->name('employees.calculate-results');
     });
 
     Route::resource('roles', RoleController::class);

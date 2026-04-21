@@ -31,13 +31,6 @@
                                     @error('username') <div class="text-danger mt-1">{{ $message }}</div> @enderror
                                 </div>
 
-                                {{-- Password --}}
-                                <div class="form-group col-md-6">
-                                    <label for="password">Yangi parol (ixtiyoriy)</label>
-                                    <input type="password" id="password" name="password" class="form-control" placeholder="Yangi parol kiriting">
-                                    @error('password') <div class="text-danger mt-1">{{ $message }}</div> @enderror
-                                </div>
-
                                 {{-- First Name --}}
                                 <div class="form-group col-md-6">
                                     <label for="first_name">Ismi</label>

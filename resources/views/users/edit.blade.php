@@ -34,10 +34,9 @@
                 <div class="col-xs-12 col-sm-12 col-md-6">
                     <div class="form-group">
                         <strong>Parol:</strong>
-                        <input type="text" name="password" class="form-control" >
-                        @error('password')
-                        <div class="alert alert-danger mt-1 mb-1">{{ $message }}</div>
-                        @enderror
+                        <a href="{{ route('users.edit-password', $user->id) }}" class="btn btn-warning">
+                            Parolni o'zgartirish
+                        </a>
                     </div>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-4">

@@ -119,14 +119,6 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0">{{ __('Xodimlar oladigan qo\'shimcha ish haqlari jadvali') }}</h4>
-                        <h5 class="mb-0 text-muted">
-                            {{ __('Joriy oydagi jami ish kuni') }} - <span class="text-primary">{{ $work_day }} {{ __('kun') }}</span>
-                        </h5>
-                    </div>
-
                     <div class="card-body">
                     <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
                         <a class="btn btn-success" href="{{ route('bugalter.export', $month_id) }}">
