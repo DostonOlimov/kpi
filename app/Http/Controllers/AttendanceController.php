@@ -22,12 +22,12 @@ class AttendanceController extends Controller
     public function index(Request $request)
     {
         $date = $request->input('date', now()->format('Y-m-d'));
-        
+
         $attendances = Attendance::where('date', $date)
             ->orderBy('first_in', 'asc')
             ->with('user')
             ->paginate(50);
-        
+
         return view('attendances.index', compact('attendances', 'date'));
     }
 
@@ -41,39 +41,38 @@ class AttendanceController extends Controller
     {
         $date = $request->input('date', now()->format('Y-m-d'));
         $type = $request->input('type', 'kirish');
-        
+
         return view('attendances.upload', compact('date', 'type'));
     }
 
-    /**
-     * Import attendance data from Excel.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function import(Request $request)
     {
         $request->validate([
-            'file' => 'required|mimes:xlsx,xls,csv|max:2048',
+            'file' => 'required|file|max:10240',
             'type' => 'required|in:kirish,chiqish',
             'date' => 'required|date',
         ]);
 
         try {
-            $type = $request->input('type');
-            $date = $request->input('date');
+            $type     = $request->input('type');
+            $date     = $request->input('date');
+            $filePath = $request->file('file')->getRealPath();
 
-            if($type === 'kirish'){
-               Excel::import(new AttendanceImport, $request->file('file'));
-            }else{
-                Excel::import(new AttendanceImport2, $request->file('file'));
+            if ($type === 'kirish') {
+                $result = (new \App\Imports\AttendanceImport)->import($filePath);
+            } else {
+                $result = (new \App\Imports\AttendanceImport)->import($filePath);
             }
 
-
             $typeName = $type === 'kirish' ? 'Kirish' : 'Chiqish';
-            
+            $message  = "{$typeName} ma'lumotlari muvaffaqiyatli yuklandi! ({$result['imported']} ta yozuv)";
+
+            if (!empty($result['errors'])) {
+                $message .= ' Xatolar: ' . implode(', ', array_slice($result['errors'], 0, 3));
+            }
+
             return redirect()->route('attendances.index', ['date' => $date])
-                ->with('message', "{$typeName} ma'lumotlari muvaffaqiyatli yuklandi!");
+                ->with('message', $message);
         } catch (\Exception $e) {
             return back()->withErrors(['file' => 'Xatolik yuz berdi: ' . $e->getMessage()]);
         }

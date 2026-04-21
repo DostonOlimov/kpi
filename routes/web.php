@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\WorkController;
 use App\Http\Controllers\MonthController;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -217,7 +218,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/departments/{workZone}', [DepartmentKpiController::class, 'index'])->name('kpi.departments');
     Route::get('/departments-details/{id}', [DepartmentKpiController::class, 'departmentDetail'])->name('kpi.department.detail');
     Route::get('/departments/users/{user}', [DepartmentKpiController::class, 'usersShow'])->name('department.user.detail');
+
 });
+
+Route::post('/debug-import', function (Request $request) {
+    $filePath = $request->file('file')->getRealPath();
+    $rows = \App\Services\HtmlXlsParser::parse($filePath);
+    return response()->json([
+        'total_rows_found' => count($rows),
+        'rows' => $rows,
+    ]);
+})->name('debug.import');
 
 
 

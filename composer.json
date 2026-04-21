@@ -18,7 +18,8 @@
         "phpoffice/phpspreadsheet": "^1.29",
         "phpoffice/phpword": "^1.4",
         "smalot/pdfparser": "^2.12",
-        "spatie/laravel-pjax": "^2.2"
+        "spatie/laravel-pjax": "^2.2",
+        "symfony/dom-crawler": "^6.4"
     },
 
     "require-dev": {
