@@ -73,7 +73,7 @@
                         <div class="row mb-4">
                             <div class="col-md-12">
                                 <div class="card">
-                                    <div class="card-header bg-primary text-white">
+                                    <div class="card-header bg-success text-white">
                                         <h5 class="mb-0">
                                             <i class="fa fa-folder"></i> {{ $parentKpi->name }}
                                             @if(isset($groupedKpis[$parentKpi->id]))
@@ -132,7 +132,7 @@
                                                             </tr>
                                                         @endforeach
                                                     </tbody>
-                                                    
+
                                                     @php
                                                         $parentCurrentScore = collect($groupedKpis[$parentKpi->id])->sum('current_score');
                                                         $parentTargetScore = collect($groupedKpis[$parentKpi->id])->sum('target_score');
@@ -142,7 +142,7 @@
                                                             <tr class="bg-light">
                                                                 <td colspan="3" class="text-right"><strong>Kategoriya natijasi:</strong></td>
                                                                 <td colspan="3" class="text-center">
-                                                                    <strong class="text-primary">
+                                                                    <strong class="text-success">
                                                                         {{ $parentCurrentScore }} / {{ $parentTargetScore }}
                                                                     </strong>
                                                                     <br>
@@ -165,7 +165,7 @@
                             </div>
                         </div>
                     @endforeach
-                    
+
                     @if($userKpis->isNotEmpty())
                         <div class="row">
                             <div class="col-md-12">
@@ -174,7 +174,7 @@
                                         <div class="row">
                                             <div class="col-md-12 text-center">
                                                 <h5><strong>Umumiy natija:</strong></h5>
-                                                <h3 class="text-primary">
+                                                <h3 class="text-success">
                                                     {{ $userKpis->sum('current_score') }} / {{ $userKpis->sum('target_score') }}
                                                 </h3>
                                                 @if($userKpis->sum('target_score') > 0)
@@ -193,12 +193,12 @@
 
                 <div class="row mt-4">
                     <div class="col-md-12 text-center">
-                        <form action="{{ route('kpis.user-kpis-refresh', $user->id) }}" method="POST" style="display: inline;">
+                        {{-- <form action="{{ route('kpis.user-kpis-refresh', $user->id) }}" method="POST" style="display: inline;">
                             @csrf
                             <button type="submit" class="btn btn-warning" onclick="return confirm('KPI larni yangilashni xohlaysizmi?')">
                                 <i class="fa fa-refresh"></i> KPI larni yangilash
                             </button>
-                        </form>
+                        </form> --}}
                         <a href="{{ route('kpis.user-kpis-dashboard') }}" class="btn btn-secondary">
                             <i class="fa fa-arrow-left"></i> Ortga qaytish
                         </a>
