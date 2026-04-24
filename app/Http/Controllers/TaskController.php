@@ -89,43 +89,78 @@ class TaskController extends Controller
     {
         $task = Task::findOrFail($id);
 
-        if($task) {
+        $filePath = null;
+        $extractedText = '';
 
-            $filePath = null;
-
-            if ($task->file_path) {
-                $filePath = storage_path('app/public/' . $task->file_path);
+        // Only try to extract text if there's a file
+        if ($task->file_path) {
+            $fullPath = storage_path('app/public/' . $task->file_path);
+            
+            // Check if file exists
+            if (!file_exists($fullPath)) {
+                return response()->json([
+                    'message' => 'Fayl topilmadi',
+                    'error' => 'Attached file does not exist at: ' . $task->file_path
+                ], 404);
             }
 
             try {
-                $text = $scorer->extractText($filePath);
-
-                $scoreData = $scorer->scoreWithGemini($text, $task->user_kpi->kpi, $task);
-
-                $score = TaskScore::create(
-                    [
-                        'task_id' => $task->id,
-                        'score' => $scoreData['score'],
-                        'feedback' => $scoreData['feedback'],
-                    ]
-                );
-
-                $task->update([
-                    'task_score_id' => $score->id,
-                    'score' => $scoreData['score'],
-                    'extracted_text' => $text
-                ]);
+                $extractedText = $scorer->extractText($fullPath);
             } catch (\Throwable $e) {
-                $this->error("Failed to score task: " . $e->getMessage());
+                // If extraction fails, use task info only
+                $extractedText = '';
+                \Log::warning('Text extraction failed for task ' . $id . ': ' . $e->getMessage());
             }
         }
 
-        return response()->json([
-            'message' => 'Scored',
-            'score' => $score->score,
-            'feedback' => $score->feedback,
-            'max_score' => $task->user_kpi->kpi->max_score ?? 10,
-        ]);
+        // Always include task name and description even if no file text
+        $taskContext = "Task: {$task->name}\nDescription: {$task->description}";
+        $fullText = $extractedText ? $taskContext . "\n\nFile content:\n" . $extractedText : $taskContext;
+
+        try {
+            $scoreData = $scorer->scoreWithGemini($fullText, $task->userKpi->kpi, $task);
+
+            // Validate score data
+            if (!$scoreData || !isset($scoreData['score'])) {
+                return response()->json([
+                    'message' => 'AI baholashda xatolik',
+                    'error' => 'Invalid score response from AI'
+                ], 500);
+            }
+
+            // Ensure feedback is always present
+            $feedback = $scoreData['feedback'] ?? 'AI tomonidan baholangan';
+            if (empty(trim($feedback))) {
+                $feedback = 'AI tomonidan baholangan';
+            }
+
+            $score = TaskScore::create([
+                'task_id' => $task->id,
+                'score' => $scoreData['score'],
+                'feedback' => $feedback,
+                'user' => 'AI Baholovchi',
+            ]);
+
+            $task->update([
+                'task_score_id' => $score->id,
+                'score' => $scoreData['score'],
+                'extracted_text' => $extractedText
+            ]);
+
+            return response()->json([
+                'message' => 'Muvaffaqiyatli baholandi',
+                'score' => $score->score,
+                'feedback' => $score->feedback,
+                'max_score' => $task->userKpi->kpi->max_score ?? 10,
+            ]);
+        } catch (\Throwable $e) {
+            \Log::error('AI scoring failed for task ' . $id . ': ' . $e->getMessage());
+            
+            return response()->json([
+                'message' => 'AI baholashda xatolik yuz berdi',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function dashboard()

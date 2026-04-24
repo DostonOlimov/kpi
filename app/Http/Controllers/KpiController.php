@@ -109,33 +109,21 @@ class KpiController extends Controller
     {
         $month = $this->month;
         $year = $this->year;
-        $defaultParentWorkZoneId = 32;
-        $workZoneId = (int) $request->input('work_zone_id', $defaultParentWorkZoneId);
+        $workZoneId = (int) $request->input('work_zone_id', get_default_parent_work_zone_id());
         $childWorkZoneId = $request->input('child_work_zone_id');
-        $monthLabel = Month::getMonth()[(int) $month] ?? (string) $month;
-
-        // Get parent work zones (where parent_id is null)
-        $parentWorkZones = WorkZone::whereNull('parent_id')
-            ->orderBy('sort_order')
-            ->withCount(['users as employees_count' => function ($query) {
-                $query->where('role_id', 3);
-            }])
-            ->get();
-        
-        // Get child work zones based on selected parent (default 32)
-        $childWorkZones = WorkZone::where('parent_id', $workZoneId)
-            ->orderBy('sort_order')
-            ->get();
         
         // Build query
         $query = User::with(['work_zone', 'role'])
             ->whereHas('user_kpis', function($query) use ($month, $year) {
                 $query->where('month', $month)
                       ->where('year', $year);
-            })
-            ->whereHas('user_kpis.kpi', function($query) {
-                $query->where('type', '!=', Kpi::SELF_BY_PERSON);
             });
+        
+        // Filter by department if user is not admin
+        if (auth()->user()->role_id == User::ROLE_DIRECTOR) {
+            $query->where('work_zone_id', auth()->user()->work_zone_id)
+              ->where('role_id', User::ROLE_USER);
+        }
         
         // Apply work zone filters
         if ($childWorkZoneId) {
@@ -149,37 +137,25 @@ class KpiController extends Controller
         $users = $query
             ->withCount(['user_kpis as total_kpis' => function($query) use ($month, $year) {
                 $query->where('month', $month)
-                      ->where('year', $year)
-                      ->whereHas('kpi', function($q) {
-                          $q->where('type', '!=', Kpi::SELF_BY_PERSON);
-                      });
+                      ->where('year', $year);
             }])
             ->withSum(['user_kpis as total_target_score' => function($query) use ($month, $year) {
                 $query->where('month', $month)
-                      ->where('year', $year)
-                      ->whereHas('kpi', function($q) {
-                          $q->where('type', '!=', Kpi::SELF_BY_PERSON);
-                      });
+                      ->where('year', $year);
             }], 'target_score')
             ->withSum(['user_kpis as total_current_score' => function($query) use ($month, $year) {
                 $query->where('month', $month)
-                      ->where('year', $year)
-                      ->whereHas('kpi', function($q) {
-                          $q->where('type', '!=', Kpi::SELF_BY_PERSON);
-                      });
+                      ->where('year', $year);
             }], 'current_score')
             ->get();
         
         return view('user-kpis.dashboard', compact(
             'users',
-            'parentWorkZones',
-            'childWorkZones',
             'workZoneId',
             'childWorkZoneId',
             'month',
             'year',
-            'monthLabel',
-            'defaultParentWorkZoneId'
+            // 'defaultParentWorkZoneId'
         ));
     }
 
@@ -196,15 +172,12 @@ class KpiController extends Controller
         
         // Get parent KPIs (categories)
         $parentKpis = Kpi::whereNull('parent_id')
-            ->where('type', '!=', Kpi::SELF_BY_PERSON)
+            ->where('type', '!=', Kpi::PERMANENT)
             ->orderBy('sort')
             ->get();
         
         // Get user KPIs with their parent KPIs
         $userKpis = UserKpi::with(['kpi.parent', 'score'])
-            ->whereHas('kpi', function($query) {
-                $query->where('type', '!=', Kpi::SELF_BY_PERSON);
-            })
             ->where('user_id', $userId)
             ->where('month', $this->month)
             ->where('year', $this->year)

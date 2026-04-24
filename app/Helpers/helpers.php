@@ -1,5 +1,12 @@
 <?php
 
+if (!function_exists('get_default_parent_work_zone_id')) {
+    function get_default_parent_work_zone_id()
+    {
+        return auth()->user()->work_zone->parent_id ?? 32;
+    }
+}
+
 if (!function_exists('format_date')) {
     function format_date($date, $format = 'd.m.Y')
     {

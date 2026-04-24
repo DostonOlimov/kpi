@@ -33,7 +33,8 @@ class WorkZoneFilter extends Component
         
         // Get current request values
         $request = request();
-        $this->selectedWorkZoneId = $request->input('work_zone_id', 32); // Default to 32
+        $defaultWorkZoneId = get_default_parent_work_zone_id();
+        $this->selectedWorkZoneId = $request->input('work_zone_id', $defaultWorkZoneId); // Default to $defaultWorkZoneId
         $this->selectedChildWorkZoneId = $request->input('child_work_zone_id');
         
         // Load work zones

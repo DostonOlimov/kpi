@@ -638,23 +638,44 @@
                 const taskId = $button.data('task-id');
                 const $scoreContainer = $(`#score-${taskId}`);
 
+                // Disable button and show loading state
                 setButtonLoading($button, true, 'Baholanmoqda...');
 
                 $.ajax({
                     url: `/tasks/${taskId}/ai-score`,
                     method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
                     success: function(response) {
-                        const scoreHtml = generateScoreHtml(response);
-                        $scoreContainer.html(scoreHtml);
-                        updateStats();
-                        showNotification('AI tomonidan baho qo\'yildi!', 'success');
+                        // Check if response has valid score
+                        if (response.score !== undefined && response.feedback) {
+                            const scoreHtml = generateScoreHtml(response);
+                            $scoreContainer.html(scoreHtml);
+                            updateStats();
+                            showNotification('AI tomonidan baho qo\'yildi! Baho: ' + response.score, 'success');
+                        } else {
+                            showWarningAlert('Ogohlantirish', 'Baho qoyildi lekin ma\'lumot to\'liq emas');
+                        }
                     },
                     error: function(xhr) {
                         console.error('AI scoring error:', xhr);
-                        showErrorAlert('AI baholashda xatolik yuz berdi.');
+                        
+                        let errorMessage = 'AI baholashda xatolik yuz berdi.';
+                        
+                        if (xhr.responseJSON) {
+                            if (xhr.responseJSON.message) {
+                                errorMessage = xhr.responseJSON.message;
+                            }
+                            if (xhr.responseJSON.error) {
+                                errorMessage += ' ' + xhr.responseJSON.error;
+                            }
+                        }
+                        
+                        showErrorAlert(errorMessage);
                     },
                     complete: function() {
-                        setButtonLoading($button, false, '<i class="fa fa-magic"></i> AI baholash');
+                        setButtonLoading($button, false, '<i class="fa fa-magic"></i> AI bilan baholash');
                     }
                 });
             });

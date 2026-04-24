@@ -15,6 +15,7 @@
 
         @php
             $currentUser = auth()->user();
+            $parent_work_zone_id = get_default_parent_work_zone_id() ;
             $isAdmin = $currentUser->role_id === \App\Models\User::ROLE_ADMIN;
             $isDirector = $currentUser->role_id === \App\Models\User::ROLE_DIRECTOR;
         @endphp
@@ -43,11 +44,11 @@
                         'icon' => 'cil-chart-pie',
                         'label' => 'Baholash mezoni',
                         'active_route' => 'kpis',
-                        'roles' => ['admin'],
+                        'roles' => ['admin','director'],
                     ],
                     [
                         'route' => 'working-kpis.index',
-                        'param' => 32,
+                        'param' => $parent_work_zone_id,
                         'icon' => 'cil-description',
                         'label' => "KPI Ko'rsatkichlari",
                         'active_route' => 'working-kpis',
@@ -55,7 +56,7 @@
                     ],
                     [
                         'route' => 'employee.kpis.users',
-                        'param' => 32,
+                        'param' => $parent_work_zone_id,
                         'icon' => 'cil-bar-chart',
                         'label' => "Shaxsiy KPI ko'rsatkichlar",
                         'active_route' => 'employee/users',
@@ -248,7 +249,7 @@
             <li class="nav-title">Hisob-kitob bo'limi</li>
 
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('kpi.departments', 32) }}">
+                <a class="nav-link" href="{{ route('kpi.departments', $parent_work_zone_id) }}">
                     <svg class="nav-icon">
                         <use xlink:href="/assets/vendors/@coreui/icons/svg/free.svg#cil-chart-line"></use>
                     </svg>

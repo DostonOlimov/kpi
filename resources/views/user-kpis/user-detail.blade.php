@@ -161,6 +161,70 @@
                                             </div>
                                         @endif
                                     </div>
+                                    @if($parentKpi->type == \App\Models\Kpi::SELF_BY_PERSON)
+                                        @php
+                                            $selfKpis = isset($groupedKpis[$parentKpi->id]) ? collect($groupedKpis[$parentKpi->id]) : collect();
+                                            $selfCurrent = $selfKpis->sum('target_score');
+                                            // SELF_BY_PERSON has fixed max total of 60 (based on kpis.blade.php logic)
+                                            $selfTotal = 60;
+                                            $selfPercentage = $selfTotal > 0 ? round(($selfCurrent / $selfTotal) * 100) : 0;
+                                        @endphp
+                                        <div class="card-footer bg-gradient-light">
+                                            <div class="row align-items-center">
+                                                <div class="col-md-8">
+                                                    <div class="d-flex align-items-center mb-2">
+                                                        <div class="mr-3">
+                                                            <span class="badge badge-primary px-3 py-2">
+                                                                <i class="fa fa-star"></i> {{ $selfCurrent }}/{{ $selfTotal }}
+                                                            </span>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <div class="progress" style="height: 12px;">
+                                                                <div class="progress-bar bg-gradient-primary progress-bar-striped progress-bar-animated" 
+                                                                     role="progressbar" 
+                                                                     style="width: {{ $selfPercentage }}%" 
+                                                                     aria-valuenow="{{ $selfPercentage }}" 
+                                                                     aria-valuemin="0" 
+                                                                     aria-valuemax="100">
+                                                                    <span class="font-weight-bold text-white">{{ $selfPercentage }}%</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="ml-3">
+                                                            <span class="text-muted font-size-sm">
+                                                                <i class="fa fa-check-circle text-success"></i> 
+                                                                {{ $selfKpis->filter(fn($k) => $k->current_score > 0)->count() }} ta bajarildi
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 text-right">
+                                                    <a href="{{ route('employee.kpis', $user->id) }}" class="btn btn-gradient-primary btn-lg">
+                                                        <i class="fa fa-plus-circle"></i> Xodimga KPI biriktirish
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <style>
+                                            .bg-gradient-light {
+                                                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                                            }
+                                            .bg-gradient-primary {
+                                                background: linear-gradient(90deg, #0c238a 0%, #764ba2 100%) !important;
+                                            }
+                                            .btn-gradient-primary {
+                                                background: linear-gradient(135deg, #0c238a 0%, #764ba2 100%);
+                                                color: white;
+                                                border: none;
+                                                transition: all 0.3s ease;
+                                            }
+                                            .btn-gradient-primary:hover {
+                                                transform: translateY(-2px);
+                                                box-shadow: 0 4px 12px rgba(12, 35, 138, 0.3);
+                                                color: white;
+                                            }
+                                        </style>
+                                    @endif
                                 </div>
                             </div>
                         </div>

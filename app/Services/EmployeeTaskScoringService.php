@@ -15,9 +15,13 @@ class EmployeeTaskScoringService
 {
     public function extractText($path): string
     {
-
-        if (is_null($path)) {
+        if (is_null($path) || empty($path)) {
             return '';
+        }
+
+        // Check if file exists
+        if (!file_exists($path)) {
+            throw new \Exception("File not found: {$path}");
         }
 
         $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
@@ -26,7 +30,9 @@ class EmployeeTaskScoringService
             'docx' => $this->extractFromDocx($path),
             'pdf'  => $this->extractFromPdf($path),
             'xlsx' => $this->extractFromXlsx($path),
-            default => throw new \Exception("Unsupported file format"),
+            'xls'  => $this->extractFromXlsx($path),
+            'doc'  => $this->extractFromDocx($path),
+            default => throw new \Exception("Unsupported file format: {$extension}"),
         };
     }
 
@@ -119,46 +125,90 @@ class EmployeeTaskScoringService
     {
         // Requires Google Gemini API client installed and configured
         $apiKey = config('services.gemini.api_key'); // define in .env
-       $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={$apiKey}";
+        
+        if (!$apiKey) {
+            throw new \Exception('Gemini API key not configured');
+        }
+        
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={$apiKey}";
 
+        $maxScore = $kpi->max_score ?? 10;
+        
         $prompt = <<<EOT
 You are a performance evaluator.
 
-Evaluate the following employee report text for the KPI "{$kpi->name}" (maximum score: {$kpi->max_score}).
-The related task is "{$task->name}": {$task->description}
-The employee's attached file's text is: {$text}
+Evaluate the following employee report for the KPI "{$kpi->name}" (maximum score: {$maxScore}).
 
-Rate the report on a scale of 1 to {$kpi->max_score} considering:
+TASK INFORMATION:
+Task Name: {$task->name}
+Task Description: {$task->description}
+
+EMPLOYEE'S SUBMISSION:
+{$text}
+
+Rate the submission on a scale of 1 to {$maxScore} considering:
 1. Quantity of tasks completed
 2. Quality of the report
-3. how relevant it is to the task
+3. Relevance to the task
 
-and give feedback in uzbek language.
+IMPORTANT: You must provide both a score and feedback in Uzbek language.
 
-Your response must follow this format:
-Score: <score out of {$kpi->max_score}>
-Feedback: <short explanation>
+Your response must follow this EXACT format:
+Score: <number from 1 to {$maxScore}>
+Feedback: <2-3 sentences explanation in Uzbek>
 EOT;
 
-        $response = Http::post($url, [
-        'contents' => [
-            [
-                'parts' => [
-                    ['text' => $prompt]
+        try {
+            $response = Http::timeout(30)->post($url, [
+                'contents' => [
+                    [
+                        'parts' => [
+                            ['text' => $prompt]
+                        ]
+                    ]
                 ]
-            ]
-        ]
-    ]);
+            ]);
 
-        $result = $response->json();
-        $content = $result['candidates'][0]['content']['parts'][0]['text'] ?? 'Score: 5\nFeedback: No reply.';
+            if (!$response->successful()) {
+                throw new \Exception('Gemini API error: ' . $response->body());
+            }
 
-        preg_match('/Score:\s*(\d+)/i', $content, $scoreMatch);
-        preg_match('/Feedback:\s*(.+)/is', $content, $feedbackMatch);
+            $result = $response->json();
+            $content = $result['candidates'][0]['content']['parts'][0]['text'] ?? '';
 
-        return [
-            'score' => isset($scoreMatch[1]) ? (int)$scoreMatch[1] : null,
-            'feedback' => $feedbackMatch[1] ?? 'No feedback generated.',
-        ];
+            if (empty($content)) {
+                throw new \Exception('Empty response from Gemini API');
+            }
+
+            // Extract score
+            preg_match('/Score:\s*(\d+(?:\.\d+)?)/i', $content, $scoreMatch);
+            $score = isset($scoreMatch[1]) ? (float)$scoreMatch[1] : null;
+
+            // Ensure score is within valid range
+            if ($score !== null) {
+                $score = min($maxScore, max(1, $score));
+            }
+
+            // Extract feedback
+            preg_match('/Feedback:\s*(.+?)(?:\n|$)/is', $content, $feedbackMatch);
+            $feedback = isset($feedbackMatch[1]) ? trim($feedbackMatch[1]) : '';
+
+            // Provide default feedback if empty
+            if (empty($feedback)) {
+                $feedback = "Vazifa bajarildi. Natija qoniqarli.";
+            }
+
+            // Provide default score if AI failed to provide one
+            if ($score === null) {
+                $score = round($maxScore * 0.7); // Default to 70%
+            }
+
+            return [
+                'score' => round($score, 1),
+                'feedback' => $feedback,
+            ];
+        } catch (\Exception $e) {
+            throw new \Exception('Gemini API call failed: ' . $e->getMessage());
+        }
     }
 }
