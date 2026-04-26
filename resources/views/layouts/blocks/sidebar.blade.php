@@ -58,7 +58,7 @@
                         'route' => 'employee.kpis.users',
                         'param' => $parent_work_zone_id,
                         'icon' => 'cil-bar-chart',
-                        'label' => "Shaxsiy KPI ko'rsatkichlar",
+                        'label' => "Xodimlarning KPI ko'rsatkichlari",
                         'active_route' => 'employee/users',
                         'roles' => ['admin', 'director'],
                     ],

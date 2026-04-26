@@ -156,9 +156,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/user-kpis-dashboard', [KpiController::class, 'usersKpiDashboard'])->name('kpis.user-kpis-dashboard');
         Route::get('/user-kpis-detail/{userId}', [KpiController::class, 'userKpisDetail'])->name('kpis.user-kpis-detail');
         Route::post('/user-kpis-refresh/{userId}', [KpiController::class, 'refreshUserKpis'])->name('kpis.user-kpis-refresh');
+        Route::get('/user-kpis-score/{userId}/{parentKpiId}', [KpiController::class, 'scoreKpiType'])->name('kpis.score-kpi-type');
+        Route::post('/user-kpis-score/{userId}/{parentKpiId}', [KpiController::class, 'storeKpiTypeScores'])->name('kpis.store-kpi-type-scores');
     });
     Route::resource('kpis', KpiController::class);
-    
+
     Route::resource('working-kpis', WorkingKpiController::class);
 
     Route::get('/working-kpis-select/{workZone}', [WorkingKpiController::class, 'index'])->name('working-kpis.index');

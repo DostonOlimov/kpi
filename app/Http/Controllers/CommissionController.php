@@ -300,6 +300,10 @@ class CommissionController extends Controller
      */
     public function scoresList($id,Request $request)
     {
+        if(!in_array(auth()->user()->role_id , [User::ROLE_ADMIN, User::ROLE_MANAGER]) ) {
+            return redirect()->back()->with('error', 'Sizda bu sahifaga kirish huquqi yo\'q!');
+        }
+
         $work_zone_id = $request->query('work_zone_id');
         $child_work_zone_id = $request->query('child_work_zone_id');
         // Only allow ID 2 or 4
@@ -334,7 +338,7 @@ class CommissionController extends Controller
         // Get the selected KPI from session or request
         $selectedKpiId = session('selected_kpi_id_' . $id, request('kpi_id'));
 
-        $title = 'Mehnat intizomiga rioya qilinganligi';
+        $title = $id == Kpi::IJRO ? 'Ijro intizomi normalari' : 'Mehnat intizomiga rioya qilinganligi';
 
         return view('commission.user_band_scores', compact(
             'users', 'title', 'days', 'groupedUsers', 'month_name', 'month_id', 'year', 'kpis', 'id', 'selectedKpiId'

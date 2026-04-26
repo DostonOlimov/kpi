@@ -114,6 +114,9 @@ class EmployeeDaysController extends Controller
      */
     public function activity(Request $request)
     {
+        if(!in_array(auth()->user()->role_id , [User::ROLE_ADMIN, User::ROLE_MANAGER]) ) {
+            return redirect()->back()->with('error', 'Sizda bu sahifaga kirish huquqi yo\'q!');
+        }
         $month_id = $this->month;
         $year = $this->year;
 
