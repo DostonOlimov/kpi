@@ -144,10 +144,12 @@ class EmployeeTaskScoringService
             throw new \Exception('Gemini API key not configured');
         }
 
-        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={$apiKey}";
+        // Using gemini-1.5-flash is currently more stable than 2.0+ versions
+        $model = 'gemini-3-flash-preview';
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}";
 
-        $maxScore   = $kpi->max_score ?? 10;
-        $shortText  = $this->truncateText($text, 3000);
+        $maxScore = $kpi->max_score ?? 10;
+        $shortText = $this->truncateText($text, 1000);
 
         $prompt = <<<EOT
 KPI: {$kpi->name} (max ball: {$maxScore})
@@ -164,15 +166,19 @@ Feedback: <2 gap izoh>
 EOT;
 
         try {
-            $response = Http::timeout(45)->post($url, [
-                'contents' => [
-                    [
-                        'parts' => [
-                            ['text' => $prompt]
-                        ]
+            // Use retry: 3 attempts, 2000ms delay between attempts
+            // Only retry if it's a 5xx error (server side)
+            $response = Http::timeout(45)
+                ->retry(3, 2000, function ($exception) {
+                    // Check if it's a connection issue or a server-side error (5xx)
+                    return $exception instanceof \Illuminate\Http\Client\ConnectionException ||
+                        ($exception->response && $exception->response->status() >= 500);
+                })
+                ->post($url, [
+                    'contents' => [
+                        ['parts' => [['text' => $prompt]]]
                     ]
-                ]
-            ]);
+                ]);
 
             if (!$response->successful()) {
                 throw new \Exception('Gemini API error: ' . $response->body());
@@ -185,27 +191,22 @@ EOT;
                 throw new \Exception('Empty response from Gemini API');
             }
 
-            // Extract score
             preg_match('/Score:\s*(\d+(?:\.\d+)?)/i', $content, $scoreMatch);
             $score = isset($scoreMatch[1]) ? (float)$scoreMatch[1] : null;
 
-            // Ensure score is within valid range
             if ($score !== null) {
                 $score = min($maxScore, max(1, $score));
             }
 
-            // Extract feedback
             preg_match('/Feedback:\s*(.+?)(?:\n|$)/is', $content, $feedbackMatch);
             $feedback = isset($feedbackMatch[1]) ? trim($feedbackMatch[1]) : '';
 
-            // Provide default feedback if empty
             if (empty($feedback)) {
                 $feedback = "Vazifa bajarildi. Natija qoniqarli.";
             }
 
-            // Provide default score if AI failed to provide one
             if ($score === null) {
-                $score = round($maxScore * 0.7); // Default to 70%
+                $score = round($maxScore * 0.7);
             }
 
             return [
@@ -213,7 +214,7 @@ EOT;
                 'feedback' => $feedback,
             ];
         } catch (\Exception $e) {
-            throw new \Exception('Gemini API call failed: ' . $e->getMessage());
+            throw new \Exception('Gemini API call failed after retries: ' . $e->getMessage());
         }
     }
 }
