@@ -38,7 +38,7 @@
                             </div>
                             <div class="form-group">
                                 <label>{{ __('Kpi vazni') }}</label>
-                                <input type="number" name="max_score" class="form-control"
+                                <input type="number" step="0.01" name="max_score" class="form-control"
                                        value="{{ old('max_score', $kpi->max_score) }}" required>
                             </div>
                             <a class="btn btn-primary" href="{{ URL::previous() }}">
