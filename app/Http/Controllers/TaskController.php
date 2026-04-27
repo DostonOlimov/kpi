@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Kpi;
 use App\Models\Score;
 use App\Models\Task;
+use App\Models\TaskComment;
 use App\Models\TaskScore;
 use App\Services\EmployeeTaskScoringService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -85,18 +88,34 @@ class TaskController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function aiScore($id,EmployeeTaskScoringService $scorer)
+    public function aiScore($id, EmployeeTaskScoringService $scorer)
     {
         $task = Task::findOrFail($id);
 
-        $filePath = null;
+        // Load userKpi without global scope (which filters by session year/month)
+        $userKpi = \App\Models\UserKpi::withoutGlobalScopes()
+            ->with('kpi')
+            ->find($task->user_kpi_id);
+
+        if (!$userKpi) {
+            return response()->json([
+                'message' => 'Xatolik',
+                'error' => 'Vazifa uchun KPI bog\'lanmagan'
+            ], 400);
+        }
+
+        if (!$userKpi->kpi) {
+            return response()->json([
+                'message' => 'Xatolik',
+                'error' => 'KPI ma\'lumotlari topilmadi'
+            ], 400);
+        }
+
         $extractedText = '';
 
-        // Only try to extract text if there's a file
         if ($task->file_path) {
             $fullPath = storage_path('app/public/' . $task->file_path);
-            
-            // Check if file exists
+
             if (!file_exists($fullPath)) {
                 return response()->json([
                     'message' => 'Fayl topilmadi',
@@ -107,20 +126,17 @@ class TaskController extends Controller
             try {
                 $extractedText = $scorer->extractText($fullPath);
             } catch (\Throwable $e) {
-                // If extraction fails, use task info only
                 $extractedText = '';
-                \Log::warning('Text extraction failed for task ' . $id . ': ' . $e->getMessage());
+                Log::warning('Text extraction failed for task ' . $id . ': ' . $e->getMessage());
             }
         }
 
-        // Always include task name and description even if no file text
         $taskContext = "Task: {$task->name}\nDescription: {$task->description}";
         $fullText = $extractedText ? $taskContext . "\n\nFile content:\n" . $extractedText : $taskContext;
-
         try {
-            $scoreData = $scorer->scoreWithGemini($fullText, $task->userKpi->kpi, $task);
+            
+            $scoreData = $scorer->scoreWithGemini($fullText, $userKpi->kpi, $task);
 
-            // Validate score data
             if (!$scoreData || !isset($scoreData['score'])) {
                 return response()->json([
                     'message' => 'AI baholashda xatolik',
@@ -128,7 +144,6 @@ class TaskController extends Controller
                 ], 500);
             }
 
-            // Ensure feedback is always present
             $feedback = $scoreData['feedback'] ?? 'AI tomonidan baholangan';
             if (empty(trim($feedback))) {
                 $feedback = 'AI tomonidan baholangan';
@@ -136,29 +151,29 @@ class TaskController extends Controller
 
             $score = TaskScore::create([
                 'task_id' => $task->id,
-                'score' => $scoreData['score'],
-                'feedback' => $feedback,
-                'user' => 'AI Baholovchi',
+                'score'   => $scoreData['score'],
+                'feedback'=> $feedback,
+                'user'    => 'AI Baholovchi',
             ]);
 
             $task->update([
-                'task_score_id' => $score->id,
-                'score' => $scoreData['score'],
-                'extracted_text' => $extractedText
+                'task_score_id'  => $score->id,
+                'score'          => $scoreData['score'],
+                'extracted_text' => $extractedText,
             ]);
 
             return response()->json([
-                'message' => 'Muvaffaqiyatli baholandi',
-                'score' => $score->score,
-                'feedback' => $score->feedback,
-                'max_score' => $task->userKpi->kpi->max_score ?? 10,
+                'message'   => 'Muvaffaqiyatli baholandi',
+                'score'     => $score->score,
+                'feedback'  => $score->feedback,
+                'max_score' => $userKpi->kpi->max_score ?? 10,
             ]);
         } catch (\Throwable $e) {
-            \Log::error('AI scoring failed for task ' . $id . ': ' . $e->getMessage());
-            
+            Log::error('AI scoring failed for task ' . $id . ': ' . $e->getMessage());
+
             return response()->json([
                 'message' => 'AI baholashda xatolik yuz berdi',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage()
             ], 500);
         }
     }

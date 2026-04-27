@@ -51,7 +51,7 @@ class WorkingKpiController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:2048',
-            'max_score' => 'required|integer|min:0',
+            'max_score' => 'required|numeric|min:0',
         ]);
 
         $kpi = Kpi::create(

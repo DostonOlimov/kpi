@@ -40,7 +40,7 @@
 
                             <div class="form-group"></div>
                                 <label>{{ __('Kpi vazni') }}</label>
-                                <input type="number" name="max_score" class="form-control" value="{{ old('max_score') }}" required>
+                                <input type="number" step="0.01" name="max_score" class="form-control" value="{{ old('max_score') }}" required>
                             </div>
                              <div class="form-group">
                                  <a class="btn btn-primary" href="{{ URL::previous() }}">

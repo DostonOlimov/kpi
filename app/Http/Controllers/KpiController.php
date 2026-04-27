@@ -15,7 +15,7 @@ class KpiController extends Controller
 {
     public function index()
     {
-        $kpis = Kpi::whereNull('parent_id')->with('children')->where('type','!=',Kpi::SELF_BY_PERSON)->paginate(10);
+        $kpis = Kpi::whereNull('parent_id')->with('children')->where('type', '!=', Kpi::SELF_BY_PERSON)->paginate(10);
         return view('kpis.index', compact('kpis'));
     }
 
@@ -52,28 +52,28 @@ class KpiController extends Controller
 
         return redirect()->route('kpis.index')->with('error', 'KPI ni o\'zgartirib bo\'lmaydi, chunki unga bog\'liq vazifalar mavjud.');
 
-//        $request->validate([
-//            'name' => 'required',
-//            'max_score' => 'nullable|integer',
-//            'parent_id' => 'nullable|exists:kpis,id',
-//        ]);
-//
-//        $kpi->update($request->all());
-//        return redirect()->route('kpis.index')->with('success', 'KPI muvaffaqiyatli o\'zgartirildi.');
+        //        $request->validate([
+        //            'name' => 'required',
+        //            'max_score' => 'nullable|integer',
+        //            'parent_id' => 'nullable|exists:kpis,id',
+        //        ]);
+        //
+        //        $kpi->update($request->all());
+        //        return redirect()->route('kpis.index')->with('success', 'KPI muvaffaqiyatli o\'zgartirildi.');
     }
 
     public function destroy(Kpi $kpi)
     {
         return redirect()->route('kpis.index')->with('error', 'KPI ni o\'chirish mumkin emas, chunki unga bog\'liq vazifalar, ballar yoki osti kpilar mavjud.');
-//        $hasScore = $kpi->user_kpis()->exists();
-//        $hasChild = $kpi->children()->exists();
+        //        $hasScore = $kpi->user_kpis()->exists();
+        //        $hasChild = $kpi->children()->exists();
 
-//        if ($hasScore || $hasChild) {
-//            return redirect()->route('kpis.index')->with('error', 'KPI ni o\'chirish mumkin emas, chunki unga bog\'liq vazifalar, ballar yoki osti kpilar mavjud.');
-//        }
-//
-//        $kpi->delete();
-//        return redirect()->route('kpis.index')->with('success', 'KPI muvaffaqiyatli o\'chirildi.');
+        //        if ($hasScore || $hasChild) {
+        //            return redirect()->route('kpis.index')->with('error', 'KPI ni o\'chirish mumkin emas, chunki unga bog\'liq vazifalar, ballar yoki osti kpilar mavjud.');
+        //        }
+        //
+        //        $kpi->delete();
+        //        return redirect()->route('kpis.index')->with('success', 'KPI muvaffaqiyatli o\'chirildi.');
     }
 
     /**
@@ -114,15 +114,15 @@ class KpiController extends Controller
 
         // Build query
         $query = User::with(['work_zone', 'role'])
-            ->whereHas('user_kpis', function($query) use ($month, $year) {
+            ->whereHas('user_kpis', function ($query) use ($month, $year) {
                 $query->where('month', $month)
-                      ->where('year', $year);
+                    ->where('year', $year);
             });
 
         // Filter by department if user is not admin
         if (auth()->user()->role_id == User::ROLE_DIRECTOR) {
             $query->where('work_zone_id', auth()->user()->work_zone_id)
-              ->where('role_id', User::ROLE_USER);
+                ->where('role_id', User::ROLE_USER);
         }
 
         // Apply work zone filters
@@ -135,17 +135,17 @@ class KpiController extends Controller
         }
 
         $users = $query
-            ->withCount(['user_kpis as total_kpis' => function($query) use ($month, $year) {
+            ->withCount(['user_kpis as total_kpis' => function ($query) use ($month, $year) {
                 $query->where('month', $month)
-                      ->where('year', $year);
+                    ->where('year', $year);
             }])
-            ->withSum(['user_kpis as total_target_score' => function($query) use ($month, $year) {
+            ->withSum(['user_kpis as total_target_score' => function ($query) use ($month, $year) {
                 $query->where('month', $month)
-                      ->where('year', $year);
+                    ->where('year', $year);
             }], 'target_score')
-            ->withSum(['user_kpis as total_current_score' => function($query) use ($month, $year) {
+            ->withSum(['user_kpis as total_current_score' => function ($query) use ($month, $year) {
                 $query->where('month', $month)
-                      ->where('year', $year);
+                    ->where('year', $year);
             }], 'current_score')
             ->get();
 
@@ -184,14 +184,14 @@ class KpiController extends Controller
             ->get();
 
         // Group user KPIs by parent KPI
-        $groupedKpis = $userKpis->groupBy(function($userKpi) {
+        $groupedKpis = $userKpis->groupBy(function ($userKpi) {
             return $userKpi->kpi->parent_id ?? $userKpi->kpi->id;
         });
 
         return view('user-kpis.user-detail', compact('user', 'parentKpis', 'groupedKpis', 'userKpis'));
     }
 
-     /**
+    /**
      * Display a scoring page for a specific KPI category (parent KPI type).
      */
     public function scoreKpiType($userId, $parentKpiId, Request $request)
@@ -201,10 +201,15 @@ class KpiController extends Controller
 
         if ($parentKpi->type == Kpi::ACTIVITY) {
             return redirect()->route('days.activity', $userId);
-        }elseif ($parentKpi->type == Kpi::BEHAVIOUR) {
+        } elseif ($parentKpi->type == Kpi::BEHAVIOUR) {
             return redirect()->route('commission.band_scores.list', Kpi::BEHAVIOUR);
-        }elseif ($parentKpi->type == Kpi::IJRO) {
+        } elseif ($parentKpi->type == Kpi::IJRO) {
             return redirect()->route('commission.band_scores.list', Kpi::IJRO);
+        } elseif ($parentKpi->type == Kpi::SELF_BY_PERSON) {
+            return redirect()->route('director.check_user', [
+                'type' => 2,
+                'employee' => $userId,
+            ]);
         }
 
         $userKpis = UserKpi::with(['kpi', 'score'])
@@ -221,7 +226,12 @@ class KpiController extends Controller
         $percentage   = $totalTarget > 0 ? round(($totalCurrent / $totalTarget) * 100, 1) : 0;
 
         return view('user-kpis.score-kpi-type', compact(
-            'user', 'parentKpi', 'userKpis', 'totalCurrent', 'totalTarget', 'percentage'
+            'user',
+            'parentKpi',
+            'userKpis',
+            'totalCurrent',
+            'totalTarget',
+            'percentage'
         ));
     }
 

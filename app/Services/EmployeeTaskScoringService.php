@@ -121,45 +121,50 @@ class EmployeeTaskScoringService
         ];
     }
 
+    /**
+     * Truncate text to a max number of characters, keeping the beginning and end.
+     */
+    protected function truncateText(string $text, int $maxChars = 3000): string
+    {
+        $text = preg_replace('/\s+/', ' ', trim($text));
+        if (mb_strlen($text) <= $maxChars) {
+            return $text;
+        }
+        $half = (int)($maxChars / 2) - 20;
+        $start = mb_substr($text, 0, $half);
+        $end   = mb_substr($text, -$half);
+        return $start . ' ... ' . $end;
+    }
+
     public function scoreWithGemini(string $text, $kpi, $task): array
     {
-        // Requires Google Gemini API client installed and configured
-        $apiKey = config('services.gemini.api_key'); // define in .env
-        
+        $apiKey = config('services.gemini.api_key');
+
         if (!$apiKey) {
             throw new \Exception('Gemini API key not configured');
         }
-        
+
         $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={$apiKey}";
 
-        $maxScore = $kpi->max_score ?? 10;
-        
+        $maxScore   = $kpi->max_score ?? 10;
+        $shortText  = $this->truncateText($text, 3000);
+
         $prompt = <<<EOT
-You are a performance evaluator.
+KPI: {$kpi->name} (max ball: {$maxScore})
+Vazifa: {$task->name}
+Tavsif: {$task->description}
 
-Evaluate the following employee report for the KPI "{$kpi->name}" (maximum score: {$maxScore}).
+Hisobot:
+{$shortText}
 
-TASK INFORMATION:
-Task Name: {$task->name}
-Task Description: {$task->description}
-
-EMPLOYEE'S SUBMISSION:
-{$text}
-
-Rate the submission on a scale of 1 to {$maxScore} considering:
-1. Quantity of tasks completed
-2. Quality of the report
-3. Relevance to the task
-
-IMPORTANT: You must provide both a score and feedback in Uzbek language.
-
-Your response must follow this EXACT format:
-Score: <number from 1 to {$maxScore}>
-Feedback: <2-3 sentences explanation in Uzbek>
+Yuqoridagi hisobotni 1 dan {$maxScore} gacha baholang (miqdor, sifat, vazifaga aloqadorlik asosida).
+Javob faqat quyidagi formatda bo'lsin (o'zbek tilida):
+Score: <raqam>
+Feedback: <2 gap izoh>
 EOT;
 
         try {
-            $response = Http::timeout(30)->post($url, [
+            $response = Http::timeout(45)->post($url, [
                 'contents' => [
                     [
                         'parts' => [
