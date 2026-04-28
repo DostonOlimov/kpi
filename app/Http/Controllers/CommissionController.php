@@ -298,11 +298,9 @@ class CommissionController extends Controller
      *
      * @return Application|Factory|View
      */
-    public function scoresList($id,Request $request)
+    public function scoresList($id, Request $request)
     {
-        if(!in_array(auth()->user()->role_id , [User::ROLE_ADMIN, User::ROLE_MANAGER]) ) {
-            return redirect()->back()->with('error', 'Sizda bu sahifaga kirish huquqi yo\'q!');
-        }
+        $this->authorize('commission.scoresList');
 
         $work_zone_id = $request->query('work_zone_id');
         $child_work_zone_id = $request->query('child_work_zone_id');

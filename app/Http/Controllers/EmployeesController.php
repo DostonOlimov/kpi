@@ -18,24 +18,25 @@ use Illuminate\Validation\Rule;
 use app\Models\User;
 use App\Models\Role;
 use App\Models\WorkZone;
+use Illuminate\Support\Facades\DB;
 
 class EmployeesController extends Controller
 {
     public function index(WorkZone $workZone, Request $request)
     {
-        $users = User::with('role')
-            ->with('work_zone')
+        $users = User::with('role', 'roles', 'work_zone')
             ->where('work_zone_id', $workZone->id)
             ->whereNotIn('role_id',[User::ROLE_ADMIN,User::ROLE_MANAGER])
             ->latest('id')
             ->paginate(20);
-        return view('employees.list', compact('users', 'workZone'));
+        $allRoles = Role::whereNotIn('id', [User::ROLE_USER, User::ROLE_ADMIN, User::ROLE_DIRECTOR])->get();
+        return view('employees.list', compact('users', 'workZone', 'allRoles'));
     }
     public function create(Request $request)
     {
         $id = $request->get('id');
         return view('employees.create', [
-            'roles' => Role::All(),
+            'roles' => Role::whereIn('id', [User::ROLE_USER, User::ROLE_MANAGER, User::ROLE_DIRECTOR])->get(),
             'works' => WorkZone::where('id', $id)->get(),
             'id' => $id
         ]);
@@ -76,6 +77,13 @@ class EmployeesController extends Controller
         }
 
         $user->save();
+
+        DB::table('user_roles')->insertOrIgnore([
+            'user_id'    => $user->id,
+            'role_id'    => $validated['role_id'],
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         Salaries::create([
             'user_id' => $user->id,
@@ -205,6 +213,52 @@ class EmployeesController extends Controller
         $user = User::find($id);
         $works = WorkZone::all();
         return view('employees.edit-password', compact('user'));
+    }
+
+    public function assignRole(Request $request, $user)
+    {
+        $request->validate([
+            'role_id' => ['required', 'integer', 'exists:roles,id'],
+        ]);
+
+        $userModel = User::findOrFail($user);
+
+        if ($request->role_id == $userModel->role_id) {
+            return response()->json(['message' => 'Bu rol allaqachon asosiy rol hisoblanadi.'], 422);
+        }
+
+        DB::table('user_roles')->insertOrIgnore([
+            'user_id'    => $userModel->id,
+            'role_id'    => $request->role_id,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $roles = $userModel->roles()->get(['roles.id', 'roles.name']);
+
+        return response()->json(['success' => true, 'roles' => $roles]);
+    }
+
+    public function removeRole(Request $request, $user)
+    {
+        $request->validate([
+            'role_id' => ['required', 'integer', 'exists:roles,id'],
+        ]);
+
+        $userModel = User::findOrFail($user);
+
+        if ($request->role_id == $userModel->role_id) {
+            return response()->json(['message' => "Asosiy rolni o'chirish mumkin emas."], 422);
+        }
+
+        DB::table('user_roles')
+            ->where('user_id', $userModel->id)
+            ->where('role_id', $request->role_id)
+            ->delete();
+
+        $roles = $userModel->roles()->get(['roles.id', 'roles.name']);
+
+        return response()->json(['success' => true, 'roles' => $roles]);
     }
 
     /**

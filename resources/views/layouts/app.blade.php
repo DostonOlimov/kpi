@@ -11,6 +11,7 @@
     <!-- Metadata -->
     <meta name="organization" content="">
     <meta name="author" content="Doston Olimov">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Page Title -->
     @if (app()->environment('production'))

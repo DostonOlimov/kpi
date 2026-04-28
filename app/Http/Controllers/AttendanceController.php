@@ -6,9 +6,7 @@ use App\Imports\AttendanceImport;
 use App\Imports\AttendanceImport2;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
-use Maatwebsite\Excel\Facades\Excel;
 
 class AttendanceController extends Controller
 {
@@ -59,7 +57,7 @@ class AttendanceController extends Controller
             $filePath = $request->file('file')->getRealPath();
 
             if ($type === 'kirish') {
-                $result = (new \App\Imports\AttendanceImport)->import($filePath);
+                $result = (new \App\Imports\AttendanceImport2)->import($filePath);
             } else {
                 $result = (new \App\Imports\AttendanceImport)->import($filePath);
             }

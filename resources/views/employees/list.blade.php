@@ -76,7 +76,28 @@
                                     {{-- <td>{{ number_format($user->salary, 0, '.', ' ') }} so'm</td> --}}
 
                                     <td>{{ $user->work_zone->name ?? '-' }}</td>
-                                    <td><span class="badge bg-primary">{{ $user->role->name ?? '-' }}</span></td>
+                                    <td>
+                                        {{-- Default role badge --}}
+                                        <span class="badge bg-primary me-1">{{ $user->role->name ?? '-' }}</span>
+                                        {{-- Extra roles from user_roles (exclude default role_id) --}}
+                                        @foreach($user->roles->where('id', '!=', $user->role_id) as $extraRole)
+                                            <span class="badge bg-secondary me-1 d-inline-flex align-items-center gap-1">
+                                                {{ $extraRole->name }}
+                                                <button type="button"
+                                                    class="btn-close btn-close-white remove-role-btn"
+                                                    style="font-size:0.55rem"
+                                                    data-user="{{ $user->id }}"
+                                                    data-role="{{ $extraRole->id }}"
+                                                    aria-label="Remove"></button>
+                                            </span>
+                                        @endforeach
+                                        <button class="btn btn-sm btn-outline-primary ms-1 assign-role-btn"
+                                            data-user="{{ $user->id }}"
+                                            data-default-role="{{ $user->role_id }}"
+                                            title="Rol qo'shish">
+                                            <i class="fa fa-plus"></i>
+                                        </button>
+                                    </td>
 
                                     <td>
                                         <a href="{{ route('employees.edit', $user->id) }}"
@@ -111,16 +132,105 @@
     </div>
 @endsection
 
+{{-- Assign Role Modal --}}
+<div class="modal fade" id="assignRoleModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title">Rol qo'shish</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <select id="roleSelect" class="form-select">
+                    <option value="">-- Rol tanlang --</option>
+                    @foreach($allRoles as $role)
+                        <option value="{{ $role->id }}">{{ $role->name }}</option>
+                    @endforeach
+                </select>
+                <div id="assignRoleError" class="text-danger mt-2 d-none"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor</button>
+                <button type="button" id="confirmAssignRole" class="btn btn-primary">Saqlash</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            let currentUserId = null;
+            let currentDefaultRole = null;
+            const assignModal = new bootstrap.Modal(document.getElementById('assignRoleModal'));
+            const roleSelect = document.getElementById('roleSelect');
+            const assignError = document.getElementById('assignRoleError');
 
+            // Open assign modal
+            document.querySelectorAll('.assign-role-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    currentUserId = this.dataset.user;
+                    currentDefaultRole = this.dataset.defaultRole;
+                    roleSelect.value = '';
+                    assignError.classList.add('d-none');
+                    assignError.textContent = '';
+                    // Disable the default role option
+                    Array.from(roleSelect.options).forEach(opt => {
+                        opt.disabled = opt.value == currentDefaultRole;
+                    });
+                    assignModal.show();
+                });
+            });
+
+            // Confirm assign role
+            document.getElementById('confirmAssignRole').addEventListener('click', function() {
+                if (!roleSelect.value) return;
+                fetch(`/users/${currentUserId}/assign-role`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
+                    },
+                    body: JSON.stringify({ role_id: roleSelect.value })
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        assignModal.hide();
+                        location.reload();
+                    } else {
+                        assignError.textContent = data.message || 'Xatolik yuz berdi';
+                        assignError.classList.remove('d-none');
+                    }
+                });
+            });
+
+            // Remove extra role
+            document.querySelectorAll('.remove-role-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const userId = this.dataset.user;
+                    const roleId = this.dataset.role;
+                    if (!confirm("Ushbu rolni o'chirishni xohlaysizmi?")) return;
+                    fetch(`/users/${userId}/remove-role`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
+                        },
+                        body: JSON.stringify({ role_id: roleId })
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success) location.reload();
+                    });
+                });
+            });
+
+            // Delete user
             document.querySelectorAll('.delete-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
-
                     Swal.fire({
                         title: "Haqiqatdan ham o'chirmoqchimisiz?",
                         text: "Bu amal qaytarib bo'lmaydi!",
@@ -135,7 +245,6 @@
                             window.location.href = this.dataset.url;
                         }
                     });
-
                 });
             });
 

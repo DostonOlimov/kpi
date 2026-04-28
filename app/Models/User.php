@@ -21,6 +21,9 @@ class User extends Authenticatable
     const ROLE_USER = 3;
     const ROLE_MANAGER = 4;
     const ROLE_ACCOUNTANT = 6;
+    const ROLE_RAHBAR = 7;
+    const ROLE_KADRLAR = 8;
+    const ROLE_IJRO = 9;
 
     const STATUS_ACTIVE = 'active';
     const STATUS_INACTIVE = 'inactive';
@@ -65,6 +68,11 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'user_roles');
+    }
+
     public function work_zone()
     {
         return $this->belongsTo(WorkZone::class);
@@ -101,6 +109,31 @@ class User extends Authenticatable
     public function getFullNameAttribute()
     {
         return $this->first_name. ' '. $this->last_name;
+    }
+
+    /**
+     * Check if the user has a given role (by role_id constant).
+     * Checks both the default role_id and the user_roles pivot table.
+     */
+    public function hasRole(int $roleId): bool
+    {
+        if ($this->role_id === $roleId) {
+            return true;
+        }
+        return $this->roles()->where('roles.id', $roleId)->exists();
+    }
+
+    /**
+     * Check if the user has any of the given roles.
+     */
+    public function hasAnyRole(array $roleIds): bool
+    {
+        foreach ($roleIds as $roleId) {
+            if ($this->hasRole($roleId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected static function booted()

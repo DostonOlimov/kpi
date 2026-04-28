@@ -170,6 +170,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/tasks/update/{id}', [TaskController::class, 'update']);
     Route::delete('/tasks/{id}', [TaskController::class, 'destroy']);
     Route::post('/tasks/{id}/ai-score', [TaskController::class, 'aiScore']);
+    Route::post('/users/{user}/assign-role', [EmployeesController::class, 'assignRole'])->name('employees.assign-role');
+    Route::delete('/users/{user}/remove-role', [EmployeesController::class, 'removeRole'])->name('employees.remove-role');
 
     Route::get('/user-kpis', [UserKPIController::class, 'index'])->name('user-kpis.index');
     Route::get('/user-kpis/user/{userId}', [UserKPIController::class, 'getUserKPIs'])->name('user-kpis.user');
