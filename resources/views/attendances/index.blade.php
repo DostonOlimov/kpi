@@ -17,74 +17,72 @@
                     :autoSubmit="true" 
                 />
         <div class="card">
-            <div class="card-header">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div>
-                        <h5 class="card-title mb-0">
-                            <i class="fe fe-calendar mr-2"></i>Davomat sanasi: {{ date('d.m.Y', strtotime($date)) }}
-                        </h5>
-                        @if(session('message'))
-                            <div class="alert alert-success mt-2 mb-0">
-                                <i class="fa fa-check-circle mr-1"></i>{{ session('message') }}
-                            </div>
-                        @endif
+            <div class="card-header" style="background: linear-gradient(135deg, #3c4b64 0%, #4f6080 100%); border-bottom: none; padding: 1rem 1.5rem;">
+
+                @if(session('message'))
+                    <div class="alert alert-success py-2 mb-3">
+                        <i class="fa fa-check-circle mr-1"></i>{{ session('message') }}
                     </div>
-                    
-                    <!-- Upload Button -->
-                    <a href="{{ route('attendances.upload', ['date' => $date]) }}" class="btn btn-primary">
-                        <i class="fa fa-upload mr-1"></i> Excel yuklash
+                @endif
+
+                {{-- Row 1: Month multi-select --}}
+                @php
+                    $monthNames = [1=>'Yanvar',2=>'Fevral',3=>'Mart',4=>'Aprel',5=>'May',6=>'Iyun',
+                                   7=>'Iyul',8=>'Avgust',9=>'Sentabr',10=>'Oktobar',11=>'Noyabr',12=>'Dekabr'];
+                @endphp
+                <div style="padding-right: 50px; display: flex; align-items: center;">
+                <form id="filterForm" action="{{ route('attendances.index') }}" method="GET">
+                    {{-- Month pills row --}}
+                    <div class="d-flex align-items-center" style="gap:6px; flex-wrap:wrap; margin-bottom:10px;">
+                        <small style="color:rgba(255, 255, 255, 0.949);font-size:0.75rem;flex-shrink:0;min-width:36px;">Oy:</small>
+                        @foreach ($monthNames as $num => $name)
+                            <button type="button"
+                                    onclick="toggleMonth({{ $num }}, this)"
+                                    class="btn btn-sm month-btn {{ in_array($num, $selected) ? 'btn-light' : 'btn-outline-light' }}"
+                                    style="border-radius:20px;font-size:0.82rem;padding:5px 15px;line-height:1.4;">
+                                {{ $name }}
+                            </button>
+                        @endforeach
+                        <div id="hiddenMonths">
+                            @foreach ($selected as $s)
+                                <input type="hidden" name="months[]" value="{{ $s }}">
+                            @endforeach
+                        </div>
+                    </div>
+
+                    {{-- Day filter row (only when single month selected) --}}
+                    @if($daysInMonth)
+                        <div class="d-flex align-items-center" style="gap:5px; flex-wrap:wrap;">
+                            <small style="color:rgba(255,255,255,0.65);font-size:0.75rem;flex-shrink:0;min-width:36px;">Kun:</small>
+                            @for ($d = 1; $d <= $daysInMonth; $d++)
+                                <button type="button"
+                                        onclick="selectDay({{ $d }}, this)"
+                                        class="btn btn-sm day-btn {{ (int)$day === $d ? 'btn-warning' : 'btn-outline-light' }}"
+                                        style="border-radius:50%;width:30px;height:30px;padding:0;font-size:0.73rem;line-height:30px;flex-shrink:0;">
+                                    {{ $d }}
+                                </button>
+                            @endfor
+                            @if($day)
+                                <button type="button" onclick="clearDay()"
+                                        class="btn btn-sm btn-outline-light"
+                                        style="border-radius:20px;font-size:0.75rem;padding:3px 12px;margin-left:4px;flex-shrink:0;">
+                                    <i class="fa fa-times mr-1"></i>Tozalash
+                                </button>
+                            @endif
+                            <input type="hidden" id="hiddenDay" name="day" value="{{ $day ?? '' }}">
+                        </div>
+                    @endif
+                </form>
+                </div>
+                                {{-- Top row: title + upload button --}}
+               <div class="d-flex justify-content-end mb-3">
+                    <a href="{{ route('attendances.upload') }}" 
+                    class="btn btn-light"
+                    style="font-weight:600; font-size:0.95rem; padding:8px 18px; border-radius:8px;">
+                        <i class="fa fa-upload mr-1"></i> Ma'lumotlarni yuklash
                     </a>
                 </div>
 
-                
-                <!-- Filters Section -->
-                <div class="filters-wrapper bg-light p-3 rounded">
-                    <div class="row align-items-center">
-                        <div class="col-md-8">
-                            <label class="form-label mb-2"><strong><i class="fe fe-clock mr-1"></i>Tezkor sana:</strong></label>
-                            <div class="btn-group btn-group-sm" role="group">
-                                <a href="{{ route('attendances.index', ['date' => now()->format('Y-m-d')]) }}" 
-                                   class="btn {{ $date == now()->format('Y-m-d') ? 'btn-primary' : 'btn-outline-primary' }}">
-                                    <i class="fa fa-calendar-day"></i> Bugun
-                                </a>
-                                <a href="{{ route('attendances.index', ['date' => now()->subDay()->format('Y-m-d')]) }}" 
-                                   class="btn {{ $date == now()->format('Y-m-d') ? 'btn-outline-primary' : 'btn-outline-primary' }}">
-                                    <i class="fa fa-calendar-minus"></i> Kecha
-                                </a>
-                                <a href="{{ route('attendances.index', ['date' => now()->subDays(7)->format('Y-m-d')]) }}" 
-                                   class="btn {{ $date == now()->subDays(7)->format('Y-m-d') ? 'btn-primary' : 'btn-outline-primary' }}">
-                                    <i class="fa fa-calendar-week"></i> 7 kun oldin
-                                </a>
-                                <a href="{{ route('attendances.index', ['date' => now()->subDays(14)->format('Y-m-d')]) }}" 
-                                   class="btn {{ $date == now()->subDays(14)->format('Y-m-d') ? 'btn-primary' : 'btn-outline-primary' }}">
-                                    <i class="fa fa-calendar-alt"></i> 2 hafta oldin
-                                </a>
-                                <a href="{{ route('attendances.index', ['date' => now()->subDays(30)->format('Y-m-d')]) }}" 
-                                   class="btn {{ $date == now()->subDays(30)->format('Y-m-d') ? 'btn-primary' : 'btn-outline-primary' }}">
-                                    <i class="fa fa-calendar"></i> 1 oy oldin
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <form action="{{ route('attendances.index') }}" method="GET">
-                                <div class="form-group mb-0">
-                                    <label class="form-label mb-2"><strong><i class="fe fe-filter mr-1"></i>Maxsus sana:</strong></label>
-                                    <div class="input-group">
-                                        <input type="date" name="date" id="date" class="form-control" 
-                                               value="{{ $date }}" max="{{ now()->format('Y-m-d') }}">
-                                        <div class="input-group-append">
-                                            <button type="submit" class="btn btn-primary">
-                                                <i class="fa fa-search"></i> Qidirish
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-              
             </div>
 
             <div class="card-body">
@@ -93,6 +91,7 @@
                         <thead class="thead-light">
                             <tr class="text-center">
                                 <th>#</th>
+                                <th>Sana</th>
                                 <th>Ism</th>
                                 <th>Familiya</th>
                                 <th>Bo'lim</th>
@@ -109,6 +108,7 @@
                             @forelse ($attendances as $index => $attendance)
                                 <tr class="text-center align-middle">
                                     <td>{{ $attendances->firstItem() + $index }}</td>
+                                    <td>{{ $attendance->date ? \Carbon\Carbon::parse($attendance->date)->format('d.m.Y') : '-' }}</td>
                                     
                                     @if($attendance->user)
                                         <td><strong>{{ $attendance->user->first_name }}</strong></td>
@@ -179,7 +179,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="10" class="text-center text-muted py-4">
+                                    <td colspan="11" class="text-center text-muted py-4">
                                         <i class="fe fe-alert-circle fa-2x mb-2"></i>
                                         <p class="mb-0">Ushbu sanada davomat ma'lumotlari topilmadi</p>
                                     </td>
@@ -191,7 +191,7 @@
 
                 <!-- Pagination -->
                 <div class="mt-3">
-                    {{ $attendances->appends(['date' => $date])->links() }}
+                    {{ $attendances->links() }}
                 </div>
             </div>
         </div>
@@ -251,23 +251,66 @@
 
 @section('scripts')
 <script>
+    let selectedMonths = @json($selected);
+
+    function syncHidden() {
+        const container = document.getElementById('hiddenMonths');
+        container.innerHTML = '';
+        selectedMonths.forEach(m => {
+            const inp = document.createElement('input');
+            inp.type = 'hidden';
+            inp.name = 'months[]';
+            inp.value = m;
+            container.appendChild(inp);
+        });
+    }
+
+    function toggleMonth(num, btn) {
+        const idx = selectedMonths.indexOf(num);
+        if (idx > -1) {
+            if (selectedMonths.length === 1) return;
+            selectedMonths.splice(idx, 1);
+            btn.classList.remove('btn-light');
+            btn.classList.add('btn-outline-light');
+        } else {
+            selectedMonths.push(num);
+            btn.classList.remove('btn-outline-light');
+            btn.classList.add('btn-light');
+        }
+        // reset day when months change
+        const hd = document.getElementById('hiddenDay');
+        if (hd) hd.value = '';
+        syncHidden();
+        document.getElementById('filterForm').submit();
+    }
+
+    function selectDay(d, btn) {
+        document.getElementById('hiddenDay').value = d;
+        document.querySelectorAll('.day-btn').forEach(b => {
+            b.classList.remove('btn-warning');
+            b.classList.add('btn-outline-light');
+        });
+        btn.classList.add('btn-warning');
+        btn.classList.remove('btn-outline-light');
+        syncHidden();
+        document.getElementById('filterForm').submit();
+    }
+
+    function clearDay() {
+        document.getElementById('hiddenDay').value = '';
+        syncHidden();
+        document.getElementById('filterForm').submit();
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
-        // Edit attendance modal
         document.querySelectorAll('.edit-attendance-btn').forEach(button => {
             button.addEventListener('click', function() {
                 const id = this.dataset.id;
                 const status = this.dataset.status || '';
                 const comment = this.dataset.comment || '';
-                const date = this.dataset.date;
-                
-                // Set form action
                 document.getElementById('editAttendanceForm').action = '/attendances/' + id;
-                
-                // Fill form fields
                 document.getElementById('edit_status').value = status;
                 document.getElementById('edit_comment').value = comment;
-                
-                // Show modal
                 $('#editAttendanceModal').modal('show');
             });
         });

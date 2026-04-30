@@ -47,6 +47,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/attendances/upload', [AttendanceController::class, 'showUploadForm'])->name('attendances.upload');
     Route::post('/attendances/import', [AttendanceController::class, 'import'])->name('attendances.import');
     Route::put('/attendances/{id}', [AttendanceController::class, 'update'])->name('attendances.update');
+    Route::get('/my-attendances', [AttendanceController::class, 'myAttendances'])->name('attendances.my');
 
     Route::resource('edodocuments', EdodocumentController::class);
     Route::post('/edodocuments/{id}/complete', [EdodocumentController::class, 'complete'])->name('edodocuments.complete');

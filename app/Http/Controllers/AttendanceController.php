@@ -7,34 +7,39 @@ use App\Imports\AttendanceImport2;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\DB;
 
 class AttendanceController extends Controller
 {
-    /**
-     * Display attendances filtered by date.
-     * Default date is today.
-     *
-     * @param Request $request
-     * @return View
-     */
     public function index(Request $request)
     {
-        $date = $request->input('date', now()->format('Y-m-d'));
+        $year     = session('year') ?? (int) date('Y');
+        $selected = array_filter(array_map('intval', (array) $request->input('months', [])));
+        $day      = $request->input('day');
 
-        $attendances = Attendance::where('date', $date)
+        if (empty($selected)) {
+            $selected = [(int) date('m')];
+        }
+
+        $query = Attendance::whereYear('date', $year)
+            ->whereIn(DB::raw('MONTH(date)'), $selected)
+            ->orderBy('date', 'asc')
             ->orderBy('first_in', 'asc')
-            ->with('user')
-            ->paginate(50);
+            ->with('user');
 
-        return view('attendances.index', compact('attendances', 'date'));
+        if ($day) {
+            $query->whereDay('date', (int) $day);
+        }
+
+        $attendances = $query->paginate(50)->appends($request->query());
+
+        $daysInMonth = (count($selected) === 1)
+            ? cal_days_in_month(CAL_GREGORIAN, $selected[0], $year)
+            : null;
+
+        return view('attendances.index', compact('attendances', 'year', 'selected', 'day', 'daysInMonth'));
     }
 
-    /**
-     * Show the upload form.
-     *
-     * @param Request $request
-     * @return View
-     */
     public function showUploadForm(Request $request)
     {
         $date = $request->input('date', now()->format('Y-m-d'));
@@ -76,13 +81,6 @@ class AttendanceController extends Controller
         }
     }
 
-    /**
-     * Update attendance status and comment.
-     *
-     * @param Request $request
-     * @param int $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function update(Request $request, $id)
     {
         $attendance = Attendance::findOrFail($id);
@@ -97,7 +95,29 @@ class AttendanceController extends Controller
             'comment' => $validated['comment'] ?? $attendance->comment,
         ]);
 
-        return redirect()->route('attendances.index', ['date' => $attendance->date])
+        return redirect()->route('attendances.index')
             ->with('message', 'Davomat holati muvaffaqiyatli yangilandi!');
+    }
+
+    /**
+     * Display the authenticated user's own attendance records.
+     */
+    public function myAttendances(Request $request)
+    {
+        $user     = auth()->user();
+        $year     = session('year') ?? (int) date('Y');
+        $selected = array_filter(array_map('intval', (array) $request->input('months', [])));
+
+        if (empty($selected)) {
+            $selected = [(int) date('m')];
+        }
+
+        $attendances = Attendance::where('external_id', $user->ch_id)
+            ->whereYear('date', $year)
+            ->whereIn(DB::raw('MONTH(date)'), $selected)
+            ->orderBy('date', 'asc')
+            ->get();
+
+        return view('attendances.my', compact('attendances', 'year', 'selected'));
     }
 }
