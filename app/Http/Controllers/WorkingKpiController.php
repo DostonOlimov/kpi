@@ -22,13 +22,12 @@ class WorkingKpiController extends Controller
                         $query->select('id')
                             ->from('work_zones')
                             ->where('parent_id', $workZone->id);
-                    })
-            ->where('id', '!=', auth()->id());
+                    });
 
         // Filter by department if user is not admin
         if (auth()->user()->role_id == User::ROLE_DIRECTOR) {
             $query->where('work_zone_id', auth()->user()->work_zone_id)
-                ->where('role_id', User::ROLE_USER);
+                ->whereIn('role_id', [User::ROLE_USER, User::ROLE_DIRECTOR]);
         }
 
         // Apply work zone filter if provided
