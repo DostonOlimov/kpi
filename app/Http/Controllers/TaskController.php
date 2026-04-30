@@ -19,7 +19,7 @@ class TaskController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
+            'title' => 'required|string|max:1024',
             'description' => 'required',
             'child_id' => 'required',
             'file' => 'nullable|file|max:5120|mimes:doc,docx,xls,xlsx,pdf',
@@ -47,7 +47,7 @@ class TaskController extends Controller
     public function update($id, Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
+            'title' => 'required|string|max:1024',
             'description' => 'required|string',
             'file' => 'nullable|file|max:5120|mimes:doc,docx,xls,xlsx,pdf',
         ]);
