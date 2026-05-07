@@ -1,37 +1,31 @@
 /* Custom Styles */
-.kpi-selector-wrapper {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+
+/* KPI pill buttons */
+.kpi-pill-btn {
+    border-radius: 24px !important;
+    font-size: 0.92rem !important;
+    padding: 8px 22px !important;
+    font-weight: 500 !important;
+    border: 1.5px solid #4f6080 !important;
+    background: #fff;
+    color: #4f6080;
+    box-shadow: none;
+    transition: all 0.2s ease !important;
+    line-height: 1.4;
 }
 
-.kpi-selector-wrapper .form-label {
-    color: white;
-    font-weight: 600;
-    margin-bottom: 10px;
-    font-size: 1.1rem;
-}
-
-.kpi-select {
-    border: none;
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-size: 1rem;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    background-color: white;
-}
-
-.kpi-select:focus {
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
-    border-color: transparent;
+.kpi-pill-btn:hover {
+    background: #eef1f6 !important;
+    color: #3c4b64 !important;
     transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(63, 98, 128, 0.15) !important;
 }
 
-.kpi-select option {
-    padding: 10px;
-    font-size: 1rem;
+.kpi-pill-btn.kpi-active {
+    background: linear-gradient(135deg, #3c4b64, #4f6080) !important;
+    color: #fff !important;
+    box-shadow: 0 3px 10px rgba(63, 98, 128, 0.4) !important;
+    border-color: transparent !important;
 }
 
 .stats-card {
@@ -98,14 +92,11 @@
 }
 
 .loading-indicator {
-    background: #e3f2fd;
-    color: #1976d2;
-    padding: 10px 15px;
-    border-radius: 8px;
+    font-size: 0.82rem;
     font-weight: 500;
     display: flex;
     align-items: center;
-    justify-content: center;
+    color: rgba(255, 255, 255, 0.85);
 }
 
 .kpi-score {

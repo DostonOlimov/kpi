@@ -55,34 +55,40 @@
         </div>
 
         <!-- Work Zone Filter Component -->
-        <x-work-zone-filter 
-            :actionUrl="route('commission.band_scores.list', $id)" 
-            :showLabel="true" 
-            :autoSubmit="true" 
+        <x-work-zone-filter
+            :actionUrl="route('commission.band_scores.list', $id)"
+            :showLabel="true"
+            :autoSubmit="true"
         />
 
         <!-- KPI Selection -->
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <div class="kpi-selector-wrapper">
-                    <label for="kpiSelect" class="form-label">
-                        <i class="fa fa-chart-line me-2"></i>Ko'rsatkichni tanlang
-                    </label>
-                    <select id="kpiSelect" class="form-select kpi-select">
-                        <option value="">Ko'rsatkichni tanlang...</option>
-                        @foreach($kpis as $kpi)
-                            <option value="{{ $kpi->id }}" {{ $selectedKpiId == $kpi->id ? 'selected' : '' }}>
-                                {{ $kpi->name }}
-                            </option>
-                        @endforeach
-                    </select>
+        <div class="card mb-4" style="border:none;box-shadow:0 4px 16px rgba(0,0,0,0.1);border-radius:14px;overflow:hidden;">
+            <div class="card-header d-flex align-items-center justify-content-between" style="background:linear-gradient(135deg,#3c4b64 0%,#4f6080 100%);border-bottom:2px solid rgba(255,255,255,0.1);padding:1rem 1.5rem;">
+                <div class="d-flex align-items-center" style="gap:0.75rem;">
+                    <div style="width:40px;height:40px;background:rgba(255,255,255,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i class="fa fa-list" style="color:#fff;font-size:1.1rem;"></i>
+                    </div>
+                    <div>
+                        <span style="color:#fff;font-weight:600;font-size:1rem;display:block;line-height:1.2;">Ko'rsatkichni tanlang</span>
+                        <small style="color:rgba(255,255,255,0.55);font-size:0.75rem;">{{ $title }}</small>
+                    </div>
+                </div>
+                <div class="loading-indicator d-none" id="loadingIndicator">
+                    <div class="spinner-border spinner-border-sm me-1" role="status" style="width:14px;height:14px;border-width:2px;"></div>
+                    Yuklanmoqda...
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="loading-indicator d-none" id="loadingIndicator">
-                    <div class="spinner-border spinner-border-sm me-2" role="status"></div>
-                    Ma'lumotlar yuklanmoqda...
+            <div class="card-body" style="background:#f4f6fb;padding:1.1rem 1.5rem;">
+                <div class="d-flex align-items-center flex-wrap" style="gap:10px;">
+                    @foreach($kpis as $kpi)
+                        <button type="button"
+                                onclick="selectKpi({{ $kpi->id }}, this)"
+                                class="btn kpi-pill-btn {{ $selectedKpiId == $kpi->id ? 'kpi-active' : '' }}">
+                            {{ $kpi->name }}
+                        </button>
+                    @endforeach
                 </div>
+                <input type="hidden" id="kpiSelect" value="{{ $selectedKpiId ?? '' }}">
             </div>
         </div>
 
@@ -117,7 +123,6 @@
                                                  data-user-id="{{ $user->id }}"
                                                  data-user-name="{{ $user->first_name . ' '.$user->last_name }}">
                                                 <div class="kpi-content row" data-user-id="{{ $user->id }}">
-                                                    <!-- KPI content will be loaded here -->
                                                     <div class="text-muted">Ko'rsatkichni tanlang</div>
                                                 </div>
                                             </div>
@@ -132,49 +137,14 @@
             @endforeach
         </div>
     </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const kpiSelect = document.getElementById('kpiSelect');
             const loadingIndicator = document.getElementById('loadingIndicator');
 
             // Initialize tooltips
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
-
-            kpiSelect.addEventListener('change', function() {
-                const selectedKpiId = this.value;
-
-                // Save selected KPI to session
-                if (selectedKpiId) {
-                    fetch('/commission-profile/save-selected-kpi', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        body: JSON.stringify({
-                            kpi_id: selectedKpiId,
-                            kpi_type: '{{ $id }}'
-                        })
-                    }).catch(error => {
-                        console.error('Error saving KPI to session:', error);
-                    });
-                }
-
-                if (!selectedKpiId) {
-                    // Reset all KPI content
-                    resetKpiContent();
-                    return;
-                }
-
-                // Show loading indicator
-                showLoading(true);
-
-                // Update KPI content for all users
-                updateKpiContent(selectedKpiId);
-            });
+            tooltipTriggerList.map(function(el) { return new bootstrap.Tooltip(el); });
 
             function showLoading(show) {
                 if (show) {
@@ -185,89 +155,116 @@
             }
 
             function resetKpiContent() {
-                const kpiContents = document.querySelectorAll('.kpi-content');
-                kpiContents.forEach(content => {
+                document.querySelectorAll('.kpi-content').forEach(content => {
                     content.innerHTML = '<div class="text-muted">Ko\'rsatkichni tanlang</div>';
                 });
             }
 
             function updateKpiContent(kpiId) {
-                // Get all user rows
                 const userRows = document.querySelectorAll('.user-row');
-
-                // Simulate loading delay
                 setTimeout(() => {
                     userRows.forEach(row => {
                         const userId = row.dataset.userId;
                         const kpiContent = row.querySelector('.kpi-content');
-
-                        // Make AJAX request to get KPI data for this user
                         fetchUserKpiData(userId, kpiId)
-                            .then(data => {
-                                updateUserKpiDisplay(kpiContent, data, userId, kpiId);
-                            })
+                            .then(data => updateUserKpiDisplay(kpiContent, data, userId, kpiId))
                             .catch(error => {
                                 console.error('Error fetching KPI data:', error);
                                 kpiContent.innerHTML = '<div class="text-danger">Xatolik yuz berdi</div>';
                             });
                     });
-
                     showLoading(false);
                 }, 500);
             }
 
             async function fetchUserKpiData(userId, kpiId) {
-
-                    const response = await fetch(`/api/user-kpi-data/${userId}/${kpiId}`, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-
-                        }
-                    });
-                    return await response.json();
+                const response = await fetch(`/api/user-kpi-data/${userId}/${kpiId}`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                return await response.json();
             }
 
             function updateUserKpiDisplay(container, data, userId, kpiId) {
+                const ATTENDANCE_KPI_ID = {{ \App\Models\Kpi::BEHAVIOUR == $id ? 8 : 0 }};
+                const isAttendanceKpi  = (parseInt(kpiId) === ATTENDANCE_KPI_ID);
+
                 let html = '';
-
                 if (data.hasScore && data.currentScore) {
+                    const editUrl = isAttendanceKpi
+                        ? `/commission-profile/attendance-score/${kpiId}/${userId}`
+                        : `/commission-profile/check-user-edit/${kpiId}/${userId}`;
                     html = `
-                <div class="kpi-score col-md-1 text-center"  >${data.currentScore}</div>
-                <div class="working-days-display col-md-11">
-                    <div class="action-buttons p-2">
-                        <a href="/commission-profile/check-user-edit/${kpiId}/${userId}"
-                           class="btn btn-primary btn-sm me-1 action-btn"
-                           data-bs-toggle="tooltip"
-                           title="Xodimni tekshirish">
-                            <i class="fa fa-pencil me-1 text-white"></i>
-                            <span class="d-none d-lg-inline">Tahrirlash</span>
-                        </a>
-                    </div>
-                </div>
-            `;
+                        <div class="kpi-score col-md-1 text-center">${data.currentScore}</div>
+                        <div class="working-days-display col-md-11">
+                            <div class="action-buttons p-2">
+                                <a href="${editUrl}"
+                                   class="btn btn-primary btn-sm me-1 action-btn"
+                                   data-bs-toggle="tooltip" title="Tahrirlash">
+                                    <i class="fa fa-pencil me-1 text-white"></i>
+                                    <span class="d-none d-lg-inline">Tahrirlash</span>
+                                </a>
+                            </div>
+                        </div>`;
                 } else {
+                    const addUrl = isAttendanceKpi
+                        ? `/commission-profile/attendance-score/${kpiId}/${userId}`
+                        : `/commission-profile/check-user/${kpiId}/${userId}`;
                     html = `
-                <div class="working-days-display">
-                    <div class="action-buttons">
-                        <a href="/commission-profile/check-user/${kpiId}/${userId}"
-                           class="btn btn-success btn-sm me-1 action-btn"
-                           data-bs-toggle="tooltip"
-                           title="Xodimni tekshirish">
-                            <i class="fa fa-plus me-1 text-white"></i>
-                            <span class="d-none d-lg-inline">Natijalarni qo'shish</span>
-                        </a>
-                    </div>
-                </div>
-            `;
+                        <div class="working-days-display">
+                            <div class="action-buttons">
+                                <a href="${addUrl}"
+                                   class="btn btn-success btn-sm me-1 action-btn"
+                                   data-bs-toggle="tooltip" title="Baholash">
+                                    <i class="fa fa-plus me-1 text-white"></i>
+                                    <span class="d-none d-lg-inline">Natijalarni qo'shish</span>
+                                </a>
+                            </div>
+                        </div>`;
                 }
-
                 container.innerHTML = html;
             }
 
-            // Auto-select KPI if one was previously selected
-            if (kpiSelect.value) {
-                kpiSelect.dispatchEvent(new Event('change'));
+            window.selectKpi = function(kpiId, btn) {
+                // Toggle active styles
+                document.querySelectorAll('.kpi-pill-btn').forEach(b => {
+                    b.classList.remove('kpi-active');
+                    b.style.background = '#fff';
+                    b.style.color = '#4f6080';
+                    b.style.boxShadow = 'none';
+                });
+                btn.classList.add('kpi-active');
+                btn.style.background = 'linear-gradient(135deg,#3c4b64,#4f6080)';
+                btn.style.color = '#fff';
+                btn.style.boxShadow = '0 2px 6px rgba(63,98,128,0.35)';
+
+                // Save selected KPI to session
+                fetch('/commission-profile/save-selected-kpi', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        kpi_id: kpiId,
+                        kpi_type: '{{ $id }}'
+                    })
+                }).catch(error => console.error('Error saving KPI to session:', error));
+
+                if (!kpiId) {
+                    resetKpiContent();
+                    return;
+                }
+
+                showLoading(true);
+                updateKpiContent(kpiId);
+            };
+
+            // Auto-load if KPI was previously selected
+            const preselected = document.getElementById('kpiSelect').value;
+            if (preselected) {
+                showLoading(true);
+                updateKpiContent(preselected);
             }
         });
     </script>

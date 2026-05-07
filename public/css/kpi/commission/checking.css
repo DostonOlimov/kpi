@@ -493,6 +493,266 @@ body {
     50% { opacity: 0.7; }
 }
 
+/* ===== Attendance Summary Cards ===== */
+.att-card {
+    position: relative;
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.25rem 1.1rem 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid var(--border-color);
+    transition: all 0.35s cubic-bezier(.4,0,.2,1);
+    overflow: hidden;
+}
+
+.att-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: 16px 16px 0 0;
+    transition: height 0.3s ease;
+}
+
+.att-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+
+.att-card:hover::before {
+    height: 4px;
+}
+
+/* Color variants – top accent bar + icon tint */
+.att-card--working::before { background: linear-gradient(90deg, #0ea5e9, #38bdf8); }
+.att-card--total::before  { background: linear-gradient(90deg, #3c4b64, #4f6080); }
+.att-card--present::before { background: linear-gradient(90deg, #10b981, #34d399); }
+.att-card--absent::before  { background: linear-gradient(90deg, #ef4444, #f87171); }
+.att-card--excused::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.att-card--late::before    { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+.att-card--early::before   { background: linear-gradient(90deg, #f97316, #fb923c); }
+
+/* Header row: icon + percentage */
+.att-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.6rem;
+}
+
+.att-card__icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    transition: transform 0.3s ease;
+}
+
+.att-card:hover .att-card__icon {
+    transform: scale(1.1);
+}
+
+.att-card--working .att-card__icon { background: rgba(14,165,233,0.1); color: #0ea5e9; }
+.att-card--total  .att-card__icon { background: rgba(60,75,100,0.1);  color: #3c4b64; }
+.att-card--present .att-card__icon { background: rgba(16,185,129,0.1); color: #10b981; }
+.att-card--absent  .att-card__icon { background: rgba(239,68,68,0.1);  color: #ef4444; }
+.att-card--excused .att-card__icon { background: rgba(245,158,11,0.1); color: #f59e0b; }
+.att-card--late    .att-card__icon { background: rgba(139,92,246,0.1);  color: #8b5cf6; }
+.att-card--early   .att-card__icon { background: rgba(249,115,22,0.1); color: #f97316; }
+
+.att-card__pct {
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 20px;
+    padding: 2px 10px;
+}
+
+.att-card--working .att-card__pct { background: rgba(14,165,233,0.1); color: #0ea5e9; }
+.att-card--total  .att-card__pct { background: rgba(60,75,100,0.08);  color: #3c4b64; }
+.att-card--present .att-card__pct { background: rgba(16,185,129,0.1); color: #10b981; }
+.att-card--absent  .att-card__pct { background: rgba(239,68,68,0.1);  color: #ef4444; }
+.att-card--excused .att-card__pct { background: rgba(245,158,11,0.1); color: #f59e0b; }
+.att-card--late    .att-card__pct { background: rgba(139,92,246,0.1);  color: #8b5cf6; }
+.att-card--early   .att-card__pct { background: rgba(249,115,22,0.1); color: #f97316; }
+
+/* Number */
+.att-card__number {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--text-primary);
+    margin-bottom: 0.15rem;
+}
+
+/* Label */
+.att-card__label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+/* Mini progress bar */
+.att-card__bar {
+    height: 4px;
+    background: #f1f5f9;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.att-card__bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.8s cubic-bezier(.4,0,.2,1);
+}
+
+.att-card--working .att-card__bar-fill { background: linear-gradient(90deg, #0ea5e9, #38bdf8); }
+.att-card--total  .att-card__bar-fill { background: linear-gradient(90deg, #3c4b64, #4f6080); }
+.att-card--present .att-card__bar-fill { background: linear-gradient(90deg, #10b981, #34d399); }
+.att-card--absent  .att-card__bar-fill { background: linear-gradient(90deg, #ef4444, #f87171); }
+.att-card--excused .att-card__bar-fill { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.att-card--late    .att-card__bar-fill { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+.att-card--early   .att-card__bar-fill { background: linear-gradient(90deg, #f97316, #fb923c); }
+
+/* ===== Penalty Calculation Section ===== */
+.penalty-section {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.penalty-header {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+.penalty-header__icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #6366f1, #818cf8);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+
+.penalty-header__title {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.penalty-table-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    margin-bottom: 1rem;
+}
+
+.penalty-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+}
+
+.penalty-table thead th {
+    background: #f8fafc;
+    padding: 0.6rem 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    border-bottom: 2px solid var(--border-color);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.penalty-table tbody td {
+    padding: 0.65rem 0.85rem;
+    border-bottom: 1px solid #f1f5f9;
+    color: var(--text-primary);
+}
+
+.penalty-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.penalty-table tfoot td {
+    padding: 0.65rem 0.85rem;
+    border-top: 2px solid var(--border-color);
+}
+
+.penalty-total-row td {
+    background: #fef2f2;
+    font-weight: 700;
+    font-size: 0.92rem;
+}
+
+.penalty-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+.penalty-result {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--border-color);
+}
+
+.penalty-result__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.35rem 0;
+}
+
+.penalty-result__label {
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.penalty-result__value {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.penalty-result__divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 0.5rem 0;
+}
+
+.penalty-result__final {
+    padding-top: 0.3rem;
+}
+
+.penalty-result__final .penalty-result__label {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+/* ===== Responsive ===== */
 @media (max-width: 768px) {
     .card-header h1 {
         font-size: 2rem;
@@ -508,6 +768,20 @@ body {
 
     .criteria-card {
         padding: 1.5rem;
+    }
+
+    .att-card__number {
+        font-size: 1.5rem;
+    }
+
+    .att-card__icon {
+        width: 30px;
+        height: 30px;
+        font-size: 0.85rem;
+    }
+
+    .att-card {
+        padding: 1rem 0.85rem 0.85rem;
     }
 }
 .score-option input[type="radio"]:checked + .score-label .score-icon {

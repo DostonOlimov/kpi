@@ -7,6 +7,9 @@ use App\Models\KpiCriteriaScore;
 use App\Models\Month;
 use App\Models\Score;
 use App\Models\User;
+use App\Models\Attendance;
+use App\Models\EmployeeDays;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -341,6 +344,76 @@ class CommissionController extends Controller
         return view('commission.user_band_scores', compact(
             'users', 'title', 'days', 'groupedUsers', 'month_name', 'month_id', 'year', 'kpis', 'id', 'selectedKpiId'
         ));
+    }
+
+    /**
+     * Show attendance-based KPI scoring page for a single user (kpi id = 8).
+     */
+    public function attendanceScore(Kpi $kpi, User $user)
+    {
+        $month     = session('month') ?? (int) date('m');
+        $year      = session('year') ?? (int) date('Y');
+        $monthName = Month::getMonth($month);
+
+        $attendances = Attendance::where('external_id', $user->ch_id)
+            ->whereYear('date', $year)
+            ->whereMonth('date', $month)
+            ->orderBy('date')
+            ->get();
+
+        $total   = $attendances->count();
+        $present = $attendances->filter(fn($a) => in_array($a->display_status, ['Bor', 'Ishda']))->count();
+        $absent  = $attendances->filter(fn($a) => $a->display_status === "Yo'q")->count();
+        $excused = $attendances->filter(fn($a) => in_array($a->display_status, ['Sababli', 'Kasal', "Ta'tilda"]))->count();
+        $late    = $attendances->filter(fn($a) => $a->is_late)->count();
+        $early   = $attendances->filter(fn($a) => $a->is_early)->count();
+
+        $workingDays = EmployeeDays::where('user_id', $user->id)
+            ->where('month_id', $month)
+            ->where('year', $year)
+            ->value('days');
+
+        $userKpi = UserKpi::where('user_id', $user->id)
+            ->where('kpi_id', $kpi->id)
+            ->first();
+
+        return view('commission.attendance_score', compact(
+            'kpi', 'user', 'attendances', 'monthName', 'month', 'year',
+            'total', 'present', 'absent', 'excused', 'late', 'early', 'workingDays', 'userKpi'
+        ));
+    }
+
+    /**
+     * Save attendance-based KPI score (kpi id = 8).
+     */
+    public function attendanceScoreStore(Kpi $kpi, User $user, Request $request)
+    {
+        $request->validate([
+            'score'    => 'required|numeric|min:0',
+            'feedback' => 'nullable|string|max:1000',
+        ]);
+
+        $userKpi = UserKpi::where('user_id', $user->id)
+            ->where('kpi_id', $kpi->id)
+            ->firstOrFail();
+
+        $score = Score::updateOrCreate(
+            ['user_kpi_id' => $userKpi->id],
+            [
+                'score'     => $request->score,
+                'feedback'  => $request->feedback,
+                'scored_by' => auth()->id(),
+                'type'      => 2,
+            ]
+        );
+
+        $userKpi->current_score = $request->score;
+        $userKpi->score_id      = $score->id;
+        $userKpi->save();
+
+        return redirect()
+            ->route('commission.band_scores.list', $kpi->type)
+            ->with('success', 'Davomat KPI bali muvaffaqiyatli saqlandi.');
     }
 
 }

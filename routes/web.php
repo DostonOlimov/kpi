@@ -126,6 +126,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/create-band-score/{id}/{user}', [CommissionController::class, 'createBandScore'])->name('commission.create.band_score');
 
         Route::post('/save-selected-kpi', [CommissionController::class, 'saveSelectedKpi'])->name('commission.session.band.score');
+
+        Route::get('/attendance-score/{kpi}/{user}', [CommissionController::class, 'attendanceScore'])->name('commission.attendance_score');
+        Route::post('/attendance-score/{kpi}/{user}', [CommissionController::class, 'attendanceScoreStore'])->name('commission.attendance_score.store');
     });
     Route::group(['prefix' => 'employee-profile'], function () {
         Route::get('/list', [EmployeeProfileController::class, 'index'])->name('profile.list');
