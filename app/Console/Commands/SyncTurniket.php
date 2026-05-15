@@ -135,6 +135,12 @@ class SyncTurniket extends Command
                 continue;
             }
 
+            // Skip device door-state events that have no person identity.
+            $verifyMode = $event['currentVerifyMode'] ?? null;
+            if ($verifyMode === 'invalid') {
+                continue;
+            }
+
             try {
                 $carbon = Carbon::parse($time);
             } catch (Throwable $e) {
