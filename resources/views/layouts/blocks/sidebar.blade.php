@@ -37,7 +37,7 @@
             $allSections = [
                 [
                     'title' => 'Foydalanuvchilar',
-                    'roles' => ['admin', 'director', 'kadrlar'],
+                    'roles' => ['admin', 'director', 'kadrlar', 'ijro'],
                     'items' => [
                         ['route' => 'works.list',              'param' => null,                   'icon' => 'cil-briefcase',     'label' => "Bo'limlar",                          'active_route' => 'works',           'roles' => ['admin']],
                         ['route' => 'month.index',             'param' => null,                   'icon' => 'cil-calendar',      'label' => 'Oy kunlari',                         'active_route' => 'month',           'roles' => ['admin']],
@@ -45,6 +45,7 @@
                         ['route' => 'working-kpis.index',      'param' => $parent_work_zone_id,   'icon' => 'cil-description',   'label' => "KPI Ko'rsatkichlari",                'active_route' => 'working-kpis',    'roles' => ['admin', 'director']],
                         ['route' => 'employee.kpis.users',     'param' => $parent_work_zone_id,   'icon' => 'cil-bar-chart',     'label' => "Xodimlarning KPI ko'rsatkichlari",   'active_route' => 'employee/users',  'roles' => ['admin', 'director']],
                         ['route' => 'attendances.index', 'param' => null, 'icon' => 'cil-calendar', 'label' => "Xodimlar davomati", 'active_route' => 'attendances', 'roles' => ['admin', 'kadrlar']],
+                        ['route' => 'edodocuments.index',      'param' => null,             'icon' => 'cil-file',         'label' => 'EDO Hujjatlari',        'active_route' => 'edodocuments',      'roles' => ['admin', 'ijro']],
                     ],
                 ],
                 [
@@ -54,7 +55,6 @@
                         ['route' => 'attendances.my',          'param' => null,             'icon' => 'cil-calendar',     'label' => 'Mening davomatim',      'active_route' => 'my-attendances',    'roles' => ['user', 'director', 'accountant', 'ijro']],
                         ['route' => 'department.user.detail', 'param' => $currentUser->id, 'icon' => 'cil-check-circle', 'label' => 'Mening natijalarim',    'active_route' => 'departments/users', 'roles' => ['user', 'director']],
                         ['route' => 'profile.create',          'param' => null,             'icon' => 'cil-cloud-upload', 'label' => "Mening topshiriqlarim",  'active_route' => 'employee-profile',  'roles' => ['user', 'director']],
-                        ['route' => 'edodocuments.index',      'param' => null,             'icon' => 'cil-file',         'label' => 'EDO Hujjatlari',        'active_route' => 'edodocuments',      'roles' => ['user', 'director', 'ijro']],
                     ],
                 ],
                 [

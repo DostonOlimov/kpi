@@ -32,6 +32,10 @@ class Edodocument extends Model
         'summary',
         'status',
         'completed_at',
+        'user_id',
+        'created_by',
+        'type',
+        'data',
     ];
 
     /**
@@ -44,6 +48,7 @@ class Edodocument extends Model
         'due_date' => 'date',
         'task_created_at' => 'date',
         'completed_at' => 'datetime',
+        'data' => 'array',
     ];
 
     /**
@@ -117,5 +122,15 @@ class Edodocument extends Model
         }
         
         return Carbon::now()->gt(Carbon::parse($this->due_date));
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

@@ -30,6 +30,12 @@
                                                 {{ trans('app.Qo\'shish')}}</b>
                                         </a>
                                     </li>
+                                    <li>
+                                        <a href="{{ route('edodocuments.import_form') }}">
+                                            <span class="visible-xs"></span>
+                                            <i class="fa fa-file-excel-o fa-lg">&nbsp;</i> <b>Import</b>
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -76,6 +82,16 @@
                 @if(session('message'))
                     <div class="alert alert-success">
                         <i class="fa fa-check-circle"></i> {{ session('message') }}
+                    </div>
+                @endif
+                @if(session('import_errors'))
+                    <div class="alert alert-warning">
+                        <i class="fa fa-exclamation-triangle mr-1"></i> <strong>Import xatoliklari:</strong>
+                        <ul class="mb-0 mt-1">
+                            @foreach(session('import_errors') as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
                 @endif
 

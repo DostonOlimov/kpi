@@ -6,6 +6,10 @@ use App\Models\Edodocument;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\EdoDocumentImport;
+use App\Jobs\ImportEdoDocumentsJob;
+use Illuminate\Support\Facades\Cache;
 
 class EdodocumentController extends Controller
 {
@@ -174,5 +178,50 @@ class EdodocumentController extends Controller
 
         return redirect()->route('edodocuments.index')
             ->with('message', 'Hujjat muvaffaqiyatli o\'chirildi!');
+    }
+
+    /**
+     * Show the import form.
+     */
+    public function showImportForm()
+    {
+        return view('edodocuments.import');
+    }
+
+    /**
+     * Import EDO documents from Excel file.
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        $file    = $request->file('file');
+        $cacheKey = 'edo_import_' . auth()->id() . '_' . time();
+
+        // Move uploaded file to a temp path that the job can access
+        $tempPath = $file->storeAs('imports', $cacheKey . '.' . $file->extension());
+
+        Cache::put($cacheKey, ['status' => 'queued'], 3600);
+
+        ImportEdoDocumentsJob::dispatch(storage_path('app/' . $tempPath), auth()->id(), $cacheKey);
+
+        return redirect()->route('edodocuments.import_form')
+            ->with('import_cache_key', $cacheKey);
+    }
+
+    /**
+     * Check import job status (AJAX).
+     */
+    public function importStatus(Request $request)
+    {
+        $cacheKey = $request->query('key');
+
+        if (!$cacheKey || !Cache::has($cacheKey)) {
+            return response()->json(['status' => 'not_found'], 404);
+        }
+
+        return response()->json(Cache::get($cacheKey));
     }
 }

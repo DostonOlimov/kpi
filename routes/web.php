@@ -50,6 +50,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/my-attendances', [AttendanceController::class, 'myAttendances'])->name('attendances.my');
 
     Route::resource('edodocuments', EdodocumentController::class);
+    Route::get('/edodocuments-import', [EdodocumentController::class, 'showImportForm'])->name('edodocuments.import_form');
+    Route::post('/edodocuments-import', [EdodocumentController::class, 'import'])->name('edodocuments.import');
+    Route::get('/edodocuments-import-status', [EdodocumentController::class, 'importStatus'])->name('edodocuments.import_status');
     Route::post('/edodocuments/{id}/complete', [EdodocumentController::class, 'complete'])->name('edodocuments.complete');
 
     Route::post('/change-year', [SessionController::class, 'changeYear']);

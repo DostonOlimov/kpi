@@ -106,6 +106,11 @@ class User extends Authenticatable
         return $this->hasMany(Attendance::class, 'external_id', 'ch_id');
     }
 
+    public function edoNames(): HasMany
+    {
+        return $this->hasMany(EdoUserName::class);
+    }
+
     public function getFullNameAttribute()
     {
         return $this->first_name. ' '. $this->last_name;
