@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Models\Attendance;
 use App\Models\TurniketEvent;
-use App\Models\User;
 use App\Services\TurniketService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -240,9 +239,6 @@ class SyncTurniket extends Command
             }
         }
 
-        // Resolve names from User table by ch_id (preferred over device-supplied name).
-        $userByChId = User::whereNotNull('ch_id')->pluck('name', 'ch_id')->toArray();
-
         $created = 0;
         $updated = 0;
 
@@ -255,8 +251,7 @@ class SyncTurniket extends Command
 
                 $isNew = !$attendance->exists;
 
-                $attendance->name       = $userByChId[$externalId]
-                    ?? ($info['name'] ?? $attendance->name ?? $externalId);
+                $attendance->name       = $info['name'] ?? $attendance->name ?? $externalId;
                 $attendance->department = $info['department'] ?? $attendance->department;
 
                 if (!empty($info['first_in'])) {
