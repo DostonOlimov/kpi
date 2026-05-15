@@ -234,6 +234,8 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::get('/turniket-test', [TurniketController::class, 'getLogs']);
+Route::get('/turniket-sync', [TurniketController::class, 'sync']);
+Route::get('/turniket-events', [TurniketController::class, 'events']);
 
 Route::post('/debug-import', function (Request $request) {
     $filePath = $request->file('file')->getRealPath();

@@ -17,6 +17,13 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('kpis:assign')->monthlyOn(1, '01:00');
+
+        // Pull turniket access events into the attendances table every 5 minutes.
+        $schedule->command('turniket:sync')
+            ->everyFiveMinutes()
+            ->withoutOverlapping(10)
+            ->runInBackground()
+            ->onOneServer();
     }
 
     /**

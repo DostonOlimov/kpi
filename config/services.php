@@ -37,4 +37,26 @@ return [
         'model' => env('GEMINI_MODEL', 'gemini-1.5-pro'),
     ],
 
+    'turniket' => [
+        'ip'              => env('TURNIKET_IP', '194.93.24.34'),
+        'user'            => env('TURNIKET_USER', 'admin'),
+        'pass'            => env('TURNIKET_PASS', 'password'),
+        'timezone'        => env('TURNIKET_TZ', '+05:00'),
+        'connect_timeout' => env('TURNIKET_CONNECT_TIMEOUT', 5),
+        'timeout'         => env('TURNIKET_TIMEOUT', 15),
+        'page_size'       => env('TURNIKET_PAGE_SIZE', 100),
+
+        // Two physical devices: 8003 = entry (check-in), 8002 = exit (check-out)
+        'devices' => [
+            'in'  => [
+                'port'      => env('TURNIKET_IN_PORT', '8003'),
+                'direction' => 'in',
+            ],
+            'out' => [
+                'port'      => env('TURNIKET_OUT_PORT', '8002'),
+                'direction' => 'out',
+            ],
+        ],
+    ],
+
 ];
