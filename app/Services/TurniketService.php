@@ -9,8 +9,8 @@ use RuntimeException;
  * Service for communicating with the Hikvision turniket (access control) devices.
  *
  * Two physical devices are configured in config/services.php:
- *   - direction "in"  (port 8003) → check-in events
- *   - direction "out" (port 8002) → check-out events
+ *   - direction "in"  (port 8002) → check-in events
+ *   - direction "out" (port 8003) → check-out events
  *
  * The same credentials and timezone are shared by both devices.
  */

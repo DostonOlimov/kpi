@@ -46,14 +46,14 @@ return [
         'timeout'         => env('TURNIKET_TIMEOUT', 15),
         'page_size'       => env('TURNIKET_PAGE_SIZE', 100),
 
-        // Two physical devices: 8003 = entry (check-in), 8002 = exit (check-out)
+        // Two physical devices: 8002 = entry (check-in), 8003 = exit (check-out)
         'devices' => [
             'in'  => [
-                'port'      => env('TURNIKET_IN_PORT', '8003'),
+                'port'      => env('TURNIKET_IN_PORT', '8002'),
                 'direction' => 'in',
             ],
             'out' => [
-                'port'      => env('TURNIKET_OUT_PORT', '8002'),
+                'port'      => env('TURNIKET_OUT_PORT', '8003'),
                 'direction' => 'out',
             ],
         ],

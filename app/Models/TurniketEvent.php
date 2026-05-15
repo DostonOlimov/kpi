@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Model;
  * Raw access-control event coming from a Hikvision turniket.
  *
  * Two physical devices feed this table:
- *   - port 8003 → direction = 'in'  (check-in)
- *   - port 8002 → direction = 'out' (check-out)
+ *   - port 8002 → direction = 'in'  (check-in)
+ *   - port 8003 → direction = 'out' (check-out)
  */
 class TurniketEvent extends Model
 {

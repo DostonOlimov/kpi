@@ -13,8 +13,8 @@ use Throwable;
 
 /**
  * Pulls access-control events from BOTH turniket devices:
- *   - port 8003 → check-in  (direction = 'in')
- *   - port 8002 → check-out (direction = 'out')
+ *   - port 8002 → check-in  (direction = 'in')
+ *   - port 8003 → check-out (direction = 'out')
  *
  * Steps performed each run:
  *   1. Fetch events from each device for the requested window.
