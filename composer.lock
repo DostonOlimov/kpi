@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "197fa359c941f0047d80ed2d0250c0a9",
+    "content-hash": "f0367bbcb3a16571009e88a99425e6d6",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -4515,6 +4515,44 @@
                 }
             ],
             "time": "2023-01-12T18:13:24+00:00"
+        },
+        {
+            "name": "rats/zkteco",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/raihanafroz/zkteco.git",
+                "reference": "6487ac5dfab34c4e4459fe6c7e9b83d53d4c4cc3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/raihanafroz/zkteco/zipball/6487ac5dfab34c4e4459fe6c7e9b83d53d4c4cc3",
+                "reference": "6487ac5dfab34c4e4459fe6c7e9b83d53d4c4cc3",
+                "shasum": ""
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Rats\\Zkteco\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Raihan Afroz",
+                    "email": "raihanafroz9@gmail.com"
+                }
+            ],
+            "description": "ZKTeco Laravel Library",
+            "support": {
+                "issues": "https://github.com/raihanafroz/zkteco/issues",
+                "source": "https://github.com/raihanafroz/zkteco/tree/master"
+            },
+            "time": "2022-01-19T12:54:40+00:00"
         },
         {
             "name": "smalot/pdfparser",
@@ -9581,7 +9619,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {},
+    "stability-flags": {
+        "rats/zkteco": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

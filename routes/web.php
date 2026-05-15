@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\WorkController;
 use App\Http\Controllers\MonthController;
+use App\Http\Controllers\TurniketController;
 use Illuminate\Http\Request;
 
 /*
@@ -231,6 +232,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/departments/users/{user}', [DepartmentKpiController::class, 'usersShow'])->name('department.user.detail');
 
 });
+
+Route::get('/turniket-test', [TurniketController::class, 'getLogs']);
 
 Route::post('/debug-import', function (Request $request) {
     $filePath = $request->file('file')->getRealPath();

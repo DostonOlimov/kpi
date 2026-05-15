@@ -17,6 +17,7 @@
         "openai-php/client": "^0.4.1",
         "phpoffice/phpspreadsheet": "^1.29",
         "phpoffice/phpword": "^1.4",
+        "rats/zkteco": "dev-master",
         "smalot/pdfparser": "^2.12",
         "spatie/laravel-pjax": "^2.2",
         "symfony/dom-crawler": "^6.4"
