@@ -45,6 +45,7 @@
                         ['route' => 'working-kpis.index',      'param' => $parent_work_zone_id,   'icon' => 'cil-description',   'label' => "KPI Ko'rsatkichlari",                'active_route' => 'working-kpis',    'roles' => ['admin', 'director']],
                         ['route' => 'employee.kpis.users',     'param' => $parent_work_zone_id,   'icon' => 'cil-bar-chart',     'label' => "Xodimlarning KPI ko'rsatkichlari",   'active_route' => 'employee/users',  'roles' => ['admin', 'director']],
                         ['route' => 'attendances.index', 'param' => null, 'icon' => 'cil-calendar', 'label' => "Xodimlar davomati", 'active_route' => 'attendances', 'roles' => ['admin', 'kadrlar']],
+                        ['route' => 'turniket-events.timeline', 'param' => null, 'icon' => 'cil-list', 'label' => "Kirishlar hisoboti", 'active_route' => 'turniket-timeline', 'roles' => ['admin', 'kadrlar']],
                         ['route' => 'edodocuments.index',      'param' => null,             'icon' => 'cil-file',         'label' => 'EDO Hujjatlari',        'active_route' => 'edodocuments',      'roles' => ['admin', 'ijro']],
                     ],
                 ],
