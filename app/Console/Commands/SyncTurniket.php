@@ -211,6 +211,14 @@ class SyncTurniket extends Command
      */
     protected function rebuildAttendances(Carbon $start, Carbon $end): array
     {
+        $now       = Carbon::now();
+        $isToday   = $start->isToday();
+
+        // If syncing today and it's before 18:00, do NOT write last_out —
+        // employees may exit briefly during the day; we only finalize last_out
+        // after working hours.
+        $canSetLastOut = !$isToday || $now->gte(Carbon::createFromTime(18, 0, 0));
+
         // Aggregate from the table — single source of truth.
         $rows = TurniketEvent::query()
             ->select('external_id', 'event_date', 'direction',
@@ -266,9 +274,15 @@ class SyncTurniket extends Command
                     }
                 }
 
+                // Only update last_out if:
+                //  - it's a past date (always allowed), OR
+                //  - it's today AND current time is >= 18:00
                 if (!empty($info['last_out'])) {
-                    if (empty($attendance->last_out) || $info['last_out'] > $attendance->last_out) {
-                        $attendance->last_out = $info['last_out'];
+                    $dateIsPast = Carbon::parse($date)->lt(Carbon::today());
+                    if ($dateIsPast || $canSetLastOut) {
+                        if (empty($attendance->last_out) || $info['last_out'] > $attendance->last_out) {
+                            $attendance->last_out = $info['last_out'];
+                        }
                     }
                 }
 
